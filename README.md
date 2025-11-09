@@ -1,10 +1,61 @@
 # **Projeto NotToWaste - Front-End**
 
-Este documento descreve a **divisão de tarefas entre os membros do grupo** e detalha **cada página do sistema**, funcionalidades e interações que devem ser implementadas em React+Vite (JavaScript ou TypeScript, dependendo da decisão do grupo).
+## Estrutura do Projeto
+
+Aqui está uma visão geral da estrutura do projeto, destacando as partes mais importantes para entender o funcionamento:
+
+```
+NotToWaste/
+├── README.md
+├── index.html
+├── eslint.config.js
+├── package.json
+├── vite.config.js
+├── src/
+│   ├── assets/          # Imagens, ícones e outros arquivos estáticos
+│   │   └── images/
+│   ├── components/      # Componentes reutilizáveis (Navbar, Botões, Cards, etc.)
+│   │   └── Navbar.tsx
+│   ├── pages/           # Páginas individuais do projeto
+│   │   ├── Home.tsx
+│   │   ├── OutraPagina.tsx
+│   ├── App.tsx          # Componente principal, onde as rotas são definidas
+│   └── main.tsx         # Ponto de entrada do React
+└── node_modules/        # Dependências do projeto
+```
+
+### Descrição das Pastas Principais
+
+* **assets/**: Contém imagens, ícones e outros arquivos estáticos usados no projeto.
+* **components/**: Componentes reutilizáveis como Navbar, botões, cards, etc.
+* **pages/**: Páginas individuais do site (Home, About, Contact, etc.).
+* **App.jsx**: Componente principal que define as rotas do projeto.
+* **main.jsx**: Ponto de entrada do React, onde o App é montado.
+
+# Instruções de Inicialização
+
+1. Clonar o repositório:
+
+   ```bash
+   git clone git@github.com:mimicarreira13/NotToWaste.git
+   ```
+2. Instalar dependências:
+
+   ```bash
+   npm install
+   ```
+3. Iniciar a aplicação:
+
+   ```bash
+   npm run dev
+   ```
+
+   O frontend deve abrir em `http://localhost:5173/` (ou porta configurada).
+
 
 ---
 
-## **Distribuição de Grupos**
+## **Distribuição de Tarefas**
 
 | Grupo | Membro Responsável | Páginas | Observações |
 |-------|-----------------|---------|-------------|

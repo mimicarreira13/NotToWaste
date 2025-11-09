@@ -1,5 +1,5 @@
 import { FiSearch, FiUser } from "react-icons/fi";
-import logo from "../assets/logo.png";
+import logo from "../assets/images/logo.png";
 
 export default function Navbar() {
     return (
