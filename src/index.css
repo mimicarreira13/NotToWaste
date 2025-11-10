@@ -3,18 +3,22 @@
 @tailwind utilities;
 
 :root {
+  --app-font: Arial, sans-serif;
   --modal-title-size: 35px; /* pode variar onde abrir o modal */
   --modal-title-line-height: 17px;
-  --modal-font-family: "Sansita";
+  --modal-font-family: Arial, sans-serif;
   --modal-band-color: #4C6E43;
   --modal-button-bg: #4C6E43;
   --modal-button-color: #ffffff;
 }
 
-body {
-  margin: 0;
-  font-family: Sansita;
+html, body, #root {
+  font-family: var(--app-font);
 }
+body * {
+  font-family: inherit;
+}
+
 
 /* modal classes */
 .modal-dialog {
