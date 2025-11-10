@@ -16,7 +16,7 @@ export default function Navbar() {
                 to="/"
                 className="flex-1 text-center font-normal"
                 aria-label="Ir para a página inicial"
-                style={{ fontFamily: 'Sansita', fontSize: '40px', lineHeight: '17px', textDecoration: 'none', color: 'inherit' }}
+                style={{ fontFamily: 'Arial', fontSize: '40px', lineHeight: '17px', textDecoration: 'none', color: 'inherit' }}
             >
                 NotToWaste
             </Link>
