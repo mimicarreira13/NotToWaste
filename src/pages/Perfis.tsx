@@ -9,7 +9,7 @@ type PerfisProps = {
     onSelect?: () => void;
 };
 
-export default function Perfis() {
+export default function Perfis({ onSelect }: PerfisProps) {
     const navigate = useNavigate();
 
     const cards = [
