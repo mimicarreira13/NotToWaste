@@ -39,7 +39,7 @@ export default function Home() {
 
     const allowed = profile ? permissions[profile.alt] ?? [] : cards.map(c => c.alt);
 
-    function handleCardClick(card: { id: number; src: string; alt: string }, disabled: boolean) {
+    function handleCardClick(disabled: boolean) {
         if (disabled) {
             setModal({
                 open: true,
@@ -64,7 +64,7 @@ export default function Home() {
                     return (
                         <div
                             key={card.id}
-                            onClick={() => handleCardClick(card, disabled)}
+                            onClick={() => handleCardClick(disabled)}
                             className={
                                 "relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 " +
                                 (disabled ? " cursor-not-allowed" : " cursor-pointer")
@@ -73,7 +73,7 @@ export default function Home() {
                             aria-label={card.alt}
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleCardClick(card, disabled);
+                                if (e.key === "Enter" || e.key === " ") handleCardClick(disabled);
                             }}
                         >
                             {disabled && (
