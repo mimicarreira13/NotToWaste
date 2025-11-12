@@ -1,6 +1,7 @@
 import { useProfile } from "../contexts/ProfileContext";
 import { useState } from "react";
 import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
 
 import dashboard from "../assets/images/icons/dashboard.png";
 import cozinha from "../assets/images/icons/cozinha.png";
@@ -24,38 +25,54 @@ type ModalConfig = {
     buttons?: { label: string; onClick?: () => void }[];
 };
 
+type Card = {
+    id: number;
+    src: string;
+    alt: string;
+    route?: string;
+};
+
 export default function Home() {
     const { profile } = useProfile();
     const [modal, setModal] = useState<ModalConfig>({ open: false });
+    const navigate = useNavigate();
 
-    const cards = [
-        { id: 1, src: dashboard, alt: "Dashboard" },
-        { id: 2, src: cozinha, alt: "Cozinha" },
-        { id: 3, src: definicoes, alt: "Definições" },
-        { id: 4, src: pratos, alt: "Gerir Pratos" },
-        { id: 5, src: stock, alt: "Stock" },
-        { id: 6, src: desperdicio, alt: "Desperdício" },
+    const cards: Card[] = [
+        { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
+        { id: 2, src: cozinha, alt: "Cozinha", route: "/cozinha" },
+        { id: 3, src: definicoes, alt: "Definições", route: "/definicoes" },
+        { id: 4, src: pratos, alt: "Gerir Pratos", route: "/pratos" },
+        { id: 5, src: stock, alt: "Stock", route: "/stock" },
+        { id: 6, src: desperdicio, alt: "Desperdício", route: "/desperdicio" },
     ];
 
     const allowed = profile ? permissions[profile.alt] ?? [] : cards.map(c => c.alt);
 
-    function handleCardClick(disabled: boolean) {
+    function handleCardClick(card: Card, disabled: boolean) {
         if (disabled) {
             setModal({
                 open: true,
                 title: "Serviço Indisponível",
                 message: "A conta atual não tem permissão para aceder a este serviço",
                 buttons: [
-                    {
-                        label: "OK",
-                        onClick: () => setModal({ open: false }),
-                    },
+                    { label: "OK", onClick: () => setModal({ open: false }) },
                 ],
             });
             return;
         }
+        if (card.route) {
+            navigate(card.route);
+        } else {
+            setModal({
+                open: true,
+                title: "Indisponível",
+                message: "Essa funcionalidade ainda não tem uma rota configurada.",
+                buttons: [{ label: "OK", onClick: () => setModal({ open: false }) }],
+            });
+        }
     }
 
+    // O .map fica dentro do return do JSX!
     return (
         <div className="w-full max-w-6xl mx-auto p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -64,7 +81,7 @@ export default function Home() {
                     return (
                         <div
                             key={card.id}
-                            onClick={() => handleCardClick(disabled)}
+                            onClick={() => handleCardClick(card, disabled)}
                             className={
                                 "relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 " +
                                 (disabled ? " cursor-not-allowed" : " cursor-pointer")
@@ -73,7 +90,7 @@ export default function Home() {
                             aria-label={card.alt}
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleCardClick(disabled);
+                                if (e.key === "Enter" || e.key === " ") handleCardClick(card, disabled);
                             }}
                         >
                             {disabled && (
