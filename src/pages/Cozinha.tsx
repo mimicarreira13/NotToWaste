@@ -37,7 +37,7 @@ export default function Cozinha() {
         {
             id:"voltar",
             content: (
-                <div className="font-black" style={{fontSize:"25px"}} onClick={() => navigate("/")}>← Voltar</div>
+                <div style={{fontSize:"25px"}} onClick={() => navigate("/")}>← Voltar</div>
             )
         },
         {
