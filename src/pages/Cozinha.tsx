@@ -1,6 +1,6 @@
-import {useNavigate, type NavigateFunction} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {FiSearch} from "react-icons/fi";
-import { createCards } from "../components/plates";
+import { createCards } from "../components/cards";
 import foodDataJSON from "../tmp/datafood.json";
 import ingredientDataJSON from "../tmp/dataingredient.json";
 import {useState} from "react";
@@ -22,8 +22,8 @@ const ingredients =createCards(ingredientData);
 export default function Cozinha() {
     const navigate = useNavigate();
     const [pageMode, setPageMode] = useState(false);
-    let fColor= "grey";
-    let iColor = "lightColor";
+    let fColor;
+    let iColor;
 
     if (pageMode) {
         iColor = "grey";
@@ -37,7 +37,7 @@ export default function Cozinha() {
         {
             id:"voltar",
             content: (
-                <div className="font-black font-bold" style={{fontSize:"25px"}} onClick={() => navigate("/")}>← Voltar</div>
+                <div className="font-black" style={{fontSize:"25px"}} onClick={() => navigate("/")}>← Voltar</div>
             )
         },
         {
@@ -67,11 +67,9 @@ export default function Cozinha() {
 
     return (
     <div className=" justify-center p-4">
-        <script>
-            <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin/>
-            <link href="https://fonts.googleapis.com/css2?family=Sansita:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&display=swap" rel="stylesheet"/>
-        </script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Sansita:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&display=swap');
+        </style>
         <div className="flex flex-row h-14 w-2/3 justify-around items-start mb-3" style={{fontFamily:"Sansita"}}>
             {topBar.map(item => (
                 <div key={item.id}>{item.content}</div>
