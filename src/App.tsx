@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Root from "./pages/Root";
 import Perfis from "./pages/Perfis";
 import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import Cozinha from "./pages/Cozinha";
 
 function App() {
     return (
@@ -16,6 +18,7 @@ function App() {
                             <Route path="/" element={<Root />} />
                             <Route path="/perfis" element={<Perfis />} />
                             <Route path="/dashboard" element={<Dashboard/>} />
+                            <Route path="/cozinha" element={<Cozinha />} />
                         </Routes>
                     </main>
                 </div>
