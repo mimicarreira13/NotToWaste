@@ -17,7 +17,7 @@ const foodData = foodDataJSON as CardOptions[];
 const ingredientData = ingredientDataJSON as CardOptions[];
 
 const foods = createCards(foodData);
-const ingredients =createCards(ingredientData);
+const ingredients = createCards(ingredientData);
 
 export default function Cozinha() {
     const navigate = useNavigate();
@@ -78,10 +78,10 @@ export default function Cozinha() {
         {pageMode ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
                  style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                {ingredients.map(plate => (
-                    <div id={plate.id} key={plate.id} className={plate.classes}
+                {ingredients.map(item => (
+                    <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(item.id)}
                          style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                        {plate.content}
+                        {item.content}
                     </div>
                 ))}
             </div>
@@ -89,7 +89,7 @@ export default function Cozinha() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
             style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
         {foods.map(plate => (
-            <div id={plate.id} key={plate.id} className={plate.classes}
+            <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(plate.id)}
                  style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
                 {plate.content}
             </div>
