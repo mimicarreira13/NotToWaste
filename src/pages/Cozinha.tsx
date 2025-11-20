@@ -67,9 +67,6 @@ export default function Cozinha() {
 
     return (
     <div className=" justify-center p-4">
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Sansita:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&display=swap');
-        </style>
         <div className="flex flex-row h-14 w-2/3 justify-around items-start mb-3" style={{fontFamily:"Sansita"}}>
             {topBar.map(item => (
                 <div key={item.id}>{item.content}</div>
