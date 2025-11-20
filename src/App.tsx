@@ -1,10 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import Navbar from "./components/Navbar";
-import Root from "./pages/Root";
 import Perfis from "./pages/Perfis";
 import Dashboard from "./pages/Dashboard";
-import Home from "./pages/Home";
+import Root from "./pages/Root";
 import Cozinha from "./pages/Cozinha";
 
 function App() {
