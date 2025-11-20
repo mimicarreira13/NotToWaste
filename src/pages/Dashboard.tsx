@@ -26,7 +26,7 @@ const cards = [
         id: "card-relatorio-sustentabilidade",
         content: (
             <>
-                <img src="/sustainability-report-icon.png" className="h-16 mb-2" alt="Sustentabilidade"/>
+                <img src="src/assets/images/icons/sustainability_report.png" className="w-1/3 h-15 pt-5" alt="Sustentabilidade"/>
                 <button className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Sustentabilidade</button>
             </>
         ),
@@ -60,7 +60,7 @@ const cards = [
         id: "card-relatorio-ingredientes",
         content: (
             <>
-                <img src="/ingredients-report-icon.png" className="h-16 mb-2" alt="Ingredientes"/>
+                <img src="src/assets/images/icons/ingredients_report.png" className="w-1/3 h-15 pt-5" alt="Ingredientes"/>
                 <button className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Ingredientes</button>
             </>
         ),
@@ -71,7 +71,7 @@ const cards = [
 export default function Dashboard() {
     return (
         <div className="flex justify-center p-4">
-            <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200">
+            <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
                 {cards.map(card => (
                     <div id={card.id} key={card.id} className={card.classes}>
                         {card.content}
