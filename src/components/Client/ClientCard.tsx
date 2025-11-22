@@ -52,15 +52,44 @@ export default function ClientCard({ item, compact = false }: Props) {
         );
     }
 
-    // pratos (fallback)
+    // pratos
+    const dish = item as DishItem;
+    const isUnavailable = dish.available === false;
+    const unavailableClass = isUnavailable ? "opacity-50 filter grayscale" : "";
+
     return (
-        <div className={`${cardBase} aspect-square`}>
-            <div className="w-full h-full flex flex-col">
-                <div className="flex-1 w-full flex items-center justify-center overflow-hidden">
-                    {item.image ? <img src={item.image} alt="Prato" className="object-contain max-h-full" /> : <div className="text-gray-500">No image</div>}
+        <div className={`${cardBase} ${unavailableClass}`}>
+            <div className="w-full flex items-center p-4">
+                <div className="w-40 min-w-[96px] flex-shrink-0 flex items-center justify-center bg-gray-100 overflow-hidden">
+                    {dish.image ? (
+                        <img
+                            src={dish.image}
+                            alt={dish.name ?? "Prato"}
+                            className="w-full h-auto object-contain transform transition-transform duration-200"
+                        />
+                    ) : (
+                        <div className="text-gray-500 p-2">No image</div>
+                    )}
                 </div>
-                <div className={bottomBand + " bg-[#4C6E43]"} />
+
+                <div className="flex-1 ml-4 flex flex-col justify-center">
+                    <div className={`${compact ? "text-sm" : "text-lg"} font-semibold text-gray-800 leading-tight`}>
+                        {dish.name}
+                    </div>
+
+                    {dish.ingredients && dish.ingredients.length > 0 && (
+                        <div className={`${compact ? "text-xs" : "text-sm"} text-gray-600 mt-2`}>
+                            {dish.ingredients.join(", ")}
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {isUnavailable && (
+                <div className={bottomBand + " bg-[#4C6E43]"}>
+                    Indisponível
+                </div>
+            )}
         </div>
     );
 }

@@ -1,5 +1,12 @@
+/* //MOCK DATA
 import sustImg from "../assets/images/reports/sustentabilidade.png";
 import ingImg from "../assets/images/reports/ingredients.png";
+import espetadaImg from "../assets/images/dishes/espetada.png";
+import picadoVacaImg from "../assets/images/dishes/picado.jpg";
+import francesinhaImg from "../assets/images/dishes/francesinha.jpg";
+import bifanaImg from "../assets/images/dishes/bifana.jpg";
+import carneVinhaAlhosImg from "../assets/images/dishes/carne_vinho_alhos.jpg";
+import espargueteBoloImg from "../assets/images/dishes/bolonhesa.jpg";
 
 export type SustainabilityReport = {
     id: number;
@@ -16,6 +23,8 @@ export type IngredientItem = {
 
 export type DishItem = {
     id: number;
+    name: string;
+    ingredients?: string[];
     image?: string;
     available?: boolean;
 };
@@ -53,5 +62,106 @@ export const ingredientItems: IngredientItem[] = [
 ];
 
 export const dishes: DishItem[] = [
-    // deixado vazio por enquanto
+    {
+        id: 1,
+        name: "Espetada",
+        ingredients: ["Carne", "Sal", "Alho", "Louro"],
+        image: espetadaImg,
+        available: true,
+    },
+    {
+        id: 2,
+        name: "Picado de Vaca",
+        ingredients: ["Carne", "Alho", "Louro", "Molho com manteiga", "Cerveja", "Batata frita"],
+        image: picadoVacaImg,
+        available: true,
+    },
+    {
+        id: 3,
+        name: "Francesinha",
+        ingredients: ["Bife", "Salsicha", "Pão", "Ovo", "Queijo", "Molho especial", "Linguiça", "Sal"],
+        image: francesinhaImg,
+        available: false,
+    },
+    {
+        id: 4,
+        name: "Carne Vinha de Alhos",
+        ingredients: ["Carne", "Sal", "Alho", "Vinho", "Viagre", "Salsa", "Batata cozida"],
+        image: carneVinhaAlhosImg,
+        available: true,
+    },
+    {
+        id: 5,
+        name: "Bifana",
+        ingredients: ["Carne", "Alho", "Arroz", "Batata frita", "Molho da casa"],
+        image: bifanaImg,
+        available: true,
+    },
+    {
+        id: 6,
+        name: "Esparguete à Bolonhesa",
+        ingredients: ["Carne moída", "Chouriço", "Bacon", "Tomate", "Esparguete"],
+        image: espargueteBoloImg,
+        available: false,
+    },
+];*/
+
+
+// VERSÃO SIMPLES -LAYOUT
+export type SustainabilityReport = {
+    id: number;
+    year: number;
+    image: string;
+};
+
+export type IngredientItem = {
+    id: number;
+    month: string;
+    year: number;
+    image: string;
+};
+
+export type DishItem = {
+    id: number;
+    name: string;
+    ingredients?: string[];
+    image?: string;
+    available?: boolean;
+};
+
+export const placeholderImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><rect width="100%" height="100%" fill="%23E5E7EB"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23777" font-size="28" font-family="Arial">imagem</text></svg>`;
+
+export const sustainabilityReports: SustainabilityReport[] = [
+    { id: 1, year: 2024, image: placeholderImage },
 ];
+
+export const ingredientItems: IngredientItem[] = [
+    { id: 1, month: "Janeiro", year: 2025, image: placeholderImage },
+    { id: 2, month: "Fevereiro", year: 2025, image: placeholderImage },
+    { id: 3, month: "Março", year: 2024, image: placeholderImage },
+];
+
+export const dishes: DishItem[] = [
+    {
+        id: 1,
+        name: "Salada de Quinoa",
+        ingredients: ["Quinoa", "Tomate cherry", "Pepino", "Azeite", "Limão"],
+        image: placeholderImage,
+        available: true,
+    },
+    {
+        id: 2,
+        name: "Frango Grelhado",
+        ingredients: ["Peito de frango", "Alho", "Azeite", "Ervas"],
+        image: placeholderImage,
+        available: true,
+    },
+    {
+        id: 3,
+        name: "Sopa de Legumes",
+        ingredients: ["Cenoura", "Batata", "Cebola", "Aipo", "Caldo de legumes"],
+        image: placeholderImage,
+        available: false,
+    },
+];
+
