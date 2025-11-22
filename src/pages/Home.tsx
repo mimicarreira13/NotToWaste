@@ -12,7 +12,7 @@ import proibido from "../assets/images/icons/proibido.png";
 
 const permissions: Record<string, string[]> = {
     Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
-    "Funcinário de Stock": ["Stock", "Desperdício"],
+    "Funcionário de Stock": ["Stock", "Desperdício"],
     "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
 };
