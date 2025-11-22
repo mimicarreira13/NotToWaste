@@ -11,7 +11,7 @@ type Props = {
 
 const DEFAULTS: Record<string, { email: string; password: string }> = {
     Gerente: { email: "gerente@nottowaste.local", password: "gerente123" },
-    "Funcinário de Stock": { email: "stock@nottowaste.local", password: "stock123" },
+    "Funcionário de Stock": { email: "stock@nottowaste.local", password: "stock123" },
     "Chef de Cozinha": { email: "chef@nottowaste.local", password: "chef123" },
     Cozinheiro: { email: "cozinheiro@nottowaste.local", password: "cozinheiro123" },
 };
