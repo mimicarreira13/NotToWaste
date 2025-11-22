@@ -3,6 +3,7 @@ import { ProfileProvider } from "./contexts/ProfileContext";
 import Navbar from "./components/Navbar";
 import Root from "./pages/Root";
 import Perfis from "./pages/Perfis";
+import Client from "./pages/Client";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Root />} />
                             <Route path="/perfis" element={<Perfis />} />
+                            <Route path="/client" element={<Client />} />
                         </Routes>
                     </main>
                 </div>
