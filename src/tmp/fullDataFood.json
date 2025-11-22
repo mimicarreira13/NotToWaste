@@ -1,0 +1,44 @@
+[
+  {
+    "id": "espetada",
+    "title": "Espetada",
+    "imageName": "espetada.jpg",
+    "ingredients": ["Carne"],
+    "description": "A espetada é uma especialidade da Madeira que consiste em pedaços de carne de vaca, geralmente temperados com alho, louro e pimenta, que são grelhados em espetos de madeira ou metal. Os cubos de carne são marinados antes de serem cozinhados, resultando numa carne suculenta e saborosa, frequentemente servida com batatas fritas ou verduras."
+  },
+  {
+    "id": "picado-de-vaca",
+    "title": "Picado de Vaca",
+    "imageName": "picado de vaca.jpg",
+    "ingredients": ["Carne", "Batata"],
+    "description": ""
+  },
+  {
+    "id": "francesinha",
+    "title": "Francesinha",
+    "imageName": "francesinha.jpg",
+    "ingredients": ["Bife", "Salsicha", "Pão", "Fiambre", "Cebola", "Linguiça", "Alho", "Tomate", "Vinho", "Cerveja", "Piri-piri", "Louros", "Farinha", "Sal", "Pimenta", "Queijo", "Batata"],
+    "description": ""
+  },
+  {
+    "id": "carne-vinha-de-alhos",
+    "title": "Carne Vinha de Alhos",
+    "imageName": "carne vinha de alhos.jpg",
+    "ingredients": ["Carne", "Vinha", "Alhos"],
+    "description": ""
+  },
+  {
+    "id": "bifana",
+    "title": "Bifana",
+    "imageName": "bifana.jpg",
+    "ingredients": ["Carne", "Arroz", "Batata"],
+    "description": ""
+  },
+  {
+    "id": "esparguete-a-bolonhesa",
+    "title": "Esparguete",
+    "imageName": "esparguete.jpg",
+    "ingredients": ["Carne", "Esparguete"],
+    "description": ""
+  }
+]
