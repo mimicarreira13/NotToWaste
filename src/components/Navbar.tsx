@@ -7,7 +7,7 @@ import logo from "../assets/images/logo.png";
 export default function Navbar() {
 
     return (
-        <nav className="w-full bg-[#4C6E43] text-white p-4 h-20 flex items-center justify-between">
+        <nav className="w-full bg-[#4C6E43] text-white p-4 h-20 flex items-center justify-between fixed z-50">
             <div className="flex items-center gap-2 flex-1">
                 <img src={logo} alt="Logo" className="w-[72px] h-[72px]" />
             </div>
