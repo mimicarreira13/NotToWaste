@@ -1,16 +1,24 @@
 import { useState } from "react";
-import ToggleTabs from "../components/ToggleTabs";
-import ClientGrid from "../components/ClientGrid";
-import ClientCard from "../components/ClientCard";
+import ToggleTabs from "../components/Client/ToggleTabs.tsx";
+import ClientGrid from "../components/Client/ClientGrid.tsx";
+import ClientCard from "../components/Client/ClientCard.tsx";
+import ClientYearSections from "../components/Client/ClientYearSections";
 import { sustainabilityReports, ingredientItems, dishes } from "../data/clientItems";
 
 export default function Client() {
     const [selected, setSelected] = useState<"reports" | "dishes">("reports");
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
 
+    const bandHeight = 190; // altura da banda fixa no topo
+
     return (
-        <div className="w-full max-w-6xl mx-auto p-6">
-            <div className="fixed top-32 left-48 right-48 flex items-center justify-between">
+        <div className="w-full" style={{ paddingLeft: "10%", paddingRight: "10%", paddingTop: 24, paddingBottom: 24 }}>
+            <div
+                className="fixed left-0 right-0 top-0 z-30 pointer-events-none"
+                style={{ height: `${bandHeight}px`, backgroundColor: "#D9D9D9" }}
+                aria-hidden="true"
+            />
+            <div className="fixed top-32 left-48 right-48 flex items-center justify-between z-40">
                 <ToggleTabs
                     options={[
                         { id: "reports", label: "Relatórios" },
@@ -43,12 +51,7 @@ export default function Client() {
                 )}
 
                 {selected === "reports" && reportTab === "ingredients" && (
-                    <ClientGrid
-                        variant="ingredients"
-                        items={ingredientItems}
-                        columns={6}
-                        renderItem={(ing) => <ClientCard item={ing} compact />}
-                    />
+                    <ClientYearSections items={ingredientItems} columns={6} compact />
                 )}
 
                 {selected === "dishes" && (
