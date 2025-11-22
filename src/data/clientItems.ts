@@ -1,4 +1,4 @@
-/* //MOCK DATA
+ //MOCK DATA
 import sustImg from "../assets/images/reports/sustentabilidade.png";
 import ingImg from "../assets/images/reports/ingredients.png";
 import espetadaImg from "../assets/images/dishes/espetada.png";
@@ -104,64 +104,6 @@ export const dishes: DishItem[] = [
         image: espargueteBoloImg,
         available: false,
     },
-];*/
-
-
-// VERSÃO SIMPLES -LAYOUT
-export type SustainabilityReport = {
-    id: number;
-    year: number;
-    image: string;
-};
-
-export type IngredientItem = {
-    id: number;
-    month: string;
-    year: number;
-    image: string;
-};
-
-export type DishItem = {
-    id: number;
-    name: string;
-    ingredients?: string[];
-    image?: string;
-    available?: boolean;
-};
-
-export const placeholderImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><rect width="100%" height="100%" fill="%23E5E7EB"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23777" font-size="28" font-family="Arial">imagem</text></svg>`;
-
-export const sustainabilityReports: SustainabilityReport[] = [
-    { id: 1, year: 2024, image: placeholderImage },
 ];
 
-export const ingredientItems: IngredientItem[] = [
-    { id: 1, month: "Janeiro", year: 2025, image: placeholderImage },
-    { id: 2, month: "Fevereiro", year: 2025, image: placeholderImage },
-    { id: 3, month: "Março", year: 2024, image: placeholderImage },
-];
-
-export const dishes: DishItem[] = [
-    {
-        id: 1,
-        name: "Salada de Quinoa",
-        ingredients: ["Quinoa", "Tomate cherry", "Pepino", "Azeite", "Limão"],
-        image: placeholderImage,
-        available: true,
-    },
-    {
-        id: 2,
-        name: "Frango Grelhado",
-        ingredients: ["Peito de frango", "Alho", "Azeite", "Ervas"],
-        image: placeholderImage,
-        available: true,
-    },
-    {
-        id: 3,
-        name: "Sopa de Legumes",
-        ingredients: ["Cenoura", "Batata", "Cebola", "Aipo", "Caldo de legumes"],
-        image: placeholderImage,
-        available: false,
-    },
-];
 
