@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import UserMenu from "./UserMenu";
@@ -24,7 +24,9 @@ export default function Navbar() {
         <nav className="w-full bg-[#4C6E43] text-white p-4 h-20 flex items-center justify-between fixed z-50">
             {/* Left: logo */}
             <div className="flex items-center gap-2 flex-1">
-                <img src={logo} alt="Logo" className="w-12 h-12 sm:w-[72px] sm:h-[72px]" />
+                <Link to="/" aria-label="Ir para a página inicial">
+                    <img src={logo} alt="Logo" className="w-12 h-12 sm:w-[72px] sm:h-[72px]" />
+                </Link>
             </div>
 
             {/* Center: title (hidden on compact) AND mobile search (visible only on compact) */}
