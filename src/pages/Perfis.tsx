@@ -1,25 +1,25 @@
-import {useNavigate} from "react-router-dom";
-import { useProfile } from "../contexts/ProfileContext";
+import { useState } from "react";
+import LoginOverlay from "../components/LoginOverlay";
 
 import gerente from "../assets/images/icons/icon_gerente.png";
 import funcionario_stock from "../assets/images/icons/icon_stock.png";
 import chef from "../assets/images/icons/icon_chef.png";
 import cozinheiro from "../assets/images/icons/icon_cozinehiro.png";
 
-export default function Perfis() {
-    const navigate = useNavigate();
-    const { setProfile } = useProfile();
+type Card = { id: number; src: string; alt: string };
 
-    const cards = [
+export default function Perfis() {
+    const [selected, setSelected] = useState<Card | null>(null);
+
+    const cards: Card[] = [
         { id: 1, src: gerente, alt: "Gerente" },
         { id: 2, src: funcionario_stock, alt: "Funcinário de Stock" },
         { id: 3, src: chef, alt: "Chef de Cozinha" },
         { id: 4, src: cozinheiro, alt: "Cozinheiro" },
     ];
 
-    function selectProfile(card: { id: number; src: string; alt: string }) {
-        setProfile({ id: card.id, alt: card.alt });
-        navigate("/");
+    function selectProfile(card: Card) {
+        setSelected(card); // abre overlay mantendo a página por baixo
     }
 
     return (
@@ -57,6 +57,7 @@ export default function Perfis() {
                     ))}
                 </div>
             </div>
+            <LoginOverlay selected={selected} onClose={() => setSelected(null)} />
         </div>
     );
 }
