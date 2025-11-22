@@ -1,3 +1,4 @@
+// src/pages/Perfis.tsx
 import { useState } from "react";
 import LoginOverlay from "../components/LoginOverlay";
 
@@ -13,19 +14,19 @@ export default function Perfis() {
 
     const cards: Card[] = [
         { id: 1, src: gerente, alt: "Gerente" },
-        { id: 2, src: funcionario_stock, alt: "Funcinário de Stock" },
+        { id: 2, src: funcionario_stock, alt: "Funcionário de Stock" },
         { id: 3, src: chef, alt: "Chef de Cozinha" },
         { id: 4, src: cozinheiro, alt: "Cozinheiro" },
     ];
 
     function selectProfile(card: Card) {
-        setSelected(card); // abre overlay mantendo a página por baixo
+        setSelected(card);
     }
 
     return (
         <div className="w-full max-w-6xl mx-auto p-4" style={{ marginTop: 20 }}>
             <div className="flex justify-center w-full">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
                     {cards.map((card) => (
                         <div
                             key={card.id}
@@ -36,8 +37,7 @@ export default function Perfis() {
                                 if (e.key === "Enter" || e.key === " ") selectProfile(card);
                             }}
                             className={
-                                "cursor-pointer border border-gray-300 shadow-xl p-3 flex flex-col aspect-square items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 " +
-                                "w-[360px] h-[360px]"
+                                "cursor-pointer border border-gray-300 shadow-xl p-3 flex flex-col aspect-square items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 w-full"
                             }
                             style={{ borderRadius: 5 }}
                         >
