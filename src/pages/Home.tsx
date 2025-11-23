@@ -1,3 +1,4 @@
+// src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
 import { useState } from "react";
 import Modal from "../components/Modal";
@@ -9,21 +10,23 @@ import definicoes from "../assets/images/icons/definicoes.png";
 import pratos from "../assets/images/icons/pratos.png";
 import stock from "../assets/images/icons/stock.png";
 import desperdicio from "../assets/images/icons/desperdicio.png";
-import proibido from "../assets/images/icons/proibido.png";
 
 const permissions: Record<string, string[]> = {
     Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
-    "Funcinário de Stock": ["Stock", "Desperdício"],
+    "Funcionário de Stock": ["Stock", "Desperdício"],
     "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
 };
 
-type ModalConfig = {
-    open: boolean;
-    title?: string;
-    message?: string;
-    buttons?: { label: string; onClick?: () => void }[];
-};
+function normalizeClassName(s?: string) {
+    if (!s) return "";
+    return s
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // remove acentos
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9-_]/g, "")
+        .toLowerCase();
+}
 
 type Card = {
     id: number;
@@ -46,67 +49,62 @@ export default function Home() {
         { id: 6, src: desperdicio, alt: "Desperdício", route: "/desperdicio" },
     ];
 
-    const allowed = profile ? permissions[profile.alt] ?? [] : cards.map(c => c.alt);
+    const allowed = profile ? permissions[profile.alt] ?? [] : cards.map((c) => c.alt);
+    const visibleCards = cards.filter((c) => allowed.includes(c.alt));
 
-    function handleCardClick(card: Card, disabled: boolean) {
-        if (disabled) {
-            setModal({
-                open: true,
-                title: "Serviço Indisponível",
-                message: "A conta atual não tem permissão para aceder a este serviço",
-                buttons: [
-                    { label: "OK", onClick: () => setModal({ open: false }) },
-                ],
-            });
-            return;
-        }
-        if (card.route) {
-            navigate(card.route);
-        } else {
-            setModal({
-                open: true,
-                title: "Indisponível",
-                message: "Essa funcionalidade ainda não tem uma rota configurada.",
-                buttons: [{ label: "OK", onClick: () => setModal({ open: false }) }],
-            });
-        }
+    // default cols for large screens (keeps previous heuristic)
+    const cols = visibleCards.length === 4 ? 4 : visibleCards.length === 2 ? 2 : 3;
+    const columnWidth = 320;
+    const gap = 16;
+
+    const roleClass = profile ? `home-grid--${normalizeClassName(profile.alt)}` : "";
+
+    function handleCardClick() {
+        // placeholder: implementar navegação/ação real para cada cartão
     }
 
     // O .map fica dentro do return do JSX!
     return (
-        <div className="w-full max-w-6xl mx-auto p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {cards.map((card) => {
-                    const disabled = !allowed.includes(card.alt);
+        <div
+            className="w-full mx-auto p-6 flex items-center justify-center"
+            style={{ minHeight: "calc(100vh - 80px)" }} // centra verticalmente abaixo da navbar
+        >
+            <div
+                role="list"
+                aria-label="Opções disponíveis"
+                className={`home-grid ${roleClass}`}
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${cols}, ${columnWidth}px)`,
+                    gap: `${gap}px`,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                {visibleCards.map((card) => {
                     return (
                         <div
                             key={card.id}
-                            onClick={() => handleCardClick(card, disabled)}
+                            role="listitem"
+                            onClick={() => handleCardClick()}
                             className={
-                                "relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 " +
-                                (disabled ? " cursor-not-allowed" : " cursor-pointer")
+                                "home-card relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 cursor-pointer"
                             }
-                            role="button"
                             aria-label={card.alt}
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleCardClick(card, disabled);
+                                if (e.key === "Enter" || e.key === " ") handleCardClick();
                             }}
+                            style={{ width: `${columnWidth}px`, maxWidth: `${columnWidth}px` }}
                         >
-                            {disabled && (
-                                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                                    <img src={proibido} alt="Proibido" className="w-32 h-32 opacity-90" />
-                                </div>
-                            )}
-
-                            <div className={"flex-1 flex items-center justify-center w-full  z-10 " + (disabled ? " opacity-50 filter grayscale" : "")}>
+                            <div className="flex-1 flex items-center justify-center w-full z-10">
                                 <img
                                     src={card.src}
                                     alt={card.alt}
-                                    className="max-h-40 max-w-full object-contain"
+                                    className="home-card-img max-h-56 max-w-full object-contain"
                                 />
                             </div>
-                            <div className={"w-full bg-[#4C6E43] text-white text-center py-2 mt-2 rounded"  + (disabled ? " opacity-50 filter grayscale" : "")}>
+                            <div className="w-full bg-[#4C6E43] text-white text-center py-2 mt-2 rounded">
                                 {card.alt}
                             </div>
                         </div>
@@ -114,13 +112,88 @@ export default function Home() {
                 })}
             </div>
 
-            <Modal
-                open={modal.open}
-                title={modal.title}
-                message={modal.message}
-                buttons={modal.buttons}
-                onClose={() => setModal({ open: false })}
-            />
+            <style>{`
+                /* breakpoint até 1370px: aplica colunas por perfil */
+                @media (max-width: 1370px) {
+                    .home-grid {
+                        /* fallback padrão: 1 coluna */
+                        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+                        gap: 1.25rem !important;
+                        justify-content: center;
+                    }
+
+                    /* Gerente: 4 colunas (vai ocupar 2 linhas se houver >4 itens) */
+                    .home-grid--gerente {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                    }
+
+                    /* Chef de Cozinha: 4 colunas, normalmente 1 linha (quando houver 4 itens) */
+                    .home-grid--chef-de-cozinha {
+                        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                    }
+
+                    /* Funcionário de Stock: 2 colunas (1 linha) */
+                    .home-grid--funcionario-de-stock,
+                    .home-grid--funcionário-de-stock {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                    }
+
+                    /* Cozinheiro: 2 colunas (1 linha) */
+                    .home-grid--cozinheiro {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                    }
+
+                    .home-card {
+                        width: 250px !important;
+                        margin: 0 auto;
+                    }
+
+                    .home-card .home-card-img {
+                        max-height: 150px !important;
+                    }
+                }
+                
+                @media (max-width: 1070px) {
+                    .home-grid {
+                        margin-top: 2rem;
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 1.5rem !important;
+                    }
+                    .home-grid--chef-de-cozinha {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                    }
+                }
+
+                /* mobile */
+                @media (max-width: 850px) {
+                    .home-grid {
+                        margin-top: 2rem;
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 1.5rem !important;
+                    }
+                    .home-card {
+                        width: 250px !important;
+                        margin: 0 auto;
+                    }
+                    .home-card .home-card-img {
+                        max-height: 150px !important;
+                    }
+                }
+                 @media (max-width: 570px) {
+                    .home-grid {
+                        margin-top: 2rem;
+                        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+                        gap: 1.5rem !important;
+                    }
+                    .home-card {
+                        width: 250px !important;
+                        margin: 0 auto;
+                    }
+                    .home-card .home-card-img {
+                        max-height: 150px !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
