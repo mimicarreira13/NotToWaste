@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import Navbar from "./components/Navbar";
-import Root from "./pages/Root";
 import Perfis from "./pages/Perfis";
+import Dashboard from "./pages/Dashboard";
+import Root from "./pages/Root";
+import Cozinha from "./pages/Cozinha";
 import Client from "./pages/Client";
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Root />} />
                             <Route path="/perfis" element={<Perfis />} />
+                            <Route path="/dashboard" element={<Dashboard/>} />
+                            <Route path="/cozinha" element={<Cozinha />} />
                             <Route path="/client" element={<Client />} />
                         </Routes>
                     </main>

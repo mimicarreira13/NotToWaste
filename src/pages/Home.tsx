@@ -1,5 +1,8 @@
 // src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
+import { useState } from "react";
+import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
 
 import dashboard from "../assets/images/icons/dashboard.png";
 import cozinha from "../assets/images/icons/cozinha.png";
@@ -25,16 +28,25 @@ function normalizeClassName(s?: string) {
         .toLowerCase();
 }
 
+type Card = {
+    id: number;
+    src: string;
+    alt: string;
+    route?: string;
+};
+
 export default function Home() {
     const { profile } = useProfile();
+    const [modal, setModal] = useState<ModalConfig>({ open: false });
+    const navigate = useNavigate();
 
-    const cards = [
-        { id: 1, src: dashboard, alt: "Dashboard" },
-        { id: 2, src: cozinha, alt: "Cozinha" },
-        { id: 3, src: definicoes, alt: "Definições" },
-        { id: 4, src: pratos, alt: "Gerir Pratos" },
-        { id: 5, src: stock, alt: "Stock" },
-        { id: 6, src: desperdicio, alt: "Desperdício" },
+    const cards: Card[] = [
+        { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
+        { id: 2, src: cozinha, alt: "Cozinha", route: "/cozinha" },
+        { id: 3, src: definicoes, alt: "Definições", route: "/definicoes" },
+        { id: 4, src: pratos, alt: "Gerir Pratos", route: "/pratos" },
+        { id: 5, src: stock, alt: "Stock", route: "/stock" },
+        { id: 6, src: desperdicio, alt: "Desperdício", route: "/desperdicio" },
     ];
 
     const allowed = profile ? permissions[profile.alt] ?? [] : cards.map((c) => c.alt);
@@ -51,6 +63,7 @@ export default function Home() {
         // placeholder: implementar navegação/ação real para cada cartão
     }
 
+    // O .map fica dentro do return do JSX!
     return (
         <div
             className="w-full mx-auto p-6 flex items-center justify-center"
