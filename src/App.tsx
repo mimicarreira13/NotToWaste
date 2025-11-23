@@ -5,6 +5,8 @@ import Perfis from "./pages/Perfis";
 import Dashboard from "./pages/Dashboard";
 import Root from "./pages/Root";
 import Cozinha from "./pages/Cozinha";
+import Food from "./pages/Food";
+import Ingredient from "./pages/Ingredient.tsx";
 import Client from "./pages/Client";
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
                             <Route path="/dashboard" element={<Dashboard/>} />
                             <Route path="/cozinha" element={<Cozinha />} />
                             <Route path="/client" element={<Client />} />
+                            <Route path="/cozinha/food/:id" element={<Food />} />
+                            <Route path="/cozinha/ingredient/:id" element={<Ingredient />} />
                         </Routes>
                     </main>
                 </div>

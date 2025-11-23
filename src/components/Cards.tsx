@@ -16,7 +16,12 @@ export function createCard({
                                isIngredient,
                            }: CardOptions) {
     const imagePath = `/src/assets/${isIngredient ? "ingredients" : "food"}/${imageName}`;
-
+    if (ingredients?.length >= 7) {
+        ingredients[6] = "..."
+        while (ingredients?.length > 7){
+            ingredients?.pop()
+        }
+    }
 
     return {
         id,
