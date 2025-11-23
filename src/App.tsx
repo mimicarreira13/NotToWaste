@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Cozinha from "./pages/Cozinha";
 import Food from "./pages/Food";
+import Ingredient from "./pages/Ingredient.tsx";
 
 function App() {
     return (
@@ -13,7 +14,8 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/cozinha" element={<Cozinha />} />
-                        <Route path="/cozinha/:id" element={<Food />} />
+                        <Route path="/cozinha/food/:id" element={<Food />} />
+                        <Route path="/cozinha/ingredient/:id" element={<Ingredient />} />
                     </Routes>
                 </main>
             </div>

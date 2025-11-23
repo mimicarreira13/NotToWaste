@@ -7,14 +7,14 @@
     "isIngredient": true
   },
   {
-    "id": "ovos",
+    "id": "ovo",
     "title": "Ovos",
     "imageName": "ovos.jpg",
     "ingredients": [""],
     "isIngredient": true
   },
   {
-    "id": "natas",
+    "id": "nata",
     "title": "Natas",
     "imageName": "natas.jpg",
     "ingredients": [""],
@@ -35,7 +35,7 @@
     "isIngredient": true
   },
   {
-    "id": "cenouras",
+    "id": "cenoura",
     "title": "Cenouras",
     "imageName": "cenoura.jpg",
     "ingredients": [""],

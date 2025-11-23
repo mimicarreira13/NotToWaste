@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {FiSearch} from "react-icons/fi";
-import { createCards } from "../components/cards";
+import { createCards } from "../components/Cards";
 import foodDataJSON from "../tmp/datafood.json";
 import ingredientDataJSON from "../tmp/dataingredient.json";
 import {useState} from "react";
@@ -19,9 +19,12 @@ const ingredientData = ingredientDataJSON as CardOptions[];
 const foods = createCards(foodData);
 const ingredients = createCards(ingredientData);
 
+
+
 export default function Cozinha() {
     const navigate = useNavigate();
-    const [pageMode, setPageMode] = useState(false);
+    const saved = localStorage.getItem("pageMode") === "true";
+    const [pageMode, setPageMode] = useState(saved);
     let fColor;
     let iColor;
 
@@ -31,6 +34,11 @@ export default function Cozinha() {
     } else {
         iColor = "lightgrey";
         fColor = "grey";
+    }
+
+    const updatePageMode = (value: boolean) => {
+        setPageMode(value);
+        localStorage.setItem("pageMode", value.toString());
     }
 
     const topBar = [
@@ -45,8 +53,8 @@ export default function Cozinha() {
             content: (
                 <div className={"flex flex-row"}>
 
-                    <button className="border-b-2" style={{paddingLeft:"5px", paddingRight:"5px", color:fColor, borderColor:fColor}} onClick={() =>setPageMode(false)}>Pratos</button>
-                    <button className="border-b-2" style={{paddingLeft:"5px", paddingRight:"5px", color:iColor, borderColor:iColor}} onClick={() =>setPageMode(true)}>Ingredientes</button>
+                    <button className="border-b-2" style={{paddingLeft:"5px", paddingRight:"5px", color:fColor, borderColor:fColor}} onClick={() => updatePageMode(false)}>Pratos</button>
+                    <button className="border-b-2" style={{paddingLeft:"5px", paddingRight:"5px", color:iColor, borderColor:iColor}} onClick={() => updatePageMode(true)}>Ingredientes</button>
                 </div>
             )
         },
@@ -66,7 +74,7 @@ export default function Cozinha() {
     ];
 
     return (
-    <div className=" justify-center p-4">
+    <div className="justify-center p-4">
         <div className="flex flex-row h-14 w-2/3 justify-around items-start mb-3" style={{fontFamily:"Sansita"}}>
             {topBar.map(item => (
                 <div key={item.id}>{item.content}</div>
@@ -76,7 +84,7 @@ export default function Cozinha() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
                  style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                 {ingredients.map(item => (
-                    <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(item.id)}
+                    <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate("/cozinha/ingredient/" + item.id)}
                          style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
                         {item.content}
                     </div>
@@ -86,7 +94,7 @@ export default function Cozinha() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
             style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
         {foods.map(plate => (
-            <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(plate.id)}
+            <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate("/cozinha/food/" + plate.id)}
                  style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
                 {plate.content}
             </div>
