@@ -1,13 +1,16 @@
 import foodDataJSON from "../tmp/fullDataFood.json";
+import {useParams} from "react-router-dom";
+import {FiAlertTriangle} from "react-icons/fi";
 
 export default function Food() {
     const { id } = useParams();
     console.log("This thing " + id);
-    const info = foodDataJSON.find(entry => entry.id === id.toString().replace("food", ""));
+    const info = foodDataJSON.find(entry => entry.id === id);
     console.log("Info " + info);
 
     return (
         <>
+            {info ? (
             <div className={"h-full! align-top!"}>
                 <div className={"shadow bg-[#D9D9D9] rounded-[15px] block ml-auto mr-auto "} style={{width:"80%", height:"80%"}}>
                     <h1 className={"text-center text-[64px] font-[Sansita]"}>{info.title}</h1>
@@ -21,6 +24,12 @@ export default function Food() {
                     </div>
                 </div>
             </div>
+            ):(
+                <div className="text-[64px] text-black">
+                    Page not available.
+                    <FiAlertTriangle className={"text-black block ml-auto mr-auto"} />
+                </div>
+            )}
         </>
     )
 }
