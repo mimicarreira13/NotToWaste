@@ -15,7 +15,6 @@ export type CardOptions = {
 
 const foodData = foodDataJSON as CardOptions[];
 const ingredientData = ingredientDataJSON as CardOptions[];
-
 const foods = createCards(foodData);
 const ingredients = createCards(ingredientData);
 
