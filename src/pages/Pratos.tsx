@@ -1,10 +1,29 @@
-import CozinhaBase from "./BaseCozinha.tsx";
-import {FiPlus, FiUpload} from "react-icons/fi";
+import CozinhaBase from "../bases/BaseCozinha.tsx";
+import {FiPlus} from "react-icons/fi";
 import {useState} from "react";
+import BasePopup from "../bases/BasePopup.tsx";
 
-export default function Pratos() {
-    const [showPopup, setShowPopup] = useState(false);
-    const [fileName, setFileName] = useState("Nenhum ficheiro selecionado");
+export default function Pratos(
+) {
+    const popupState = localStorage.getItem("popup") === "false";
+    const [showPopup, setShowPopup] = useState(popupState);
+
+    const saved = localStorage.getItem("pageMode") === "true";
+    const [pageMode] = useState(saved);
+    let type = "dishes";
+    let title = "Adição de pratos"
+
+    switch (pageMode) {
+        case true:
+            type = "ingredients";
+            title = "Adição de ingredientes"
+            break;
+        case false:
+            type = "dishes";
+            title = "Adição de pratos"
+            break;
+    }
+
     return (
         <CozinhaBase
             path="/pratos"
@@ -18,32 +37,12 @@ export default function Pratos() {
                 showPopup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-[#4c6e43] w-[90%] h-[90%]  shadow-lg  overflow-auto rounded-[25px]">
-                            <div className={"text-[35px] text-white text-center content-center h-[7%]"}>Adição de Prato</div>
+                            <div className={"text-[35px] text-white text-center content-center h-[7%]"}>{title}</div>
                             <div className="bg-[#d9d9d9] w-full h-[93%] overflow-auto rounded-[25px] flex flex-col items-center  justify-evenly text-center">
                                 <div className={"h-[80%] flex flex-col w-[90%] text-[35px]"}>
-                                   <div className={"h-[80%] flex flex-row items-center"}>
-                                       <div className={"w-1/2"}>Nome:
-                                           <input id={"name"} className={"bg-white rounded-[15px] p-[5px] ml-[15px]"} placeholder={"Insira o nome"}/>
-                                       </div>
-                                       <div className={"w-1/2"}>Ingredientes:
-                                           <select id={"ingredients"} className={"bg-white rounded-[15px] p-[5px] m-[15px]"} defaultValue={"Selecione os incredientes"}>
-                                               <option>Selecione ingredientes</option>
-                                           </select>
-                                       </div>
-                                   </div>
-                                    <div className={"w-1/2 h-[80%] flex flex-row items-center"}>
-                                        <div className={"flex flex-row"}>Imagem:
-                                            <FiUpload className={"ml-[15px]"}/>
-                                            <input type={"file"} onChange={(e) => setFileName(e.target.files?.[0]?.name || "Nenhum ficheiro selecionado")}/>
-                                        </div>
-                                        <div className={"w-1/2"}></div>
-                                    </div>
-                                    <div className={"h-[80%] flex flex-row items-center"}>
-                                        <div className={"w-1/2"}>Preço (€)
-                                            <input id={"price"} className={"bg-white rounded-[15px] p-[5px] ml-[15px]"} placeholder={"Insira o custo"}/>
-                                        </div>
-                                        <div className={"w-1/2"}></div>
-                                    </div>
+                                    <BasePopup
+                                        type={type}
+                                    />
                                     <div className={"text-[25px] flex flex-row w-[80%] justify-evenly text-center"}>
                                         <div className={"bg-[#c34a3a] text-white w-[200px] h-[70px] content-center text-[40px] rounded-[10px]"} onClick={() => setShowPopup(false)}>
                                             Cancelar
@@ -53,10 +52,10 @@ export default function Pratos() {
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
+
                 )
             }
         />

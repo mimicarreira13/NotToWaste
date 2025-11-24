@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {FiSearch} from "react-icons/fi";
-import { createCards } from "../components/Cards";
+import { createCards } from "../components/Cards.tsx";
 import foodDataJSON from "../tmp/datafood.json";
 import ingredientDataJSON from "../tmp/dataingredient.json";
 import {useState} from "react";

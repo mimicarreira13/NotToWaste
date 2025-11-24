@@ -1,4 +1,4 @@
-import CozinhaBase from "./BaseCozinha.tsx";
+import CozinhaBase from "../bases/BaseCozinha.tsx";
 
 export default function Cozinha() {
     return (
