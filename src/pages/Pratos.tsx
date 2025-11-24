@@ -8,8 +8,7 @@ export default function Pratos(
     const popupState = localStorage.getItem("popup") === "false";
     const [showPopup, setShowPopup] = useState(popupState);
 
-    const saved = localStorage.getItem("pageMode") === "true";
-    const [pageMode] = useState(saved);
+    const pageMode = localStorage.getItem("pageMode") === "true";
     let type = "dishes";
     let title = "Adição de pratos"
 
