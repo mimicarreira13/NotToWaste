@@ -4,10 +4,11 @@ import Navbar from "./components/Navbar";
 import Perfis from "./pages/Perfis";
 import Dashboard from "./pages/Dashboard";
 import Root from "./pages/Root";
-import Cozinha from "./pages/Cozinha";
+import Cozinha from "./pages/Cozinha.tsx";
 import Food from "./pages/Food";
 import Ingredient from "./pages/Ingredient.tsx";
 import Client from "./pages/Client";
+import Pratos from "./pages/Pratos";
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                             <Route path="/client" element={<Client />} />
                             <Route path="/cozinha/food/:id" element={<Food />} />
                             <Route path="/cozinha/ingredient/:id" element={<Ingredient />} />
+                            <Route path="/pratos" element={<Pratos />} />
                         </Routes>
                     </main>
                 </div>

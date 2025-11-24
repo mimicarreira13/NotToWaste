@@ -1,8 +1,5 @@
 // src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
-import { useState } from "react";
-import Modal from "../components/Modal";
-import { useNavigate } from "react-router-dom";
 
 import dashboard from "../assets/images/icons/dashboard.png";
 import cozinha from "../assets/images/icons/cozinha.png";
@@ -37,8 +34,6 @@ type Card = {
 
 export default function Home() {
     const { profile } = useProfile();
-    const [modal, setModal] = useState<ModalConfig>({ open: false });
-    const navigate = useNavigate();
 
     const cards: Card[] = [
         { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
