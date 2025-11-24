@@ -51,9 +51,9 @@ export default function CozinhaBase({
         {
             id:"categoria",
             content: (
-                <div className={"flex flex-row"}>
-                    <button className={"border-b-2 pl-[5px] pr-[5px] text-["+{fColor}+"] border-["+{fColor}+"]"} onClick={() => updatePageMode(false)}>Pratos</button>
-                    <button className={"border-b-2 pl-[5px] pr-[5px]  text-["+{iColor}+"] border-["+{iColor}+"]"} onClick={() => updatePageMode(true)}>Ingredientes</button>
+                <div className={"flex flex-row text-[20px]"}>
+                    <button className={"border-b-2 pl-[5px] pr-[5px]"} style={{color:fColor, borderColor:fColor}} onClick={() => updatePageMode(false)}>Pratos</button>
+                    <button className={"border-b-2 pl-[5px] pr-[5px]"} style={{color:iColor, borderColor:iColor}} onClick={() => updatePageMode(true)}>Ingredientes</button>
                 </div>
             )
         },
