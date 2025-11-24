@@ -35,14 +35,14 @@ export default function Pratos(
             overlay={
                 showPopup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-[#4c6e43] w-[90%] h-[90%]  shadow-lg  overflow-auto rounded-[25px]">
-                            <div className={"text-[35px] text-white text-center content-center h-[7%]"}>{title}</div>
-                            <div className="bg-[#d9d9d9] w-full h-[93%] overflow-auto rounded-[25px] flex flex-col items-center  justify-evenly text-center">
+                        <div className="bg-[#4c6e43] w-[70%] h-[70%]  shadow-lg  overflow-auto rounded-[25px]">
+                            <div className={"text-[45px] text-white text-center content-center h-[15%]"}>{title}</div>
+                            <div className="bg-[#d9d9d9] w-full h-[85%] overflow-auto rounded-[25px] flex flex-col items-center  justify-evenly text-center">
                                 <div className={"h-[80%] flex flex-col w-[90%] text-[35px]"}>
                                     <BasePopup
                                         type={type}
                                     />
-                                    <div className={"text-[25px] flex flex-row w-[80%] justify-evenly text-center"}>
+                                    <div className={"mt-4 text-[25px] flex flex-row w-full justify-evenly text-center"}>
                                         <div className={"bg-[#c34a3a] text-white w-[200px] h-[70px] content-center text-[40px] rounded-[10px]"} onClick={() => setShowPopup(false)}>
                                             Cancelar
                                         </div>
