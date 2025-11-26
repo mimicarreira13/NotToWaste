@@ -101,7 +101,7 @@ const cards = [
 export default function Dashboard() {
     return (
         <div className="flex justify-center p-4">
-            <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+            <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 mt-12">
                 {cards.map(card => (
                     <div id={card.id} key={card.id} className={cardBaseClasses}>
                         {card.content}
