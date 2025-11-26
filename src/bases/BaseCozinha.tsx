@@ -82,7 +82,7 @@ export default function CozinhaBase({
             </div>
         </div>
         {pageMode ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
                  style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                 {ingredients.map(item => (
                     <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/ingredient/" + item.id)}
@@ -92,7 +92,7 @@ export default function CozinhaBase({
                 ))}
             </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
             style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                 {foods.map(plate => (
                     <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/food/" + plate.id)}
