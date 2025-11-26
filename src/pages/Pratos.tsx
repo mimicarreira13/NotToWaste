@@ -1,13 +1,24 @@
 import CozinhaBase from "../bases/BaseCozinha.tsx";
 import {FiPlus} from "react-icons/fi";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import BasePopup from "../bases/BasePopup.tsx";
+
+function useLocalStorageState(key: string, defaultValue: boolean) {
+    const stored = localStorage.getItem(key);
+    const initial = stored !== null ? stored === "true" : defaultValue;
+
+    const [value, setValue] = useState(initial);
+
+    useEffect(() => {
+        localStorage.setItem(key, String(value));
+    }, [key, value]);
+
+    return [value, setValue] as const;
+}
 
 export default function Pratos(
 ) {
-    const popupState = localStorage.getItem("popup") === "false";
-    const [showPopup, setShowPopup] = useState(popupState);
-
+    const [showPopup, setShowPopup] = useLocalStorageState("popup", false);
     const pageMode = localStorage.getItem("pageMode") === "true";
     let type = "dishes";
     let title = "Adição de pratos"
@@ -27,34 +38,21 @@ export default function Pratos(
         <CozinhaBase
             path="/pratos"
             extraDiv={
-                <div className="bg-[#4c6e43] rounded-[5px] shadow flex flex-row p-[5px] text-[25px] items-center" onClick={() => setShowPopup(true)}>
+                <button className="bg-[#4c6e43] rounded-[5px] shadow flex flex-row p-[5px] text-[25px] items-center" onClick={() => setShowPopup(true)}>
                     <FiPlus className="text-[#D9D9D9]" />
                     <span className={"text-[#D9D9D9]"}>Adicionar</span>
-                </div>
+                </button>
             }
             overlay={
                 showPopup && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-[#4c6e43] w-[70%] h-[70%]  shadow-lg  overflow-auto rounded-[25px]">
-                            <div className={"text-[45px] text-white text-center content-center h-[15%]"}>{title}</div>
-                            <div className="bg-[#d9d9d9] w-full h-[85%] overflow-auto rounded-[25px] flex flex-col items-center  justify-evenly text-center">
-                                <div className={"h-[80%] flex flex-col w-[90%] text-[35px]"}>
-                                    <BasePopup
-                                        type={type}
-                                    />
-                                    <div className={"mt-4 text-[25px] flex flex-row w-full justify-evenly text-center"}>
-                                        <div className={"bg-[#c34a3a] text-white w-[200px] h-[70px] content-center text-[40px] rounded-[10px]"} onClick={() => setShowPopup(false)}>
-                                            Cancelar
-                                        </div>
-                                        <div className={"bg-[#4c6e43] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px]"} onClick={() => setShowPopup(false)}>
-                                            Adicionar Prato
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <BasePopup
+                        type={type}
+                        greenButton="Adicionar Prato"
+                        redFunction="close"
+                        greenFunction="navigate"
+                        onClose={() => setShowPopup(false)}
+                        title={title}
+                    />
                 )
             }
         />
