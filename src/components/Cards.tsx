@@ -39,6 +39,7 @@ export function createCard({
                 </div>
             </>
         ),
+        title: title
     };
 }
 
