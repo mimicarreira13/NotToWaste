@@ -9,6 +9,9 @@ import Food from "./pages/Food";
 import Ingredient from "./pages/Ingredient.tsx";
 import Client from "./pages/Client";
 import Pratos from "./pages/Pratos";
+import Stock from "./pages/Stock";
+import Desperdicio from "./pages/Desperdicio";
+
 
 function App() {
     return (
@@ -20,6 +23,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Root />} />
                             <Route path="/perfis" element={<Perfis />} />
+
                             <Route path="/dashboard" element={<Dashboard/>} />
                             <Route path="/cozinha" element={<Cozinha />} />
                             <Route path="/client" element={<Client />} />
@@ -28,6 +32,9 @@ function App() {
                             <Route path="/pratos" element={<Pratos />} />
                             <Route path="/pratos/food/:id" element={<Food mode={true} />} />
                             <Route path="/pratos/ingredient/:id" element={<Ingredient  mode={true} />} />
+                            <Route path="/stock" element={<Stock />} />
+                            <Route path="/desperdicio" element={<Desperdicio />} />
+
                         </Routes>
                     </main>
                 </div>
