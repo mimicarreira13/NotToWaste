@@ -4,6 +4,7 @@ import { createCards } from "../components/Cards.tsx";
 import foodDataJSON from "../tmp/datafood.json";
 import ingredientDataJSON from "../tmp/dataingredient.json";
 import {useState} from "react";
+import BackButton from "../components/Back.tsx";
 
 export type CardOptions = {
     id: string;
@@ -48,6 +49,12 @@ export default function CozinhaBase({
     }
 
     const topBar = [
+        {
+          id:"voltar",
+          content: (
+              <BackButton />
+          )
+        },
         {
             id:"categoria",
             content: (
