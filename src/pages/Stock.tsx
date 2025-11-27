@@ -1,8 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import stockDataJSON from "../tmp/dataStock.json";
 import {useState} from "react";
-import { Table } from "../components/CriarTabela";
-import type { Column } from "../components/CriarTabela";
+import { Table } from "../components/Tabels/CriarTabela";
+import type { Column } from "../components/Tabels/CriarTabela";
+import BotaoAdicionar from "../components/BotaoAdicionar";
+import StockFormulario from "../components/forms/StockFormulario";
+
 
 export type IngredientesStockTabela = {
 
@@ -30,9 +33,18 @@ const stockColumns: Column<IngredientesStockTabela>[] = [
 export default function StockPage() {
     return (
          <div className="p-6">
-            <h1 className="text-xl mb-7 text-center font-bold">Stock</h1>
-            
+            <div className="flex items-center justify-end mb-4">
+                <BotaoAdicionar 
+                        title="Adicionar ingrediente ao Stock" 
+                        modalComponent={StockFormulario} 
+                        buttonLabel="Adicionar"       
+                />
+
+            </div>
                 <Table data={stockData} columns={stockColumns} rowKey={(i) => i.id} />
         </div>
     );
 }
+
+
+
