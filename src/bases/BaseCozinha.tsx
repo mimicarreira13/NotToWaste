@@ -30,6 +30,7 @@ export default function CozinhaBase({
     const navigate = useNavigate();
     const saved = localStorage.getItem("pageMode") === "true";
     const [pageMode, setPageMode] = useState(saved);
+    const [search, setSearch] = useState("");
     let fColor;
     let iColor;
 
@@ -65,6 +66,7 @@ export default function CozinhaBase({
                         type="text"
                         placeholder="Pesquisar..."
                         className="bg-transparent placeholder-black text-black ml-2 outline-none"
+                        onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
             )
@@ -72,38 +74,40 @@ export default function CozinhaBase({
     ];
 
     return (
-    <div className="p-4 mt-4 font-[Sansita]">
-        <div className="flex items-center flex-row h-14 w-full justify-around mb-3" style={{fontFamily:"Sansita"}}>
-            {topBar.map(item => (
-                <div key={item.id}>{item.content}</div>
-            ))}
-            <div>
-                {extraDiv}
+        <div className="p-4 mt-20 w-full h-full flex flex-col justify-start self-start">
+            <div className="flex items-center flex-row h-14 w-[80%] mb-3 justify-between flex-wrap gap-4 ml-auto mr-auto">
+                {topBar.map(item => (
+                    <div key={item.id}>{item.content}</div>
+                ))}
+                <div>
+                    {extraDiv}
+                </div>
             </div>
+            {pageMode ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
+                     style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
+                    {ingredients.map(item => (
+                        item.title.toLowerCase().includes(search.toLowerCase()) && (
+                        <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"}
+                                          onClick={() => navigate(path + "/ingredient/" + item.id)}
+                                          style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
+                    {item.content}
+                </div>
+            )))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
+                style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
+                    {foods.map(plate => (
+                        plate.title.toLowerCase().includes(search.toLowerCase()) && (
+                        <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/food/" + plate.id)}
+                             style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
+                            {plate.content}
+                        </div>
+                        )))}
+                </div>
+            )}
+            {overlay}
         </div>
-        {pageMode ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
-                 style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                {ingredients.map(item => (
-                    <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/ingredient/" + item.id)}
-                         style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                        {item.content}
-                    </div>
-                ))}
-            </div>
-        ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 min-h-200"
-            style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                {foods.map(plate => (
-                    <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/food/" + plate.id)}
-                         style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                        {plate.content}
-                    </div>
-                ))}
-            </div>
-        )}
-        {overlay}
-    </div>
-)
-    ;
+    );
 }

@@ -16,12 +16,6 @@ export function createCard({
                                isIngredient,
                            }: CardOptions) {
     const imagePath = `/src/assets/${isIngredient ? "ingredients" : "food"}/${imageName}`;
-    if (ingredients?.length >= 7) {
-        ingredients[6] = "..."
-        while (ingredients?.length > 7){
-            ingredients?.pop()
-        }
-    }
 
     return {
         id,
@@ -38,14 +32,14 @@ export function createCard({
                     <div className="font-black" style={{fontSize: "32px", fontWeight: "bold"}}>{title}</div>
                     {!isIngredient && (
                         <>
-                            <div style={{fontSize: "24px", color: "grey"}}>Ingredientes</div>
-                            <div className="font-black" style={{fontSize: "24px", fontWeight: "normal"}}
-                                 dangerouslySetInnerHTML={{__html: ingredients.map(i => `•${i}`).join("<br/>"),}}/>
+                            <div className={"text-[24px] text-stone-800"}>Ingredientes</div>
+                            <div className="text-stone-600 text-[24px]" dangerouslySetInnerHTML={{__html: ingredients.map(i => ` ${i}`).join(","),}}/>
                         </>
                     )}
                 </div>
             </>
         ),
+        title: title
     };
 }
 
