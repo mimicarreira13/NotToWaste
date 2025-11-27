@@ -1,25 +1,42 @@
 import { useState } from 'react';
+import Modal from '../components/Modal';
+import {useNavigate} from "react-router-dom";
 
 export default function Definicoes(){
-    const [numeroDiasPrato, setNumeroDiasPrato] = useState(3);
-    const [numeroDiasIngrediente, setNumeroDiasIngrediente] = useState(7);
+
+    const [numeroDiasPrato, setNumeroDiasPrato] = useState(() => {
+        const saved = localStorage.getItem('numeroDiasPrato');
+        return saved ? Number(saved) : 3;
+    });
+
+    const [numeroDiasIngrediente, setNumeroDiasIngrediente] = useState(() => {
+        const saved = localStorage.getItem('numeroDiasIngrediente');
+        return saved ? Number(saved) : 7;
+    });
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     function contagemDiasPrato(action: 'increment' | 'decrement') {
-        if (action === 'increment') {
-            setNumeroDiasPrato(numeroDiasPrato + 1);
-        }
-        if (action === 'decrement' && numeroDiasPrato > 0) {
-            setNumeroDiasPrato(numeroDiasPrato - 1);
-        }
+        setNumeroDiasPrato((prev) => {
+            if (action === 'increment') return prev + 1;
+            if (action === 'decrement' && prev > 0) return prev - 1;
+            return prev;
+        });
     }
 
     function contagemDiasIngrediente(action: 'increment' | 'decrement') {
-        if (action === 'increment') {
-            setNumeroDiasIngrediente(numeroDiasIngrediente + 1);
-        }
-        if (action === 'decrement' && numeroDiasIngrediente > 0) {
-            setNumeroDiasIngrediente(numeroDiasIngrediente - 1);
-        }
+        setNumeroDiasIngrediente((prev) => {
+            if (action === 'increment') return prev + 1;
+            if (action === 'decrement' && prev > 0) return prev - 1;
+            return prev;
+        });
+    }
+
+    function guardarAlteracoes() {
+        localStorage.setItem('numeroDiasPrato', String(numeroDiasPrato));
+        localStorage.setItem('numeroDiasIngrediente', String(numeroDiasIngrediente));
+        setModalOpen(false);
     }
 
     const cardStyle = [
@@ -82,21 +99,46 @@ export default function Definicoes(){
     ];
 
     return(
-        <div>
-            {cardStyle.map(card => (
-                <div
-                    id={card.id}
-                    key={card.id}
-                    className="border-2 border-[#CFCFCF] rounded-lg mb-6"
-                    style={{width: "850px"}}
-                >
-                    {card.content}
+        <>
+            <div>
+                {cardStyle.map(card => (
+                    <div
+                        id={card.id}
+                        key={card.id}
+                        className="border-2 border-[#CFCFCF] rounded-lg mb-6"
+                        style={{width: "850px"}}
+                    >
+                        {card.content}
+                    </div>
+                ))}
+
+                <div className="flex flex-row items-center justify-center text-white gap-32">
+                    <button className="bg-[#C34A3A] px-10 py-2 rounded-lg" onClick={() => navigate(-1)}>
+                        Cancelar
+                    </button>
+                    <button
+                        className="bg-[#4C6E43] px-10 py-2 rounded-lg"
+                        onClick={() => setModalOpen(true)}   // abre o modal
+                    >
+                        Guardar Alterações
+                    </button>
                 </div>
-            ))}
-            <div className="flex flex-row align-items items-center justify-center text-white gap-32">
-                <button className="bg-[#C34A3A] px-10 py-2 rounded-lg">Cancelar</button>
-                <button className="bg-[#4C6E43] px-10 py-2 rounded-lg">Guardar Alterações</button>
             </div>
-        </div>
+
+            {/* Modal reutilizado da Milena*/}
+            <Modal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="Alterações"
+                message={`Guardadas com sucesso!`}
+                buttons={[
+                    {
+                        label: "Ok",
+                        className: "px-8 py-2 rounded text-lg text-white bg-[#4C6E43] hover:opacity-90",
+                        onClick:guardarAlteracoes,
+                    },
+                ]}
+            />
+        </>
     );
 }
