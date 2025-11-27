@@ -10,12 +10,14 @@ import Ingredient from "./pages/Ingredient.tsx";
 import Client from "./pages/Client";
 import Definicoes from "./pages/Definicoes";
 import Pratos from "./pages/Pratos";
+import Stock from "./pages/Stock";
+import Desperdicio from "./pages/Desperdicio";
 
 function App() {
     return (
         <ProfileProvider>
             <Router>
-                <div className="min-h-screen bg-[#D9D9D9] flex flex-col w-full font-[Sansita]">
+                <div className="min-h-screen bg-[#D9D9D9] flex flex-col w-full">
                     <Navbar />
                     <main className="flex-1 flex items-center justify-center">
                         <Routes>
@@ -30,6 +32,8 @@ function App() {
                             <Route path="/pratos" element={<Pratos />} />
                             <Route path="/pratos/food/:id" element={<Food mode={true} />} />
                             <Route path="/pratos/ingredient/:id" element={<Ingredient  mode={true} />} />
+                            <Route path="/stock" element={<Stock />} />
+                            <Route path="/desperdicio" element={<Desperdicio />} />
                         </Routes>
                     </main>
                 </div>

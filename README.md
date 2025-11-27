@@ -61,7 +61,7 @@ NotToWaste/
 |-------|-----------------|---------|-------------|
 | 1 | Milena    | Página Inicial (navbar -> para todas as páginas), Página de Perfis, Página do Cliente | Menu dinâmico, grid de perfis, lógica de login simulada, grid de pratos do cliente, download de relatórios, popups de permissão e feedback. |
 | 2 | Alexandra | Página de Stock, Página de Desperdício | Tabelas de ingredientes, popups de adicionar/editar, manipulação de stock/desperdício, botões de incremento/decremento, feedback visual. |
-| 3 | Leandro   | Página de BaseCozinha, Página de Gerir Pratos | Grid de pratos e ingredientes, visualização detalhada, filtros e pesquisa, popups de adicionar/editar/excluir pratos e ingredientes (somente chefe de cozinha), alternar entre grid de pratos e ingredientes. |
+| 3 | Leandro   | Página de Cozinha, Página de Gerir Pratos | Grid de pratos e ingredientes, visualização detalhada, filtros e pesquisa, popups de adicionar/editar/excluir pratos e ingredientes (somente chefe de cozinha), alternar entre grid de pratos e ingredientes. |
 | 4 | Catarina  | Dashboard, Definições | Métricas de sustentabilidade, notificações de ingredientes próximos da validade, download de relatórios, configuração de alertas (tipo e número de dias), popups de confirmação e feedback. |
 
 ---
@@ -70,7 +70,7 @@ NotToWaste/
 
 ### **1️⃣ Página Inicial**
 - Navbar: logo (esquerda), nome da aplicação (centro), pesquisa + ícone do utilizador (direita)
-- Menu de opções: Dashboard, BaseCozinha, Definições, Gerir Pratos, Stock, Desperdício
+- Menu de opções: Dashboard, Cozinha, Definições, Gerir Pratos, Stock, Desperdício
 - Funcionalidades:
   - Mostrar apenas opções desbloqueadas de acordo com o tipo de utilizador
   - Clique em opção bloqueada → popup: “Serviço indisponível / Sem permissão”
@@ -78,11 +78,11 @@ NotToWaste/
 - Tipos de utilizador e permissões:
   - Funcionário de stock: Stock, Desperdício
   - Gerente: Todas
-  - Cozinheiro: BaseCozinha, Desperdício
-  - Chefe de cozinha: Dashboard, BaseCozinha, Gerir Pratos, Desperdício
+  - Cozinheiro: Cozinha, Desperdício
+  - Chefe de cozinha: Dashboard, Cozinha, Gerir Pratos, Desperdício
 
 ### **2️⃣ Página de Perfis**
-- Grid de perfis: Gerente, Funcionário de Stock, Chefe de BaseCozinha, Cozinheiro
+- Grid de perfis: Gerente, Funcionário de Stock, Chefe de Cozinha, Cozinheiro
 - Funcionalidades:
   - Seleção de perfil → simula login
   - Guardar perfil selecionado em state global/context
@@ -113,7 +113,7 @@ NotToWaste/
   - Popup de confirmação após adição
   - Backend decrementa stock automaticamente
 
-### **6️⃣ Página de BaseCozinha**
+### **6️⃣ Página de Cozinha**
 - Barra superior: Voltar, seleção Pratos / Ingredientes, pesquisa
 - Grid de pratos: imagem, nome, lista de ingredientes
 - Funcionalidades:
@@ -125,7 +125,7 @@ NotToWaste/
 ### **7️⃣ Página de Gerir Pratos**
 - Grid de pratos e ingredientes:
   - Pratos: imagem, nome, lista de ingredientes, ícone apagar
-  - Ingredientes: nome, custo, peso, validade, ícone editar (somente Chefe de BaseCozinha)
+  - Ingredientes: nome, custo, peso, validade, ícone editar (somente Chefe de Cozinha)
 - Funcionalidades:
   - Adicionar prato → popup: nome, ingredientes, custo, imagem, Cancelar / Adicionar
   - Visualização detalhada do prato: ingredientes, custo, imagem, botões Editar / Eliminar
