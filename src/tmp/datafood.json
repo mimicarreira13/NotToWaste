@@ -1,0 +1,44 @@
+[
+  {
+    "id": "espetada",
+    "title": "Espetada",
+    "imageName": "espetada.jpg",
+    "ingredients": ["Carne"],
+    "isIngredient": false
+  },
+  {
+  "id": "picado-de-vaca",
+  "title": "Picado de Vaca",
+  "imageName": "picado de vaca.jpg",
+  "ingredients": ["Carne", "Batata"],
+  "isIngredient": false
+  },
+  {
+  "id": "francesinha",
+  "title": "Francesinha",
+  "imageName": "francesinha.jpg",
+  "ingredients": ["Bife", "Salsicha", "Pão", "Fiambre", "Cebola", "Linguiça", "Alho", "Tomate", "Vinho", "Cerveja", "Piri-piri", "Louros", "Farinha", "Sal", "Pimenta", "Queijo", "Batata"],
+  "isIngredient": false
+  },
+  {
+    "id": "carne-vinha-de-alhos",
+    "title": "Carne Vinha de Alhos",
+    "imageName": "carne vinha de alhos.jpg",
+    "ingredients": ["Carne", "Vinha", "Alhos"],
+    "isIngredient": false
+  },
+  {
+    "id": "bifana",
+    "title": "Bifana",
+    "imageName": "bifana.jpg",
+    "ingredients": ["Carne", "Arroz", "Batata"],
+    "isIngredient": false
+  },
+  {
+    "id": "esparguete-a-bolonhesa",
+    "title": "Esparguete",
+    "imageName": "esparguete.jpg",
+    "ingredients": ["Carne", "Esparguete"],
+    "isIngredient": false
+  }
+]

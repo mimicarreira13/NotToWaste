@@ -17,7 +17,7 @@ function App() {
     return (
         <ProfileProvider>
             <Router>
-                <div className="min-h-screen bg-[#D9D9D9] flex flex-col w-full">
+                <div className="min-h-screen bg-[#D9D9D9] flex flex-col w-full font-[Sansita]">
                     <Navbar />
                     <main className="flex-1 flex items-center justify-center">
                         <Routes>
