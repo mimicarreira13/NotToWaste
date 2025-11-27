@@ -6,7 +6,7 @@ import ClientYearSections from "../components/Client/ClientYearSections";
 import { sustainabilityReports, ingredientItems, dishes } from "../data/clientItems";
 
 export default function Client() {
-    const [selected, setSelected] = useState<"reports" | "dishes">("reports");
+    const [selected, setSelected] = useState<"reports" | "dishes">("dishes");
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
 
     const bandHeight = 190; // altura da banda fixa no topo
@@ -21,8 +21,8 @@ export default function Client() {
             <div className="fixed top-32 left-48 right-48 flex items-center justify-between z-40">
                 <ToggleTabs
                     options={[
-                        { id: "reports", label: "Relatórios" },
                         { id: "dishes", label: "Pratos" },
+                        { id: "reports", label: "Relatórios" },
                     ]}
                     value={selected}
                     onChange={(id) => setSelected(id as "reports" | "dishes")}
