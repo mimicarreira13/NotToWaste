@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "nome": "Natas",
+        "marca": "Continente",
+        "quantidade": "200",
+        "unidade": "Gramas",
+        "dataAbertura": "20-05-2025",
+        "dataValidade": "20-11-2025"
+    
+    },
+    {
+        "id": 2,
+        "nome": "Mozarella",
+        "marca": "Continente",
+        "quantidade": "150",
+        "unidade": "Gramas",
+        "dataAbertura": "31-01-2025",
+        "dataValidade": "10-04-2025"
+    
+    }
+
+
+]

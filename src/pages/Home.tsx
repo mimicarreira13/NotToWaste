@@ -1,6 +1,7 @@
 import { useProfile } from "../contexts/ProfileContext";
 import { useState } from "react";
 import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
 
 import dashboard from "../assets/images/icons/dashboard.png";
 import cozinha from "../assets/images/icons/cozinha.png";
@@ -11,10 +12,10 @@ import desperdicio from "../assets/images/icons/desperdicio.png";
 import proibido from "../assets/images/icons/proibido.png";
 
 const permissions: Record<string, string[]> = {
-    Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
-    "Funcinário de Stock": ["Stock", "Desperdício"],
-    "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
-    Cozinheiro: ["Cozinha", "Desperdício"],
+    Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdicio"],
+    "Funcinário de Stock": ["Stock", "Desperdicio"],
+    "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdicio"],
+    Cozinheiro: ["Cozinha", "Desperdicio"],
 };
 
 type ModalConfig = {
@@ -27,6 +28,7 @@ type ModalConfig = {
 export default function Home() {
     const { profile } = useProfile();
     const [modal, setModal] = useState<ModalConfig>({ open: false });
+    const navigate = useNavigate();
 
     const cards = [
         { id: 1, src: dashboard, alt: "Dashboard" },
@@ -34,12 +36,12 @@ export default function Home() {
         { id: 3, src: definicoes, alt: "Definições" },
         { id: 4, src: pratos, alt: "Gerir Pratos" },
         { id: 5, src: stock, alt: "Stock" },
-        { id: 6, src: desperdicio, alt: "Desperdício" },
+        { id: 6, src: desperdicio, alt: "Desperdicio" },
     ];
 
     const allowed = profile ? permissions[profile.alt] ?? [] : cards.map(c => c.alt);
 
-    function handleCardClick(disabled: boolean) {
+    function handleCardClick(alt: string,disabled: boolean) {
         if (disabled) {
             setModal({
                 open: true,
@@ -54,6 +56,18 @@ export default function Home() {
             });
             return;
         }
+        // Mapa explícito de alt -> rota 
+        const routeMap: Record<string, string> = {
+            Dashboard: "/",
+            Cozinha: "/cozinha",
+            "Definições": "/definicoes",
+            "Gerir Pratos": "/pratos",
+            Stock: "/stock",
+            Desperdicio: "/desperdicio",
+       };
+
+        const path = routeMap[alt] ?? "/" ;
+        navigate(path);
     }
 
     return (
@@ -64,7 +78,7 @@ export default function Home() {
                     return (
                         <div
                             key={card.id}
-                            onClick={() => handleCardClick(disabled)}
+                            onClick={() => handleCardClick(card.alt, disabled)}
                             className={
                                 "relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 " +
                                 (disabled ? " cursor-not-allowed" : " cursor-pointer")
@@ -73,7 +87,7 @@ export default function Home() {
                             aria-label={card.alt}
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleCardClick(disabled);
+                                if (e.key === "Enter" || e.key === " ") handleCardClick(card.alt, disabled);
                             }}
                         >
                             {disabled && (
