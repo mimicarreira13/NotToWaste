@@ -5,7 +5,7 @@ import { Table } from "../components/Tabels/CriarTabela";
 import type { Column } from "../components/Tabels/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import StockFormulario from "../components/forms/StockFormulario";
-
+import BackButton from "../components/Back.tsx";
 
 export type IngredientesStockTabela = {
 
@@ -22,18 +22,28 @@ export type IngredientesStockTabela = {
 const stockData = stockDataJSON as IngredientesStockTabela[];
 
 const stockColumns: Column<IngredientesStockTabela>[] = [
+
     { key: "nome", label: "Nome" },
     { key: "marca", label: "Marca" },
     { key: "quantidade", label: "Quantidade" },
     { key: "unidade", label: "Unidade" },
     { key: "dataAbertura", label: "Data Abertura" },
     { key: "dataValidade", label: "Data Validade" },
+
 ];
 
 export default function StockPage() {
+
     return (
+
          <div className="p-6">
-            <div className="flex items-center justify-end mb-4">
+
+            <h1 className="text-4xl md:text-5l mb-7 text-center font-bold">Stock</h1>
+
+            <div className="flex items-center justify-between mb-4">
+
+                <BackButton />
+
                 <BotaoAdicionar 
                         title="Adicionar ingrediente ao Stock" 
                         modalComponent={StockFormulario} 
@@ -41,7 +51,13 @@ export default function StockPage() {
                 />
 
             </div>
-                <Table data={stockData} columns={stockColumns} rowKey={(i) => i.id} />
+
+            <Table 
+                data={stockData} 
+                columns={stockColumns} 
+                rowKey={(i) => i.id} 
+            />
+
         </div>
     );
 }
