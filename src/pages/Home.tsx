@@ -9,7 +9,7 @@ import stock from "../assets/images/icons/stock.png";
 import desperdicio from "../assets/images/icons/desperdicio.png";
 
 const permissions: Record<string, string[]> = {
-    Gerente: ["Dashboard", "Cozinha", "Definicoes", "Gerir Pratos", "Stock", "Desperdício"],
+    Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
     "Funcionário de Stock": ["Stock", "Desperdício"],
     "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
@@ -39,7 +39,7 @@ export default function Home() {
     const cards: Card[] = [
         { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
         { id: 2, src: cozinha, alt: "Cozinha", route: "/cozinha" },
-        { id: 3, src: definicoes, alt: "Definicoes", route: "/definicoes" },
+        { id: 3, src: definicoes, alt: "Definições", route: "/definicoes" },
         { id: 4, src: pratos, alt: "Gerir Pratos", route: "/pratos" },
         { id: 5, src: stock, alt: "Stock", route: "/stock" },
         { id: 6, src: desperdicio, alt: "Desperdício", route: "/desperdicio" },
