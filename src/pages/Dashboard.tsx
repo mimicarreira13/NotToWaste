@@ -1,6 +1,11 @@
+import Modal from '../components/Modal';
+import React from "react";
+
 const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 border-[#CFCFCF] w-full min-h-[220px] text-center";
 
-const cards = [
+export default function Dashboard() {
+    const [openSugestoesModal, setOpenSugestoesModal] = React.useState(false);
+    const cards = [
     {
         id: "card-mes",
         content: (
@@ -47,7 +52,7 @@ const cards = [
                         <li className="text-xs">Prego</li>
                     </ul>
                     <span className="float-right text-sm font-semibold">6 dias restantes</span></div>
-                <button className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center mt-auto">Sugestões</button>
+                <button className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center mt-auto"  onClick={() => setOpenSugestoesModal(true)}>Sugestões</button>
             </>
         )
     },
@@ -97,8 +102,6 @@ const cards = [
         )
     }
 ];
-
-export default function Dashboard() {
     return (
         <div className="flex justify-center p-4">
             <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 mt-12">
@@ -108,6 +111,54 @@ export default function Dashboard() {
                     </div>
                 ))}
             </div>
+            <Modal
+                open={openSugestoesModal}
+                onClose={() => setOpenSugestoesModal(false)}
+                title="Ingredientes a terminar o prazo"
+                widthClass="max-w-6xl"
+                buttons={[
+                    {
+                        label: "Fechar",
+                        className:
+                            "px-6 py-2 rounded text-sm text-white bg-[#4C6E43] hover:opacity-90",
+                        onClick: () => setOpenSugestoesModal(false),
+                    },
+                ]}
+            >
+                {/* Conteúdo da tabela da modal */}
+                <div className="max-full overflow-x-auto">
+                    <table className="w-auto text-left text-sm border-separate border-0 border border-[#a1a1a1]">
+                        <tbody>
+                        <tr className="bg-[#bcbcbc]">
+                            <td className="px-3 py-2 font-semibold">Ovo</td>
+                            <td className="px-3 py-2">
+                                Pratos recomendados: Bitoque, Prego, Prego no Prato, Hamburger
+                                Especial, Tostas Benedict
+                            </td>
+                            <td className="px-3 py-2">Tempo restante: 1 dia</td>
+                            <td className="px-3 py-2">Quantidade restante: 4 kg</td>
+                        </tr>
+                        <tr className="bg-[#bcbcbc]">
+                            <td className="px-3 py-2 font-semibold">Polvo</td>
+                            <td className="px-3 py-2">
+                                Pratos recomendados: Polvo Lagareiro, Polvo Salteado, Arroz de Polvo
+                            </td>
+                            <td className="px-3 py-2">Tempo restante: 3 dias</td>
+                            <td className="px-3 py-2">Quantidade restante: 1 kg</td>
+                        </tr>
+                        <tr className="bg-[#bcbcbc]">
+                            <td className="px-3 py-2 font-semibold">Alface</td>
+                            <td className="px-3 py-2">
+                                Pratos recomendados: Bitoque, Salada Cesar, Pokebowl, Salada de Atum,
+                                Salada Colorida com Requeijão
+                            </td>
+                            <td className="px-3 py-2">Tempo restante: 4 dias</td>
+                            <td className="px-3 py-2">Quantidade restante: 0,2 kg</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Modal>
         </div>
     );
 }
