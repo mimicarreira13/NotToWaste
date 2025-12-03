@@ -1,4 +1,5 @@
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
+import { generateReportPDF } from "../../utils/pdfGenerator";
 
 type Props = { item: SustainabilityReport | IngredientItem | DishItem; compact?: boolean };
 
@@ -24,10 +25,23 @@ export default function ClientCard({ item, compact = false }: Props) {
     const bottomBandCompact = "w-full text-white text-center py-2 text-sm";
     const bottomBand = compact ? bottomBandCompact : bottomBandLarge;
 
+    const handleDownload = () => {
+        if (isIngredient(item)) {
+            generateReportPDF(item.image, "ingredientes", item.year, item.month);
+        } else if (isSustainability(item)) {
+            generateReportPDF(item.image, "sustentabilidade", item.year);
+        }
+    };
+
     // ingrediente
     if (isIngredient(item)) {
         return (
-            <div className={`${cardBase} aspect-square`}>
+            <div
+                className={`${cardBase} aspect-square`}
+                onClick={handleDownload}
+                role="button"
+                tabIndex={0}
+            >
                 <div className="w-full h-full flex flex-col">
                     <div className="flex-1 w-full overflow-hidden ">
                         <img src={item.image} alt={item.month} className={imgClasses} />
@@ -41,7 +55,12 @@ export default function ClientCard({ item, compact = false }: Props) {
     // sustentabilidade
     if (isSustainability(item)) {
         return (
-            <div className={`${cardBase} aspect-square`}>
+            <div
+                className={`${cardBase} aspect-square`}
+                onClick={handleDownload}
+                role="button"
+                tabIndex={0}
+            >
                 <div className="w-full h-full flex flex-col">
                     <div className="flex-1 w-full overflow-hidden ">
                         <img src={item.image} alt={`Relatório ${item.year}`} className={imgClasses} />
