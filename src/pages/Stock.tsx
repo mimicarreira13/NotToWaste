@@ -1,6 +1,5 @@
-import {useNavigate} from "react-router-dom";
+
 import stockDataJSON from "../tmp/dataStock.json";
-import {useState} from "react";
 import { Table } from "../components/Tabels/CriarTabela";
 import type { Column } from "../components/Tabels/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
