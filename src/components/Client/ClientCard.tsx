@@ -13,8 +13,8 @@ function isSustainability(i: unknown): i is SustainabilityReport {
 }
 
 export default function ClientCard({ item, compact = false }: Props) {
-    const cardBaseLarge = "border rounded-2xl overflow-hidden bg-white transform transition-transform duration-200 ease-out hover:scale-105 hover:shadow-xl group";
-    const cardBaseCompact = "border rounded-lg overflow-hidden bg-white transform transition-transform duration-150 hover:scale-105 hover:shadow-md group";
+    const cardBaseLarge = "border-black shadow-xl rounded-2xl overflow-hidden bg-[#D9D9D9] transform transition-transform duration-200 ease-out hover:scale-105 hover:shadow-xl group";
+    const cardBaseCompact = "border-black shadow-xl rounded-lg overflow-hidden bg-[#D9D9D9] transform transition-transform duration-150 hover:scale-105 hover:shadow-md group";
     const cardBase = compact ? cardBaseCompact : cardBaseLarge;
 
     const imgClassesLarge = "w-full h-full object-cover object-top transform transition-transform duration-300 group-hover:scale-105";
@@ -26,10 +26,12 @@ export default function ClientCard({ item, compact = false }: Props) {
     const bottomBand = compact ? bottomBandCompact : bottomBandLarge;
 
     const handleDownload = () => {
+        const logo = "./logo.png";
+
         if (isIngredient(item)) {
-            generateReportPDF(item.image, "ingredientes", item.year, item.month);
+            generateReportPDF(logo, "ingredientes", item.year, item.month);
         } else if (isSustainability(item)) {
-            generateReportPDF(item.image, "sustentabilidade", item.year);
+            generateReportPDF(logo, "sustentabilidade", item.year);
         }
     };
 
