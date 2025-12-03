@@ -127,33 +127,33 @@ export default function Dashboard() {
             >
                 {/* Conteúdo da tabela da modal */}
                 <div className="max-full overflow-x-auto">
-                    <table className="w-auto text-left text-sm border-separate border-0 border border-[#a1a1a1]">
+                    <table className="w-auto text-left text-sm border-collapse">
                         <tbody>
                         <tr className="bg-[#bcbcbc]">
-                            <td className="px-3 py-2 font-semibold">Ovo</td>
-                            <td className="px-3 py-2">
+                            <td className="px-3 py-2 font-semibold border border-[#949494]">Ovo</td>
+                            <td className="px-3 py-2 border border-[#949494]">
                                 Pratos recomendados: Bitoque, Prego, Prego no Prato, Hamburger
                                 Especial, Tostas Benedict
                             </td>
-                            <td className="px-3 py-2">Tempo restante: 1 dia</td>
-                            <td className="px-3 py-2">Quantidade restante: 4 kg</td>
+                            <td className="px-3 py-2 border border-[#949494]">Tempo restante: 1 dia</td>
+                            <td className="px-3 py-2 border border-[#949494]">Quantidade restante: 4 kg</td>
                         </tr>
                         <tr className="bg-[#bcbcbc]">
-                            <td className="px-3 py-2 font-semibold">Polvo</td>
-                            <td className="px-3 py-2">
+                            <td className="px-3 py-2 font-semibold border border-[#949494]">Polvo</td>
+                            <td className="px-3 py-2 border border-[#949494]">
                                 Pratos recomendados: Polvo Lagareiro, Polvo Salteado, Arroz de Polvo
                             </td>
-                            <td className="px-3 py-2">Tempo restante: 3 dias</td>
-                            <td className="px-3 py-2">Quantidade restante: 1 kg</td>
+                            <td className="px-3 py-2 border border-[#949494]">Tempo restante: 3 dias</td>
+                            <td className="px-3 py-2 border border-[#949494]">Quantidade restante: 1 kg</td>
                         </tr>
                         <tr className="bg-[#bcbcbc]">
-                            <td className="px-3 py-2 font-semibold">Alface</td>
-                            <td className="px-3 py-2">
+                            <td className="px-3 py-2 font-semibold border border-[#949494]">Alface</td>
+                            <td className="px-3 py-2 border border-[#949494]">
                                 Pratos recomendados: Bitoque, Salada Cesar, Pokebowl, Salada de Atum,
                                 Salada Colorida com Requeijão
                             </td>
-                            <td className="px-3 py-2">Tempo restante: 4 dias</td>
-                            <td className="px-3 py-2">Quantidade restante: 0,2 kg</td>
+                            <td className="px-3 py-2 border border-[#949494]">Tempo restante: 4 dias</td>
+                            <td className="px-3 py-2 border border-[#949494]">Quantidade restante: 0,2 kg</td>
                         </tr>
                         </tbody>
                     </table>
