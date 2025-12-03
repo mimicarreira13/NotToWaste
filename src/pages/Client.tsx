@@ -190,8 +190,8 @@ export default function Client() {
                     }
                 }
 
-                /* entre 801px e 1000px: 3 colunas */
-                @media (min-width: 801px) and (max-width: 1000px) {
+                /* entre 801px e 1200px: 3 colunas */
+                @media (min-width: 801px) and (max-width: 1200px) {
                     .client-page [role="list"] {
                         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
                         gap: 1rem !important;
@@ -251,7 +251,6 @@ export default function Client() {
                     }
                 }
 
-                /* acima de 1000px mantém o comportamento original (default) */
             `}</style>
         </div>
     );
