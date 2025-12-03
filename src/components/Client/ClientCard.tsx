@@ -57,6 +57,10 @@ export default function ClientCard({ item, compact = false }: Props) {
     const isUnavailable = dish.available === false;
     const unavailableClass = isUnavailable ? "opacity-50 filter grayscale" : "";
 
+    const badgeClasses = compact
+        ? "w-3/4 text-center px-3 py-1 rounded-md text-sm font-semibold"
+        : "w-full text-center px-6 py-3 rounded-none text-2xl font-extrabold";
+
     return (
         <div className={`${cardBase} ${unavailableClass}`}>
             <div className="w-full flex items-center p-4">
@@ -86,8 +90,10 @@ export default function ClientCard({ item, compact = false }: Props) {
             </div>
 
             {isUnavailable && (
-                <div className={bottomBand + " bg-[#4C6E43]"}>
-                    Indisponível
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className={`bg-[#4C6E43] text-white ${badgeClasses}`}>
+                        Indisponível
+                    </div>
                 </div>
             )}
         </div>
