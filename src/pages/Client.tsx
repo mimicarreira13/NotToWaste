@@ -63,47 +63,24 @@ export default function Client() {
                         variant="dishes"
                         items={dishes}
                         columns={4}
+                        className="client-dishes-grid"
                         renderItem={(d) => <ClientCard item={d} />}
                     />
                 )}
             </div>
             <style>{`
-                /* quando a largura do ecrã for <= 650px: forçar 1 coluna em todos os grids desta página */
+                /* mobile: até 550px — toggles em coluna */
                 @media (max-width: 650px) {
                     .client-page [role="list"] {
                         grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
                         gap: 1rem !important;
                     }
 
-                    /* Ajuste visual dos cards para ocupar toda a largura */
                     .client-page .w-full[role="list"] > div[role="listitem"] {
                         width: 100% !important;
                         margin: 0 auto;
                     }
 
-                    /* manter toggles fixos, no canto superior esquerdo, abaixo da navbar */
-                    .client-page .fixed-top-toggles {
-                        position: fixed !important;
-                        top: 120px !important;   /* ajusta se necessário */
-                        left: 1rem !important;
-                        right: auto !important;
-                        width: auto !important;
-                        padding: 0.5rem 0.75rem;
-                        box-sizing: border-box;
-                        pointer-events: auto;
-                        background: transparent;
-                        justify-content: flex-start;
-                        gap: 1rem;
-                    }
-
-                    .client-page .fixed-top-toggles .relative.inline-flex {
-                        width: auto;
-                        justify-content: flex-start;
-                    }
-                }
-
-                /* para ecrãs muito pequenos: organizar toggles em coluna e centrar; ajustar altura da band conforme presença do 2º toggle */
-                @media (max-width: 500px) {
                     .client-page .fixed-top-toggles {
                         position: fixed !important;
                         top: 110px !important;
@@ -116,6 +93,7 @@ export default function Client() {
                         gap: 1.25rem;
                         padding: 0.5rem 0.75rem;
                         box-sizing: border-box;
+                        pointer-events: auto;
                     }
 
                     .client-page .fixed-top-toggles > .relative.inline-flex,
@@ -136,12 +114,7 @@ export default function Client() {
                         width: 100%;
                     }
 
-                    .client-page [role="list"] {
-                        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-                        gap: 1rem !important;
-                    }
-
-                    /* altura da banda em mobile: 150px por omissão */
+                    /* altura da banda em mobile: 170px por omissão */
                     .client-page .band {
                         height: 170px !important;
                     }
@@ -151,6 +124,134 @@ export default function Client() {
                         height: 220px !important;
                     }
                 }
+
+                /* entre 551px e 800px: 2 colunas e toggles na mesma linha (row) com gap maior */
+                @media (min-width: 601px) and (max-width: 800px) {
+                    /* grid com 2 colunas */
+                    .client-page [role="list"] {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 1rem !important;
+                    }
+
+                    .client-page .w-full[role="list"] > div[role="listitem"] {
+                        width: 100% !important;
+                        margin: 0 auto;
+                    }
+
+                    /* toggles na mesma linha, centralizados com espaço entre os dois grupos */
+                    .client-page .fixed-top-toggles {
+                        position: fixed !important;
+                        top: 120px !important;
+                        left: 50% !important;
+                        transform: translateX(-50%) !important;
+                        right: auto !important;
+                        display: flex !important;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 2rem; /* espaço entre 1º toggle e 2º toggle */
+                        padding: 0.5rem 0.75rem;
+                        box-sizing: border-box;
+                        pointer-events: auto;
+                        background: transparent;
+                    }
+
+                    /* cada ToggleTabs fica inline-flex com largura automática */
+                    .client-page .fixed-top-toggles > .relative.inline-flex,
+                    .client-page .fixed-top-toggles > div > .relative.inline-flex {
+                        display: inline-flex !important;
+                        width: auto !important;
+                        justify-content: center;
+                        gap: 0.5rem;
+                        align-items: center;
+                    }
+
+                    /* manter botões do primeiro toggle com largura equilibrada */
+                    .client-page .fixed-top-toggles > .relative.inline-flex > button {
+                        flex: 0 0 auto;
+                        min-width: 4rem;
+                        text-align: center;
+                    }
+
+                    /* --- ajustes para deixar os cards de PRATOS um pouco menores --- */
+                    /* limita largura do cartão, reduz tamanho do bloco de imagem e padding */
+                    .client-page .client-dishes-grid [role="listitem"] > div {
+                        max-width: 480px !important;
+                        margin: 0 auto;
+                    }
+
+                    .client-page .client-dishes-grid [role="listitem"] .w-40 {
+                        width: 8rem !important; /* reduzir de 10rem para 8rem */
+                        min-width: 5rem !important;
+                    }
+
+                    .client-page .client-dishes-grid [role="listitem"] .p-4 {
+                        padding: 0.75rem !important; /* reduzir padding interno do card */
+                    }
+                }
+
+                /* entre 801px e 1000px: 3 colunas */
+                @media (min-width: 801px) and (max-width: 1000px) {
+                    .client-page [role="list"] {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 1rem !important;
+                    }
+
+                    .client-page .w-full[role="list"] > div[role="listitem"] {
+                        width: 100% !important;
+                        margin: 0 auto;
+                    }
+
+                    /* toggles em linha, centralizados */
+                    .client-page .fixed-top-toggles {
+                        position: fixed !important;
+                        top: 120px !important;
+                        left: 50% !important;
+                        transform: translateX(-50%) !important;
+                        right: auto !important;
+                        display: flex !important;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 2rem;
+                        padding: 0.5rem 0.75rem;
+                        box-sizing: border-box;
+                        pointer-events: auto;
+                        background: transparent;
+                    }
+
+                    .client-page .fixed-top-toggles > .relative.inline-flex,
+                    .client-page .fixed-top-toggles > div > .relative.inline-flex {
+                        display: inline-flex !important;
+                        width: auto !important;
+                        justify-content: center;
+                        gap: 0.5rem;
+                        align-items: center;
+                    }
+
+                    .client-page .fixed-top-toggles > .relative.inline-flex > button {
+                        flex: 0 0 auto;
+                        min-width: 4rem;
+                        text-align: center;
+                    }
+
+                    /* ajustes leves para os cards de pratos nesta faixa */
+                    .client-page .client-dishes-grid [role="listitem"] > div {
+                        max-width: 440px !important;
+                        margin: 0 auto;
+                    }
+
+                    .client-page .client-dishes-grid [role="listitem"] .w-40 {
+                        width: 7.5rem !important;
+                        min-width: 5rem !important;
+                    }
+
+                    .client-page .client-dishes-grid [role="listitem"] .p-4 {
+                        padding: 0.85rem !important;
+                    }
+                }
+
+                /* acima de 1000px mantém o comportamento original (default) */
             `}</style>
         </div>
     );
