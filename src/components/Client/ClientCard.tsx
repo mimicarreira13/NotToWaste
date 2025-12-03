@@ -1,4 +1,5 @@
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
+import { generateReportPDF } from "../../utils/pdfGenerator";
 
 type Props = { item: SustainabilityReport | IngredientItem | DishItem; compact?: boolean };
 
@@ -12,8 +13,8 @@ function isSustainability(i: unknown): i is SustainabilityReport {
 }
 
 export default function ClientCard({ item, compact = false }: Props) {
-    const cardBaseLarge = "border rounded-2xl overflow-hidden bg-white transform transition-transform duration-200 ease-out hover:scale-105 hover:shadow-xl group";
-    const cardBaseCompact = "border rounded-lg overflow-hidden bg-white transform transition-transform duration-150 hover:scale-105 hover:shadow-md group";
+    const cardBaseLarge = "border-black shadow-xl rounded-2xl overflow-hidden bg-[#D9D9D9] transform transition-transform duration-200 ease-out hover:scale-105 hover:shadow-xl group";
+    const cardBaseCompact = "border-black shadow-xl rounded-lg overflow-hidden bg-[#D9D9D9] transform transition-transform duration-150 hover:scale-105 hover:shadow-md group";
     const cardBase = compact ? cardBaseCompact : cardBaseLarge;
 
     const imgClassesLarge = "w-full h-full object-cover object-top transform transition-transform duration-300 group-hover:scale-105";
@@ -24,10 +25,25 @@ export default function ClientCard({ item, compact = false }: Props) {
     const bottomBandCompact = "w-full text-white text-center py-2 text-sm";
     const bottomBand = compact ? bottomBandCompact : bottomBandLarge;
 
+    const handleDownload = () => {
+        const logo = "./logo.png";
+
+        if (isIngredient(item)) {
+            generateReportPDF(logo, "ingredientes", item.year, item.month);
+        } else if (isSustainability(item)) {
+            generateReportPDF(logo, "sustentabilidade", item.year);
+        }
+    };
+
     // ingrediente
     if (isIngredient(item)) {
         return (
-            <div className={`${cardBase} aspect-square`}>
+            <div
+                className={`${cardBase} aspect-square`}
+                onClick={handleDownload}
+                role="button"
+                tabIndex={0}
+            >
                 <div className="w-full h-full flex flex-col">
                     <div className="flex-1 w-full overflow-hidden ">
                         <img src={item.image} alt={item.month} className={imgClasses} />
@@ -41,7 +57,12 @@ export default function ClientCard({ item, compact = false }: Props) {
     // sustentabilidade
     if (isSustainability(item)) {
         return (
-            <div className={`${cardBase} aspect-square`}>
+            <div
+                className={`${cardBase} aspect-square`}
+                onClick={handleDownload}
+                role="button"
+                tabIndex={0}
+            >
                 <div className="w-full h-full flex flex-col">
                     <div className="flex-1 w-full overflow-hidden ">
                         <img src={item.image} alt={`Relatório ${item.year}`} className={imgClasses} />
