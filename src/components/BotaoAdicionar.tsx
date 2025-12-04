@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import Modal from "./Modal";
+import ModalSemOk from "./ModalSemOk";
 
 export type AdicionarForm = {
   onClose: () => void;
@@ -28,16 +28,16 @@ export default function BotaoAdicionar({ title, modalComponent: ModalComponent, 
       </button>
 
       {showPopup && ModalComponent && (
-        <Modal open={true} title={title} onClose={() => setShowPopup(false)}>
+        <ModalSemOk open={true} title={title} onClose={() => setShowPopup(false)}>
           <ModalComponent
             onClose={() => setShowPopup(false)}
             onAdded={(item) => {
-              // podes emitir um evento, fazer refresh ou passar callback via props se necessário
+              //emitir um evento, fazer refresh ou passar callback via props 
               setShowPopup(false);
               //console.log("adicionado:", item);
             }}
           />
-        </Modal>
+        </ModalSemOk>
       )}
     </div>
   );
