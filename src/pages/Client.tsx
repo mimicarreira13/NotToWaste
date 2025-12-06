@@ -1,15 +1,15 @@
-// File: `src/pages/Client.tsx`
 import { useState } from "react";
 import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
-import ClientYearSections from "../components/Client/ClientYearSections";
-import { sustainabilityReports, ingredientItems, dishes } from "../data/clientItems";
-import Relatorios, { RelatoriosContent, RelatoriosToggle } from "./Relatorios";
+import { dishes } from "../data/clientItems";
+import { RelatoriosContent, RelatoriosToggle } from "./Relatorios";
 
 export default function Client() {
     const [selected, setSelected] = useState<"reports" | "dishes">("dishes");
+    // estado para o segundo toggle (ingredientes / sustentabilidade)
+    const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
     const bandHeight = 190; // altura da banda fixa no topo
 
     const DishesIcon = <FaUtensils size={20} aria-hidden />;
@@ -35,15 +35,16 @@ export default function Client() {
                     onChange={(id) => setSelected(id as "reports" | "dishes")}
                 />
 
-                {/* quando "reports" estiver selecionado, injeta aqui o toggle proveniente da página Relatórios
-                    (o toggle é controlado dentro de Relatorios/RelatoriosContent) */}
-                {selected === "reports" && <RelatoriosToggle value={"ingredients"} onChange={() => {}} />}
+                {/* passa o estado real do segundo toggle para permitir clique */}
+                {selected === "reports" && (
+                    <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} />
+                )}
             </div>
 
             <div style={{ marginTop: 220 }}>
                 {selected === "reports" && (
-                    // renderiza o conteúdo de relatórios (grid ou sections)
-                    <RelatoriosContent tab={"ingredients"} />
+                    // renderiza o conteúdo de relatórios usando o estado controlado aqui
+                    <RelatoriosContent tab={reportTab} />
                 )}
 
                 {selected === "dishes" && (
