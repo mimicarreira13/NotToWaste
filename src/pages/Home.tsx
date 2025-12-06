@@ -8,9 +8,9 @@ import stock from "../assets/images/icons/stock.png";
 import desperdicio from "../assets/images/icons/desperdicio.png";
 
 const permissions: Record<string, string[]> = {
-    Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
+    Gerente: ["Informações e Sustentabilidade", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
     "Funcionário de Stock": ["Stock", "Desperdício"],
-    "Chef de Cozinha": ["Dashboard", "Gerir Pratos", "Desperdício"],
+    "Chef de Cozinha": ["Informações e Sustentabilidade", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
 };
 
@@ -33,15 +33,14 @@ type Card = {
 
 export default function Home() {
     const { profile } = useProfile();
-    const navigate = useNavigate();
 
-    const cards: Card[] = [
-        { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
-        { id: 2, src: cozinha, alt: "Cozinha", route: "/cozinha" },
-        { id: 3, src: definicoes, alt: "Definições", route: "/definicoes" },
-        { id: 4, src: pratos, alt: "Gerir Pratos", route: "/pratos" },
-        { id: 5, src: stock, alt: "Stock", route: "/stock" },
-        { id: 6, src: desperdicio, alt: "Desperdício", route: "/desperdicio" },
+    const cards = [
+        { id: 1, src: dashboard, alt: "Informações e Sustentabilidade" },
+        { id: 2, src: cozinha, alt: "Cozinha" },
+        { id: 3, src: definicoes, alt: "Definições" },
+        { id: 4, src: pratos, alt: "Gerir Pratos" },
+        { id: 5, src: stock, alt: "Stock" },
+        { id: 6, src: desperdicio, alt: "Desperdício" },
     ];
 
     const allowed = profile ? permissions[profile.alt] ?? [] : cards.map((c) => c.alt);
