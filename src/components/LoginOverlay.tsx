@@ -1,3 +1,4 @@
+// typescript
 // src/components/LoginOverlay.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +30,7 @@ export default function LoginOverlay({ selected, onClose }: Props) {
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState<string>("");
@@ -41,6 +43,7 @@ export default function LoginOverlay({ selected, onClose }: Props) {
     useEffect(() => {
         setEmail("");
         setPassword("");
+        setShowPassword(false);
     }, [selected]);
 
     useEffect(() => {
@@ -149,49 +152,81 @@ export default function LoginOverlay({ selected, onClose }: Props) {
                 >
                     <div className="modal-title">Login como {selected.alt}</div>
 
-                    <div className="modal-body">
-                        <div className="w-full mb-4">
-                            <label className="block text-left mb-1 font-semibold">Email</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-80 border px-2 py-2 rounded bg-gray-100 text-left"
-                                autoComplete="off"
-                                autoFocus
-                                disabled={isLoading}
-                            />
-                        </div>
+                    <div className="modal-body px-6 py-4">
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                await handleEnter();
+                            }}
+                        >
+                            <div className="w-full mb-4">
+                                <label className="block text-left mb-1 font-semibold">Email</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-80 border px-2 py-2 rounded bg-gray-100 text-left"
+                                    autoComplete="off"
+                                    autoFocus
+                                    disabled={isLoading}
+                                />
+                            </div>
 
-                        <div className="w-full mb-4">
-                            <label className="block text-left mb-1 font-semibold">Password</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full border px-3 py-2 rounded bg-gray-100"
-                                autoComplete="off"
-                                disabled={isLoading}
-                            />
-                        </div>
+                            <div className="w-full mb-4 relative">
+                                <label className="block text-left mb-1 font-semibold">Password</label>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full border px-3 py-2 rounded bg-gray-100 pr-12"
+                                    autoComplete="off"
+                                    disabled={isLoading}
+                                    aria-describedby="toggle-password"
+                                />
+                                <button
+                                    id="toggle-password"
+                                    type="button"
+                                    onClick={() => setShowPassword((s) => !s)}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 translate-y-1 w-9 h-9 inline-flex items-center justify-center bg-transparent border-0 cursor-pointer text-black rounded-md z-10 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    aria-pressed={showPassword}
+                                    aria-label={showPassword ? "Ocultar password" : "Mostrar password"}
+                                    disabled={isLoading}
+                                >
+                                    {showPassword ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" className="stroke-current text-black">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.58 10.58A3 3 0 1113.42 13.42" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.94 12.94A12.04 12.04 0 0112 6c2.1 0 4.05.5 5.8 1.38" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21.06 11.06A12.04 12.04 0 0112 18c-2.1 0-4.05-.5-5.8-1.38" />
+                                        </svg>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" className="stroke-current text-black">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12s4-7.5 9.5-7.5S21.5 12 21.5 12s-4 7.5-9.5 7.5S2.5 12 2.5 12z" />
+                                            <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    )}
+                                </button>
+                            </div>
 
-                        <div className="flex gap-3 mt-4">
-                            <button
-                                onClick={handleEnter}
-                                className="modal-button-default flex-1"
-                                disabled={isLoading}
-                                aria-disabled={isLoading}
-                            >
-                                {isLoading ? "A entrar..." : "Entrar"}
-                            </button>
-                            <button
-                                onClick={onClose}
-                                className="border border-[#4C6E43] px-4 py-2 rounded flex-1"
-                                disabled={isLoading}
-                            >
-                                Voltar
-                            </button>
-                        </div>
+                            <div className="flex gap-3 mt-4">
+                                <button
+                                    type="submit"
+                                    className="modal-button-default flex-1"
+                                    disabled={isLoading}
+                                    aria-disabled={isLoading}
+                                >
+                                    {isLoading ? "A entrar..." : "Entrar"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="border border-[#4C6E43] px-4 py-2 rounded flex-1"
+                                    disabled={isLoading}
+                                >
+                                    Voltar
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
                     {/* Loading overlay */}
@@ -202,7 +237,7 @@ export default function LoginOverlay({ selected, onClose }: Props) {
                             aria-hidden="true"
                         >
                             <div className="flex flex-col items-center gap-3">
-                                <div className="loader" />
+                                <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-[#4C6E43] animate-spin" />
                                 <div className="text-[#4C6E43] font-medium">A entrar...</div>
                             </div>
                         </div>
@@ -233,20 +268,6 @@ export default function LoginOverlay({ selected, onClose }: Props) {
                     },
                 ]}
             />
-
-            <style>{`
-                .loader {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    border: 4px solid rgba(76,110,67,0.2);
-                    border-top-color: #4C6E43;
-                    animation: spin 1s linear infinite;
-                }
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
         </>
     );
 }
