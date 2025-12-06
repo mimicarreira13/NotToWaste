@@ -7,6 +7,13 @@ import api from "../api/api";
 import { login, decodeToken, getCurrentUser, getUserTypeById } from "../api/login";
 import Modal from "./Modal";
 
+const presetCredentials: Record<string, { email: string; password: string }> = {
+    Gerente: { email: "gerente@nottowaste.local", password: "gerente123" },
+    "Funcionário de Stock": { email: "stock@nottowaste.local", password: "stock123" },
+    "Chef de Cozinha": { email: "chef@nottowaste.local", password: "chef123" },
+    Cozinheiro: { email: "cozinheiro@nottowaste.local", password: "cozinheiro123" },
+};
+
 type SelectedCard = { id: number; src: string; alt: string } | null;
 
 type Props = {
@@ -40,10 +47,32 @@ export default function LoginOverlay({ selected, onClose }: Props) {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    useEffect(() => {
+    // ESTE É O CORRETO A USAR
+/*    useEffect(() => {
         setEmail("");
         setPassword("");
         setShowPassword(false);
+    }, [selected]);*/
+
+    // ESTE É PARA COMENTAR DEPOIS
+    useEffect(() => {
+        // reseta visibilidade da password sempre que muda o perfil
+        setShowPassword(false);
+
+        if (!selected) {
+            setEmail("");
+            setPassword("");
+            return;
+        }
+    // DEPOIS TBM É PARA COMENTAR
+   const creds = presetCredentials[selected.alt as keyof typeof presetCredentials];
+        if (creds) {
+            setEmail(creds.email);
+            setPassword(creds.password);
+        } else {
+            setEmail("");
+            setPassword("");
+        }
     }, [selected]);
 
     useEffect(() => {
