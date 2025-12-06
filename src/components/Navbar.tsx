@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";
@@ -23,23 +24,18 @@ export default function Navbar() {
 
     return (
         <nav className="w-full bg-[#4C6E43] text-white p-4 h-20 flex items-center justify-between fixed z-50">
-            <div className="flex items-center gap-2 flex-1">
-                <Link to="/" aria-label="Ir para a página inicial">
+            <div className="flex items-center gap-3 flex-1">
+                <Link to="/" aria-label="Ir para a página inicial" className="flex items-center gap-3">
                     <img src={logo} alt="Logo" className="w-12 h-12 sm:w-[72px] sm:h-[72px]" />
+                    {!isCompact && (
+                        <span
+                            className="text-white font-normal"
+                            style={{ fontFamily: "Arial", fontSize: "40px", lineHeight: "17px", textDecoration: "none" }}
+                        >
+                            NotToWaste
+                        </span>
+                    )}
                 </Link>
-            </div>
-
-            <div className="flex-1 flex items-center justify-center">
-                {!isCompact && (
-                    <Link
-                        to="/"
-                        className="text-center font-normal"
-                        aria-label="Ir para a página inicial"
-                        style={{ fontFamily: "Arial", fontSize: "40px", lineHeight: "17px", textDecoration: "none", color: "inherit" }}
-                    >
-                        NotToWaste
-                    </Link>
-                )}
             </div>
 
             <div className="flex items-center gap-4 justify-end flex-1">
