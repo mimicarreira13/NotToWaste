@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import api from "../api";
-import {createCards} from "./Cards.tsx";
-import {useNavigate} from "react-router-dom";  // o ficheiro criado
+import {useState, useEffect, type JSX, useRef} from "react";
+import api from "./api.ts";
+import {createCards} from "../components/Cards.tsx";
+import {useNavigate} from "react-router-dom";
+import type {IngredientItem} from "../data/clientItems.ts";  // o ficheiro criado
 
 type Mensagem<T = any> = {
     exito: boolean;
@@ -29,15 +30,15 @@ type Mensagem<T = any> = {
 //     ];
 // };
 //
-// type Ingredient = {
-//     id: string;
-//     nome: string;
-//     quantidade: number;
-//     caminhoImagem: null
-//     custo: number;
-//     dataValidade: string;
-//     unidade: number;
-// }
+type Ingredient = {
+    id: string;
+    nome: string;
+    quantidade: number;
+    caminhoImagem: null
+    custo: number;
+    dataValidade: string;
+    unidade: number;
+}
 
 type ItemUI = {
     id: string;
@@ -53,83 +54,80 @@ type InfoProps = {
     onData?: (data: ItemUI[]) => void;
 };
 
-function converterImg(item: any): ItemUI {
-    return {
-        id: item.id,
-        title: item.nome, // Maps 'nome' to 'title'
-        imageName: item.caminhoImagem || "", // Handle potential nulls
-        ingredients: [], // You might need extra logic here to extract ingredient names
-        isIngredient: false // You might need logic to determine this based on the input
-    };
-}
+type CardUI = {
+    id: string;
+    content: JSX.Element;
+    title: string;
+};
 
 export default function Info({type, id, onData} : InfoProps) {
     const [info, setInfo] = useState<Mensagem | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const hasFetched = useRef(false); // Add this to track if we've already fetched
 
     useEffect(() => {
+        // Prevent multiple fetches
+        if (hasFetched.current) return;
+
+        console.log(`Fetching ${type}${id ? "/" + id : ""}`);
+
         api.get<Mensagem>(`/api/${type}${id ? "/" + id : ""}`, { timeout: 10000 })
             .then(res => {
+                console.log(`API Response for ${type}:`, res.data);
                 setInfo(res.data);
+                hasFetched.current = true; // Mark as fetched
+
                 if (res.data.objeto && Array.isArray(res.data.objeto)) {
-                    const converted = res.data.objeto.map(item => converterImg(item));
+                    const converted = res.data.objeto.map(item => convertToItemUI(item));
+                    console.log(`Converted ${converted.length} items`, converted);
                     onData?.(converted);
                 } else {
+                    console.warn("No objeto array in response");
                     onData?.([]);
                 }
             })
             .catch(err => {
-                console.error("API Error Details:", {
+                console.error("API Error:", {
                     message: err.message,
                     code: err.code,
                     url: err.config?.url,
-                    status: err.response?.status,
-                    statusText: err.response?.statusText,
+                    isTimeout: err.code === 'ECONNABORTED'
                 });
 
                 if (err.code === "ECONNABORTED") {
-                    setError("A conexão com o servidor está demorando muito. Verifique sua internet ou tente novamente.");
-                } else if (err.response) {
-                    setError(`Erro ${err.response.status}: ${err.response.statusText}`);
-                } else if (err.request) {
-                    setError("Não foi possível conectar ao servidor. Verifique se o servidor está online.");
+                    setError("Timeout - o servidor demorou muito a responder");
                 } else {
                     setError("Falha ao carregar dados");
                 }
             })
-            .finally(() => setLoading(false));
-    }, [type, id, onData]);
+            .finally(() => {
+                console.log(`Finished loading ${type}`);
+                setLoading(false);
+            });
+    }, [type, id, onData]); // Dependencies
+
+    // Add a cleanup function
+    useEffect(() => {
+        return () => {
+            // Reset when component unmounts
+            hasFetched.current = false;
+        };
+    }, []);
 
     if (loading) return <div>Loading…</div>;
     if (error) return <div>{error}</div>;
+    return null; // Return null instead of empty fragment
+}
 
-    const [ingredientCards, setIngredientCards] = useState<CardUI[]>([]);
-    const [foodCards, setFoodCards] = useState<CardUI[]>([]);
-
-    const handleIngredientData = useCallback((data: ItemUI[]) => {
-        console.log("Ingredient data received:", data);
-        setIngredientCards(createCards(data));
-    }, []);
-
-    const handleFoodData = useCallback((data: ItemUI[]) => {
-        console.log("Food data received:", data);
-        setFoodCards(createCards(data));
-    }, []);
-
-
-    return <></>;
-    // if (info !== null){
-    //     if (type === "Prato" && id === null) {
-    //         return(FoodList(info.objeto));
-    //     } else if (type === "Ingrediente" && id === null) {
-    //         return(IngredientList(info.objeto));
-    //     }// else if (type === "Prato" && id !== null) {
-    //     //     return(FoodItem(info.objeto));
-    //     // } else if (type === "Ingrediente" && id !== null) {
-    //     //     return(IngredientItem(info.objeto));
-    //     // }
-    // }
+function convertToItemUI(item: any): ItemUI {
+    return {
+        id: item.id || "",
+        title: item.nome || item.title || "",
+        imageName: item.caminhoImagem || item.imageName || "",
+        ingredients: [], // You'll need to populate this based on your data
+        isIngredient: false // You'll need logic to determine this
+    };
 }
 
 

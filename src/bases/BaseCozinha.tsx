@@ -1,8 +1,7 @@
-import {useNavigate} from "react-router-dom";
 import {FiSearch} from "react-icons/fi";
-import {JSX, useState} from "react";
+import {type JSX, useState} from "react";
 import BackButton from "../components/Back.tsx";
-import Info from "../components/APIgetter.tsx";
+import Info from "../api/APIgetter.tsx";
 import {createCards} from "../components/Cards.tsx";
 
 type ItemUI = {
@@ -23,13 +22,10 @@ type CardUI = {
 export default function CozinhaBase({
                                         overlay,
                                         extraDiv,
-                                        path,
                                     }: {
     overlay?: React.ReactNode;
     extraDiv?: React.ReactNode;
-    path: string;
 }) {
-    const navigate = useNavigate();
     const saved = localStorage.getItem("pageMode") === "true";
     const [pageMode, setPageMode] = useState(saved);
     const [search, setSearch] = useState("");
