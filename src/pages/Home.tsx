@@ -1,5 +1,5 @@
 import { useProfile } from "../contexts/ProfileContext";
-
+import { useNavigate } from "react-router-dom";
 import dashboard from "../assets/images/icons/dashboard.png";
 import cozinha from "../assets/images/icons/cozinha.png";
 import definicoes from "../assets/images/icons/definicoes.png";
@@ -24,6 +24,13 @@ function normalizeClassName(s?: string) {
         .toLowerCase();
 }
 
+type Card = {
+    id: number;
+    src: string;
+    alt: string;
+    route?: string;
+};
+
 export default function Home() {
     const { profile } = useProfile();
 
@@ -46,10 +53,14 @@ export default function Home() {
 
     const roleClass = profile ? `home-grid--${normalizeClassName(profile.alt)}` : "";
 
-    function handleCardClick() {
+    function handleCardClick(card: Card) {
         // placeholder: implementar navegação/ação real para cada cartão
+        if( card.route) {
+            navigate(card.route);
+        }
     }
 
+    // O .map fica dentro do return do JSX!
     return (
         <div
             className="w-full mx-auto p-6 flex items-center justify-center"
@@ -72,14 +83,14 @@ export default function Home() {
                         <div
                             key={card.id}
                             role="listitem"
-                            onClick={() => handleCardClick()}
+                            onClick={() => handleCardClick(card)}
                             className={
                                 "home-card relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 cursor-pointer"
                             }
                             aria-label={card.alt}
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleCardClick();
+                                if (e.key === "Enter" || e.key === " ") handleCardClick(card);
                             }}
                             style={{ width: `${columnWidth}px`, maxWidth: `${columnWidth}px` }}
                         >

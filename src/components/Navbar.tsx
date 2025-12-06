@@ -37,7 +37,7 @@ export default function Navbar() {
                 {hideUserMenu ? (
                     <div aria-disabled="true" className="flex items-center gap-3" style={{ cursor: "default" }}>
                         <img src={logo} alt="Logo" className="w-12 h-12 sm:w-[72px] sm:h-[72px]" />
-                        <span className="text-white font-normal" style={nameStyle}>
+                        <span className="text-white" style={nameStyle}>
                             NotToWaste
                         </span>
                     </div>
