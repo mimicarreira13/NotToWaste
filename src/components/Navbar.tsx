@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { FiSearch } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";
 
@@ -41,31 +40,9 @@ export default function Navbar() {
                         NotToWaste
                     </Link>
                 )}
-
-                {isCompact && (
-                    <div className="flex items-center bg-white/20 rounded-full px-3 py-1 hover:bg-white/30 transition w-full max-w-xs">
-                        <FiSearch className="text-white" />
-                        <input
-                            type="text"
-                            placeholder="Pesquisar..."
-                            className="bg-transparent placeholder-white text-white ml-2 outline-none w-full"
-                        />
-                    </div>
-                )}
             </div>
 
             <div className="flex items-center gap-4 justify-end flex-1">
-                {!isCompact && (
-                    <div className="flex items-center bg-white/20 rounded-full px-3 py-1 hover:bg-white/30 transition">
-                        <FiSearch className="text-white" />
-                        <input
-                            type="text"
-                            placeholder="Pesquisar..."
-                            className="bg-transparent placeholder-white text-white ml-2 outline-none"
-                        />
-                    </div>
-                )}
-
                 {!hideUserMenu && <UserMenu />}
             </div>
         </nav>
