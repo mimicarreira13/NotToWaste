@@ -12,6 +12,7 @@ import Definicoes from "./pages/Definicoes";
 import Pratos from "./pages/Pratos";
 import Stock from "./pages/Stock";
 import Desperdicio from "./pages/Desperdicio";
+import Relatorios from "./pages/Relatorios.tsx";
 
 function App() {
     return (
@@ -34,6 +35,7 @@ function App() {
                             <Route path="/pratos/ingredient/:id" element={<Ingredient  mode={true} />} />
                             <Route path="/stock" element={<Stock />} />
                             <Route path="/desperdicio" element={<Desperdicio />} />
+                            <Route path="/relatorios" element={<Relatorios />} />
                         </Routes>
                     </main>
                 </div>
