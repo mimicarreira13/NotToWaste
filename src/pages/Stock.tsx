@@ -1,11 +1,12 @@
 import {useNavigate} from "react-router-dom";
 import stockDataJSON from "../tmp/dataStock.json";
 import {useState} from "react";
-import { Table } from "../components/Tabels/CriarTabela";
-import type { Column } from "../components/Tabels/CriarTabela";
+import { Table } from "../components/Tabelas/CriarTabela.tsx";
+import type { Column } from "../components/Tabelas/CriarTabela.tsx";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import StockFormulario from "../components/forms/StockFormulario";
 import BackButton from "../components/Back.tsx";
+import Contador from "../components/Contador.tsx";
 
 export type IngredientesStockTabela = {
 
@@ -25,7 +26,14 @@ const stockColumns: Column<IngredientesStockTabela>[] = [
 
     { key: "nome", label: "Nome" },
     { key: "marca", label: "Marca" },
-    { key: "quantidade", label: "Quantidade" },
+    { key: "quantidade", label: "Quantidade",
+            render: (row, updateRow) => (
+          <Contador
+            value={Number(row.quantidade)}
+            onChange={(int) => updateRow({ quantidade: String(int) })}
+          />
+        )
+    },
     { key: "unidade", label: "Unidade" },
     { key: "dataAbertura", label: "Data Abertura" },
     { key: "dataValidade", label: "Data Validade" },
