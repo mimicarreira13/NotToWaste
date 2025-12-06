@@ -1,4 +1,3 @@
-// src/pages/Perfis.tsx
 import { useState } from "react";
 import LoginOverlay from "../components/LoginOverlay";
 

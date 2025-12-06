@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
 import { useNavigate } from "react-router-dom";
 import dashboard from "../assets/images/icons/dashboard.png";
@@ -11,7 +10,7 @@ import desperdicio from "../assets/images/icons/desperdicio.png";
 const permissions: Record<string, string[]> = {
     Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
     "Funcionário de Stock": ["Stock", "Desperdício"],
-    "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
+    "Chef de Cozinha": ["Dashboard", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
 };
 

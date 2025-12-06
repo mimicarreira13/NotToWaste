@@ -1,6 +1,8 @@
-// src/pages/Client.tsx
 import { useState } from "react";
-import ToggleTabs from "../components/Client/ToggleTabs.tsx";
+import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
+import { GiCarrot } from "react-icons/gi";
+import { MdEco } from "react-icons/md";
+import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
 import ClientYearSections from "../components/Client/ClientYearSections";
@@ -11,6 +13,12 @@ export default function Client() {
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
 
     const bandHeight = 190; // altura da banda fixa no topo
+
+    const DishesIcon = <FaUtensils size={20} aria-hidden />;
+    const ReportsIcon = <FaRegFileAlt size={20} aria-hidden />;
+
+    const IngredientsIcon = <GiCarrot size={18} aria-hidden />;
+    const SustainabilityIcon = <MdEco size={18} aria-hidden />;
 
     return (
         <div
@@ -25,8 +33,8 @@ export default function Client() {
             <div className="fixed-top-toggles fixed top-32 left-48 right-48 flex items-center justify-between z-40">
                 <ToggleTabs
                     options={[
-                        { id: "dishes", label: "Pratos" },
-                        { id: "reports", label: "Relatórios" },
+                        { id: "dishes", label: "Pratos", icon: DishesIcon },
+                        { id: "reports", label: "Relatórios", icon: ReportsIcon },
                     ]}
                     value={selected}
                     onChange={(id) => setSelected(id as "reports" | "dishes")}
@@ -35,8 +43,8 @@ export default function Client() {
                 {selected === "reports" && (
                     <ToggleTabs
                         options={[
-                            { id: "ingredients", label: "Ingredientes" },
-                            { id: "sustainability", label: "Sustentabilidade" },
+                            { id: "ingredients", label: "Ingredientes", icon: IngredientsIcon},
+                            { id: "sustainability", label: "Sustentabilidade", icon: SustainabilityIcon },
                         ]}
                         value={reportTab}
                         onChange={(id) => setReportTab(id as "ingredients" | "sustainability")}
@@ -46,16 +54,20 @@ export default function Client() {
 
             <div style={{ marginTop: 220 }}>
                 {selected === "reports" && reportTab === "sustainability" && (
-                    <ClientGrid
-                        variant="sustainability"
-                        items={sustainabilityReports}
-                        columns={4}
-                        renderItem={(r) => <ClientCard item={r} />}
-                    />
+                    <div className="sust_grid">
+                        <ClientGrid
+                            variant="sustainability"
+                            items={sustainabilityReports}
+                            columns={4}
+                            renderItem={(r) => <ClientCard item={r} />}
+                        />
+                    </div>
                 )}
 
                 {selected === "reports" && reportTab === "ingredients" && (
-                    <ClientYearSections items={ingredientItems} columns={6} compact />
+                    <div className="first-year-wrap">
+                        <ClientYearSections items={ingredientItems} columns={6} compact />
+                    </div>
                 )}
 
                 {selected === "dishes" && (
@@ -71,6 +83,14 @@ export default function Client() {
             <style>{`
                 /* mobile: até 550px — toggles em coluna */
                 @media (max-width: 650px) {
+                
+                    .client-page .first-year-wrap {
+                        margin-top: 280px !important;
+                    }
+                    .client-page .sust_grid {
+                        margin-top: 280px !important;
+                    }
+        
                     .client-page [role="list"] {
                         grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
                         gap: 1rem !important;
@@ -116,12 +136,12 @@ export default function Client() {
 
                     /* altura da banda em mobile: 170px por omissão */
                     .client-page .band {
-                        height: 170px !important;
+                        height: 190px !important;
                     }
 
                     /* quando existe o 2º toggle, aumentar para 220px */
                     .client-page.has-second-toggle .band {
-                        height: 220px !important;
+                        height: 260px !important;
                     }
                 }
 
