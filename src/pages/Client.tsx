@@ -1,14 +1,15 @@
+// File: `src/pages/Client.tsx`
 import { useState } from "react";
 import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
-import { dishes } from "../data/clientItems";
-import Relatorios from "./Relatorios";
+import ClientYearSections from "../components/Client/ClientYearSections";
+import { sustainabilityReports, ingredientItems, dishes } from "../data/clientItems";
+import Relatorios, { RelatoriosContent, RelatoriosToggle } from "./Relatorios";
 
 export default function Client() {
     const [selected, setSelected] = useState<"reports" | "dishes">("dishes");
-
     const bandHeight = 190; // altura da banda fixa no topo
 
     const DishesIcon = <FaUtensils size={20} aria-hidden />;
@@ -33,12 +34,16 @@ export default function Client() {
                     value={selected}
                     onChange={(id) => setSelected(id as "reports" | "dishes")}
                 />
+
+                {/* quando "reports" estiver selecionado, injeta aqui o toggle proveniente da página Relatórios
+                    (o toggle é controlado dentro de Relatorios/RelatoriosContent) */}
+                {selected === "reports" && <RelatoriosToggle value={"ingredients"} onChange={() => {}} />}
             </div>
 
             <div style={{ marginTop: 220 }}>
                 {selected === "reports" && (
-                    // incorporamos o componente de relatórios (embebido) — este traz o seu próprio toggle interno
-                    <Relatorios embedded />
+                    // renderiza o conteúdo de relatórios (grid ou sections)
+                    <RelatoriosContent tab={"ingredients"} />
                 )}
 
                 {selected === "dishes" && (
@@ -52,9 +57,8 @@ export default function Client() {
                 )}
             </div>
 
-            {/* Mantive o CSS responsivo original — continua a funcionar com o has-second-toggle */}
             <style>{`
-                /* mobile: até 650px — toggles em coluna */
+                /* pequenas regras de responsividade herdadas e mantidas */
                 @media (max-width: 650px) {
                     .client-page .first-year-wrap {
                         margin-top: 280px !important;
@@ -62,7 +66,7 @@ export default function Client() {
                     .client-page .sust_grid {
                         margin-top: 280px !important;
                     }
-        
+
                     .client-page [role="list"] {
                         grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
                         gap: 1rem !important;
@@ -92,8 +96,6 @@ export default function Client() {
                         height: 260px !important;
                     }
                 }
-
-                /* outras quebras de responsividade mantidas... */
             `}</style>
         </div>
     );
