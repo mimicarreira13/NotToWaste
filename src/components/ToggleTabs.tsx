@@ -1,6 +1,7 @@
+// File: `src/components/ToggleTabs.tsx`
 import React from "react";
 
-type Option = { id: string; label: React.ReactNode };
+type Option = { id: string; label: React.ReactNode; icon?: React.ReactNode };
 
 type ToggleTabsProps = {
     options: Option[];
@@ -26,13 +27,23 @@ export default function ToggleTabs({
             className={`inline-flex items-center gap-3 ${className}`}
             style={{
                 backgroundColor: "transparent",
-                padding: "8px", // maior padding na box
+                padding: "8px",
                 borderRadius: 10,
             }}
             role="tablist"
         >
             {options.map((opt) => {
                 const selected = opt.id === value;
+                const baseButtonStyle: React.CSSProperties = {
+                    padding: "0.5rem 1rem",
+                    borderRadius: 8,
+                    fontSize: "1rem",
+                    minWidth: 88,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    justifyContent: "center",
+                };
                 return (
                     <button
                         key={opt.id}
@@ -45,26 +56,21 @@ export default function ToggleTabs({
                         style={
                             selected
                                 ? {
+                                    ...baseButtonStyle,
                                     backgroundColor: selectedBackgroundColor,
                                     color: selectedTextColor,
-                                    padding: "0.5rem 1rem", // maior padding do botão
-                                    borderRadius: 8,
-                                    fontSize: "1rem", // tamanho de letra maior
                                     fontWeight: 600,
-                                    minWidth: 88, // largura mínima
                                 }
                                 : {
+                                    ...baseButtonStyle,
                                     backgroundColor: "transparent",
                                     color: baseTextColor,
-                                    padding: "0.5rem 1rem",
-                                    borderRadius: 8,
-                                    fontSize: "1rem",
                                     fontWeight: 500,
-                                    minWidth: 88,
                                 }
                         }
                     >
-                        {opt.label}
+                        {opt.icon && <span aria-hidden style={{ display: "inline-flex", width: 20, height: 20 }}>{opt.icon}</span>}
+                        <span>{opt.label}</span>
                     </button>
                 );
             })}
