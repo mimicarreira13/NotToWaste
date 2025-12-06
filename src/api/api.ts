@@ -7,6 +7,11 @@ const api = axios.create({
     },
 });
 
+const savedToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+if (savedToken) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+}
+
 api.interceptors.request.use(request => {
     console.log('Starting Request:', request.url);
     return request;
@@ -15,9 +20,17 @@ api.interceptors.request.use(request => {
 api.interceptors.response.use(response => {
     console.log('Response:', response.status, response.config.url);
     return response;
-}, error => {
-    console.log('Response Error:', error.message, error.config?.url);
-    return Promise.reject(error);
-});
+},     (error) => {
+        console.log(
+            "Response Error:",
+            error.message,
+            error.config?.method?.toUpperCase(),
+            error.config?.url,
+            "status:",
+            error.response?.status
+        );
+        return Promise.reject(error);
+    }
+);
 
 export default api;
