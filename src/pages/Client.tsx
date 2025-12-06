@@ -54,12 +54,14 @@ export default function Client() {
 
             <div style={{ marginTop: 220 }}>
                 {selected === "reports" && reportTab === "sustainability" && (
-                    <ClientGrid
-                        variant="sustainability"
-                        items={sustainabilityReports}
-                        columns={4}
-                        renderItem={(r) => <ClientCard item={r} />}
-                    />
+                    <div className="sust_grid">
+                        <ClientGrid
+                            variant="sustainability"
+                            items={sustainabilityReports}
+                            columns={4}
+                            renderItem={(r) => <ClientCard item={r} />}
+                        />
+                    </div>
                 )}
 
                 {selected === "reports" && reportTab === "ingredients" && (
@@ -83,7 +85,10 @@ export default function Client() {
                 @media (max-width: 650px) {
                 
                     .client-page .first-year-wrap {
-                        margin-top: 250px !important;
+                        margin-top: 280px !important;
+                    }
+                    .client-page .sust_grid {
+                        margin-top: 280px !important;
                     }
         
                     .client-page [role="list"] {
