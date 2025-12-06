@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
@@ -10,6 +11,9 @@ export default function Client() {
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
 
     const bandHeight = 190; // altura da banda fixa no topo
+
+    const DishesIcon = <FaUtensils size={20} aria-hidden />;
+    const ReportsIcon = <FaRegFileAlt size={20} aria-hidden />;
 
     return (
         <div
@@ -24,8 +28,8 @@ export default function Client() {
             <div className="fixed-top-toggles fixed top-32 left-48 right-48 flex items-center justify-between z-40">
                 <ToggleTabs
                     options={[
-                        { id: "dishes", label: "Pratos" },
-                        { id: "reports", label: "Relatórios" },
+                        { id: "dishes", label: "Pratos", icon: DishesIcon },
+                        { id: "reports", label: "Relatórios", icon: ReportsIcon },
                     ]}
                     value={selected}
                     onChange={(id) => setSelected(id as "reports" | "dishes")}
