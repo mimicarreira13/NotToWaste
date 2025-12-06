@@ -51,8 +51,6 @@ export function RelatoriosContent({ tab }: { tab: "ingredients" | "sustainabilit
             )}
 
             <style>{`
-                /* reutiliza as mesmas regras que existiam em Client para garantir posicionamento/responsividade idênticos */
-                /* mobile: até 650px */
                 @media (max-width: 650px) {
                     .client-page .first-year-wrap,
                     .relatorios-page .first-year-wrap {
@@ -122,9 +120,6 @@ export function RelatoriosContent({ tab }: { tab: "ingredients" | "sustainabilit
                         height: 260px !important;
                     }
                 }
-
-                /* outras regras entre 601-800 e 801-1200 podem ser mantidas conforme necessidade - */
-                /* aqui preservamos as regras anteriormente definidas no Client para manter comportamento idêntico */
             `}</style>
         </div>
     );
@@ -145,13 +140,12 @@ export default function Relatorios() {
                 aria-hidden="true"
             />
             <div className="fixed-top-toggles fixed top-32 left-48 right-48 flex items-center justify-between z-40">
-                {/* Quando acessada diretamente, a página Relatórios renderiza ambos os toggles */}
-                <div>
-                    {/* placeholder para o primeiro toggle quando acessada diretamente */}
-                    {/* pode-se reutilizar ToggleTabs se houver necessidade de controlar a seleção externa */}
-                </div>
-
+                {/* agora o toggle secundário fica no lado esquerdo quando acessada a página Relatórios */}
                 <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} />
+
+                <div>
+                    {/* placeholder para o primeiro toggle quando acessada diretamente (lado direito) */}
+                </div>
             </div>
 
             <RelatoriosContent tab={reportTab} />
