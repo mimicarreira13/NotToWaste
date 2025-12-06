@@ -27,6 +27,8 @@ const desperdicioColumns: Column<IngredientesTabela>[] = [
     { key: "motivo", label: "Motivo" },
     { key: "quantidade", label: "Quantidade" },
     { key: "unidade", label: "Unidade" },
+    {key: "custo", label: "Custo"},
+    {key: "dataDesperdicio", label: "Data do Desperdício"}
 
 ];
 
