@@ -1,5 +1,3 @@
-// typescript
-// src/components/LoginOverlay.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../contexts/ProfileContext";
