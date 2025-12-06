@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ToggleTabs from "../components/Client/ToggleTabs.tsx";
+import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
 import ClientYearSections from "../components/Client/ClientYearSections";
