@@ -1,23 +1,24 @@
 import {useNavigate} from "react-router-dom";
 import {FiSearch} from "react-icons/fi";
-import { createCards } from "../components/Cards.tsx";
-import foodDataJSON from "../tmp/datafood.json";
-import ingredientDataJSON from "../tmp/dataingredient.json";
-import {useState} from "react";
+import {JSX, useState} from "react";
 import BackButton from "../components/Back.tsx";
+import Info from "../components/APIgetter.tsx";
+import {createCards} from "../components/Cards.tsx";
 
-export type CardOptions = {
+type ItemUI = {
     id: string;
     title: string;
     imageName: string;
-    ingredients?: string[];
+    ingredients: string[];
     isIngredient: boolean;
 }
 
-const foodData = foodDataJSON as CardOptions[];
-const ingredientData = ingredientDataJSON as CardOptions[];
-const foods = createCards(foodData);
-const ingredients = createCards(ingredientData);
+type CardUI = {
+    id: string;
+    content: JSX.Element;
+    title: string;
+};
+
 
 export default function CozinhaBase({
                                         overlay,
@@ -32,6 +33,7 @@ export default function CozinhaBase({
     const saved = localStorage.getItem("pageMode") === "true";
     const [pageMode, setPageMode] = useState(saved);
     const [search, setSearch] = useState("");
+    const [cards, setCards] = useState<CardUI[]>([]);
     let fColor;
     let iColor;
 
@@ -93,25 +95,28 @@ export default function CozinhaBase({
             {pageMode ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
                      style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                    {ingredients.map(item => (
-                        item.title.toLowerCase().includes(search.toLowerCase()) && (
-                        <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"}
-                                          onClick={() => navigate(path + "/ingredient/" + item.id)}
-                                          style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                    {item.content}
-                </div>
-            )))}
+                    <div className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"}
+                         style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
+                        <Info
+                            type={"Ingrediente"} // Singular, not "Ingredientes"
+                            onData={(data: ItemUI[]) => {
+                                setCards(createCards(data));
+                            }}
+                        />
+                    </div>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
-                style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                    {foods.map(plate => (
-                        plate.title.toLowerCase().includes(search.toLowerCase()) && (
-                        <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/food/" + plate.id)}
-                             style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                            {plate.content}
-                        </div>
-                        )))}
+                     style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
+                    <div className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"}
+                         style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
+                        <Info
+                            type={"Prato"} // This should match your backend route
+                            onData={(data: ItemUI[]) => {
+                                setCards(createCards(data));
+                            }}
+                        />
+                    </div>
                 </div>
             )}
             {overlay}

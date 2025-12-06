@@ -1,6 +1,6 @@
 //import {useNavigate} from "react-router-dom";
 
-type CardOptions = {
+type ItemUI = {
     id: string;
     title: string;
     imageName: string;
@@ -14,7 +14,7 @@ export function createCard({
                                imageName,
                                ingredients = [],
                                isIngredient,
-                           }: CardOptions) {
+                           }: ItemUI) {
     const imagePath = `/src/assets/${isIngredient ? "ingredients" : "food"}/${imageName}`;
 
     return {
@@ -44,6 +44,6 @@ export function createCard({
 }
 
 
-export function createCards(data: CardOptions[]) {
+export function createCards(data: ItemUI[]) {
     return data.map(item => createCard(item));
 }
