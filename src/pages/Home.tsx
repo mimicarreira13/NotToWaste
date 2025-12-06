@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
 
 import dashboard from "../assets/images/icons/dashboard.png";

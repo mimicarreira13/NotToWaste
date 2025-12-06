@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";

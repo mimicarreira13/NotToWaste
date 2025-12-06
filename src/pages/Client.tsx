@@ -1,4 +1,3 @@
-// src/pages/Client.tsx
 import { useState } from "react";
 import ToggleTabs from "../components/Client/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
