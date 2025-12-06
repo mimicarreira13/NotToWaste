@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
+import { GiCarrot } from "react-icons/gi";
+import { MdEco } from "react-icons/md";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
@@ -14,6 +16,9 @@ export default function Client() {
 
     const DishesIcon = <FaUtensils size={20} aria-hidden />;
     const ReportsIcon = <FaRegFileAlt size={20} aria-hidden />;
+
+    const IngredientsIcon = <GiCarrot size={18} aria-hidden />;
+    const SustainabilityIcon = <MdEco size={18} aria-hidden />;
 
     return (
         <div
@@ -38,8 +43,8 @@ export default function Client() {
                 {selected === "reports" && (
                     <ToggleTabs
                         options={[
-                            { id: "ingredients", label: "Ingredientes" },
-                            { id: "sustainability", label: "Sustentabilidade" },
+                            { id: "ingredients", label: "Ingredientes", icon: IngredientsIcon},
+                            { id: "sustainability", label: "Sustentabilidade", icon: SustainabilityIcon },
                         ]}
                         value={reportTab}
                         onChange={(id) => setReportTab(id as "ingredients" | "sustainability")}
