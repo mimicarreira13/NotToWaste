@@ -105,7 +105,6 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        // para guardar a imagem em base64 dentro do objeto form (chave "imagem")
         (setForm as any)((prev: any) => ({ ...prev, imagem: reader.result as string }));
         const img = document.getElementById("preview") as HTMLImageElement | null;
         if (img) img.src = reader.result as string;
@@ -114,7 +113,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       }}
     />
 
-    <div className="mt-2">
+    <div className="mt-2  text-center ">
       <label
       htmlFor="imageInput"
       className="inline-block px-4 py-2 rounded bg-[#4C6E43] text-white"
@@ -126,7 +125,6 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       type="button"
       className="ml-2 px-3 py-2 rounded border"
       onClick={() => {
-        // limpar preview e valor do input
         (setForm as any)((prev: any) => {
         const copy = { ...prev };
         delete copy.imagem;
