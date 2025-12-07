@@ -1,6 +1,6 @@
 import desperdicioDataJSON from "../tmp/dataDesperdicio.json";
-import { Table } from "../components/Tabels/CriarTabela";
-import type { Column } from "../components/Tabels/CriarTabela";
+import { Tabela } from "../components/Tabelas/CriarTabela";
+import type { Column } from "../components/Tabelas/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
