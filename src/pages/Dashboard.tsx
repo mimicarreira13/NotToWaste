@@ -1,10 +1,63 @@
 import Modal from '../components/Modal';
 import React from "react";
+import {getPontuacaoSustentabilidade, type RankingItem, getRankingDesperdicio} from "../api/dashboard.ts"
+import { useNavigate } from "react-router-dom";
 
 const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 border-[#CFCFCF] w-full min-h-[220px] text-center p-0";
 
 export default function Dashboard() {
     const [openSugestoesModal, setOpenSugestoesModal] = React.useState(false);
+    const [pontuacaoSustentabilidade, setPontuacaoSustentabilidade] = React.useState<number | null>(null);
+    const [ranking, setRanking] = React.useState<RankingItem[]>([]);
+    const [totalKgDesperdicado, setTotalKgDesperdicado] = React.useState<number>(0);
+    const [totalCustoDesperdicio, setTotalCustoDesperdicio] = React.useState<number>(0);
+    const navigate = useNavigate();
+
+    React.useEffect(() => {
+        async function loadPontuacao() {
+            try {
+                const objeto = await getPontuacaoSustentabilidade();
+                setPontuacaoSustentabilidade(objeto);
+            } catch (err) {
+                console.error("Erro ao calcular a pontuação de sustentabilidade", err);
+            }
+        }
+        loadPontuacao();
+    }, []);
+
+    React.useEffect(() => {
+        async function loadRanking() {
+            try {
+                const rankingData = await getRankingDesperdicio();
+                console.log("rankingData", rankingData); // verifica no console
+                setRanking(rankingData);
+                const totalKg = rankingData.reduce(
+                    (custoDesperdicio, item) => custoDesperdicio + item.quantidadeDesperdicada,
+                    0
+                );
+                const totalCusto = rankingData.reduce(
+                    (custoEuros, item) => custoEuros + item.custoDesperdicio,
+                    0
+                );
+                setTotalKgDesperdicado(totalKg);
+                setTotalCustoDesperdicio(totalCusto);
+            } catch (err) {
+                console.error("Erro ao carregar ranking de desperdício", err);
+            }
+        }
+        loadRanking();
+    }, []);
+
+    function getClassificacaoSustentabilidade(score: number | null): string {
+        if (score === null || Number.isNaN(score)) return "-";
+
+        if (score <= 30) return "Péssima";
+        if (score <= 50) return "Média";
+        if (score <= 70) return "Bom";
+        if (score <= 99) return "Muito bom";
+        return "Excelente"; // 100
+    }
+
     const cards = [
     {
         id: "card-sugestoes",
@@ -43,41 +96,45 @@ export default function Dashboard() {
     {
         id: "card-mes",
         content: (
-            <button>
+            <>
                 <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-[6px] text-center mt-auto">Ranking Mensal de
                     Desperdício
                 </div>
-                <div className="bg-[#D9D9D9] text-[#000000] pb-4 p-4 rounded mb-1 text-lg">2% (2€) das compras
-                    desperdiçadas
+                <div className="bg-[#D9D9D9] text-[#000000] pb-4 p-4 rounded mb-1 text-lg">{totalCustoDesperdicio.toFixed(2)}€ de compras desperdiçadas
                 </div>
-                <div className="bg-[#D9D9D9] text-[#000000] rounded text-lg">1 kg</div>
+                <div className="bg-[#D9D9D9] text-[#000000] rounded text-lg">{totalKgDesperdicado}kg</div>
                 <div className="bg-[#BCBCBC] text-[#000000] p-2 text-sm text-left h-[80px] mt-2">
                     <ul>
-                        <li>1º - Esparguete (1Kg / 2€)</li>
-                        <li>2º -</li>
-                        <li>3º -</li>
+                        {ranking.slice(0, 3).map((item, index) => (
+                            <li key={item.ingredienteId}>
+                                {index + 1}º - {item.nome} ({item.quantidadeDesperdicada}Kg /{" "}
+                                {item.custoDesperdicio}€)
+                            </li>
+                        ))}
+                        {ranking.length < 3 &&
+                            Array.from({length: 3 - ranking.length}).map((_, i) => (
+                                <li key={`empty-${i}`}>{ranking.length + i + 1}º -</li>
+                            ))}
                     </ul>
                 </div>
-            </button>
+            </>
         )
     },
         {
             id: "card-pontuacao",
             content: (
                 <>
-                    <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center">Pontuação de
-                        Sustentabilidade
-                    </div>
+                    <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center">Pontuação de Sustentabilidade</div>
                     <div className="text-[#000000] pt-8 mb-2 text-lg">A sua pontuação é:</div>
-                    <div className="text-[#4C6E43] font-medium text-lg">EXCELENTE</div>
-                    <div className="text-3xl font-bold 4C6E43 my-2">85</div>
+                    <div className="text-[#4C6E43] font-medium text-lg">{getClassificacaoSustentabilidade(pontuacaoSustentabilidade)}</div>
+                    <div className="text-3xl font-bold 4C6E43 my-2">{pontuacaoSustentabilidade ?? "--"}</div>
                 </>
             )
         },
         {
             id: "card-relatorio-sustentabilidade",
             content: (
-                <button>
+                <button onClick={()=>navigate("/relatorios")}>
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Sustentabilidade</div>
                     <div className="flex flex-center">
                         <img src="src/assets/images/icons/sustainability_report.png" className="w-1/3 h-15 mx-auto pt-6" alt="Sustentabilidade"/>
@@ -88,7 +145,7 @@ export default function Dashboard() {
         {
             id: "card-relatorio-ingredientes",
             content: (
-                <button>
+                <button onClick={()=>navigate("/relatorios")}>
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Ingredientes</div>
                     <div className="flex flex-center">
                         <img src="src/assets/images/icons/ingredients_report.png" className="w-1/3 h-15 mx-auto pt-6" alt="Ingredientes"/>
