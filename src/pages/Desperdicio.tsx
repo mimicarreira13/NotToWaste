@@ -1,8 +1,6 @@
-import {useNavigate} from "react-router-dom";
 import desperdicioDataJSON from "../tmp/dataDesperdicio.json";
-import {useState} from "react";
-import { Tabela } from "../components/Tabelas/CriarTabela.tsx";
-import type { Column } from "../components/Tabelas/CriarTabela.tsx";
+import { Table } from "../components/Tabels/CriarTabela";
+import type { Column } from "../components/Tabels/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";

@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
 import { useNavigate } from "react-router-dom";
 import dashboard from "../assets/images/icons/dashboard.png";
@@ -9,9 +8,9 @@ import stock from "../assets/images/icons/stock.png";
 import desperdicio from "../assets/images/icons/desperdicio.png";
 
 const permissions: Record<string, string[]> = {
-    Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
+    Gerente: ["Informações e Sustentabilidade", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
     "Funcionário de Stock": ["Stock", "Desperdício"],
-    "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
+    "Chef de Cozinha": ["Informações e Sustentabilidade", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
 };
 
@@ -37,7 +36,7 @@ export default function Home() {
     const navigate = useNavigate();
 
     const cards: Card[] = [
-        { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
+        { id: 1, src: dashboard, alt: "Informações e Sustentabilidade", route: "/dashboard" },
         { id: 2, src: cozinha, alt: "Cozinha", route: "/cozinha" },
         { id: 3, src: definicoes, alt: "Definições", route: "/definicoes" },
         { id: 4, src: pratos, alt: "Gerir Pratos", route: "/pratos" },
