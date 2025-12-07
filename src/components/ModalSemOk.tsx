@@ -39,7 +39,7 @@ export default function ModalSemOk({ open, title, message, children, buttons, on
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center">
             <div
-                className="absolute inset-0 bg-black/50 pointer-events-auto"
+                className="absolute  inset-0 bg-black/50 pointer-events-auto"
                 onClick={onClose}
                 aria-hidden="true"
             />
@@ -50,12 +50,16 @@ export default function ModalSemOk({ open, title, message, children, buttons, on
                 aria-labelledby="modal-title"
                 tabIndex={-1}
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-white rounded-lg shadow-xl w-full mx-4 overflow-hidden z-[10000] sm:max-w-lg md:max-w-2xl lg:max-w-3xl"
+                className="relative bg-white rounded-xl shadow-xl
+                            w-full mx-4
+                            max-w-[95vw] sm:max-w-lg md:max-w-2xl lg:max-w-3xl
+                            flex flex-col
+                            max-h-[90vh]"
             >
 {title && (
     <div
         id="modal-title"
-        className="modal-title border-b"
+        className="modal-title border-b rounded-t-xl"
         style={{ padding: "1.70rem 2rem" }} // 20px vertical, 32px horizontal
     >
         <h3 className="text-lg md:text-xl font-semibold">{title}</h3>
@@ -70,7 +74,7 @@ export default function ModalSemOk({ open, title, message, children, buttons, on
 .modal-body { font-size: 1.125rem; } /* ~18px */
 `}</style>
                 {/* body */}
-                <div className="modal-body px-7 py-5 max-h-[70vh] overflow-auto">
+                <div className="flex-1 px-4 sm:px-7 py-4 sm:py-5 overflow-y-auto">
                     {message && <p className="mb-4">{message}</p>}
                     {children}
                 </div>

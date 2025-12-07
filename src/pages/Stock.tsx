@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import stockDataJSON from "../tmp/dataStock.json";
 import {useState} from "react";
-import { Table } from "../components/Tabelas/CriarTabela.tsx";
+import { Tabela } from "../components/Tabelas/CriarTabela.tsx";
 import type { Column } from "../components/Tabelas/CriarTabela.tsx";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import StockFormulario from "../components/forms/StockFormulario";
@@ -44,11 +44,13 @@ export default function StockPage() {
 
     return (
 
-         <div className="p-6">
+         <div className="w-full min-h-full flex flex-col p-3 sm:p-6">
 
-            <h1 className="text-4xl md:text-5l mb-7 text-center font-bold">Stock</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">
+                Stock   
+            </h1>
 
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
 
                 <BackButton />
 
@@ -60,7 +62,7 @@ export default function StockPage() {
 
             </div>
 
-            <Table 
+            <Tabela 
                 data={stockData} 
                 columns={stockColumns} 
                 rowKey={(i) => i.id} 

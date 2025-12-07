@@ -17,7 +17,7 @@ type TableProps<T> = {
   className?: string;
 };
 
-export function Table<T extends Record<string, any>>({
+export function Tabela<T extends Record<string, any>>({
   data,
   columns,
   rowKey,
@@ -34,7 +34,7 @@ export function Table<T extends Record<string, any>>({
   }
 
   return (
-    <div className={`rounded-lg overflow-hidden border bg-white shadow ${className ?? ""}`}>
+    <div className={`rounded-lg overflow-x-auto border bg-white shadow ${className ?? ""}`}>
       <table className="w-full border-collapse">
         
         <thead className="bg-gray-800">
