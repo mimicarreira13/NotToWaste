@@ -51,6 +51,12 @@ export function decodeToken(token: string): JwtPayload | null {
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
     const resp = await api.post("/api/Autenticacao/Login", { email, password });
+    const token = resp.data.objeto as string | undefined;
+    if (token && typeof window !== "undefined") {
+        // guarda token e atualiza header global para chamadas subsequentes
+        localStorage.setItem("authToken", token);
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
     return resp.data as LoginResponse;
 }
 
