@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {type InternalAxiosRequestConfig, type AxiosRequestHeaders} from "axios";
 
 const api = axios.create({
     baseURL: "https://nottowaste.onrender.com",
@@ -12,8 +12,14 @@ if (savedToken) {
     api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
 }
 
-api.interceptors.request.use(request => {
-    console.log('Starting Request:', request.url);
+api.interceptors.request.use((request: InternalAxiosRequestConfig) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    if (token) {
+        const headers = (request.headers ?? {}) as AxiosRequestHeaders;
+        headers["Authorization"] = `Bearer ${token}`;
+        request.headers = headers;
+    }
+    console.log("Starting Request:", request.url);
     return request;
 });
 
