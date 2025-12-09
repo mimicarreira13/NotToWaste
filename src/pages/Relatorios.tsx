@@ -1,4 +1,3 @@
-// src/pages/Relatorios.tsx
 import { useState } from "react";
 import { GiCarrot } from "react-icons/gi";
 import { MdEco } from "react-icons/md";
