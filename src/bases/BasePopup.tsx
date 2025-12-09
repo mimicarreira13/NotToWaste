@@ -1,38 +1,89 @@
 import {useNavigate} from "react-router-dom";
+import { useIngredients } from "../api/useIngredients.ts";
+import {useState} from "react";
 
-function dishes(){
+type MultiIngredientSelectProps = {
+    selectedIds: string[];
+    onChange: (ids: string[]) => void;
+};
+
+function Dishes({
+                    selectedIds = [],
+                    onChange
+                }: MultiIngredientSelectProps){
+    const { getOptions, loading } = useIngredients();
+    const options = getOptions();
+
+    const handleCheckboxChange = (ingredientId: string) => {
+        const newSelected = selectedIds.includes(ingredientId)
+            ? selectedIds.filter(id => id !== ingredientId)
+            : [...selectedIds, ingredientId];
+
+        onChange(newSelected);
+    };
+
+    if (loading) {
+        return <div>Carregando ingredientes...</div>;
+    }
+
     return (
         <>
-            <div className={"h-[80%] flex flex-row items-center"}>
-                <div className={"w-1/2"}>Nome:
-                    <input id={"name"} className={"bg-white rounded-[15px] p-[5px] ml-[15px]"}
-                           placeholder={"Insira o nome"}/>
+            <div className={"flex flex-row gap-2"}>
+                <div className={"w-1/2 flex flex-col"}>
+                    <div className={"h-[80%] flex justify-between items-center"}>
+                        <div>Nome:
+                            <input id={"name"} className={"bg-white rounded-[15px] p-[5px] ml-[15px] w-[70%]"}
+                                   placeholder={"Insira o nome"}/>
+                        </div>
+
+                    </div>
+                    <div className={"h-[80%] flex justify-between items-center"}>
+                        <div>Imagem:
+                            <input type={"file"} className={"ml-[15px] w-[423px]"}/>
+                        </div>
+                    </div>
+                    <div className={"h-[80%] flex justify-between items-center"}>
+                        <div>Preço (€)
+                            <input id={"price"} className={"bg-white rounded-[15px] p-[5px] ml-[15px] w-[70%]"}
+                                   placeholder={"Insira o custo"}/>
+                        </div>
+                    </div>
                 </div>
-                <div className={"w-1/2"}>Ingredientes:
-                    <select id={"ingredients"} className={"bg-white rounded-[15px] p-[5px] m-[15px]"}
-                            defaultValue={"Selecione os incredientes"}>
-                        <option>Selecione ingredientes</option>
-                    </select>
+                <div className={"w-1/2"}>
+                    <div className="space-y-2">
+                        <label className="block font-medium">Ingredientes:</label>
+                        <div className="max-h-60 overflow-y-auto border rounded p-2">
+                            {options.map(option => (
+                                <div key={option.id} className="flex items-center space-x-2 p-1 flex-row">
+                                    <div className="w-1/2 flex items-start flex-row align-center">
+                                        <input
+                                            type="checkbox"
+                                            id={`${option.id}`}
+                                            checked={selectedIds.includes(option.id)}
+                                            onChange={() => handleCheckboxChange(option.id)}
+                                            className="rounded mt-auto mb-auto"
+                                        />
+                                        <label htmlFor={`${option.id}`} className="cursor-pointer text-[30px]">
+                                            {option.name}
+                                        </label>
+                                    </div>
+                                    <div className="w-1/2">
+                                        <input id={`${option.id}`} className={"bg-white rounded-[15px] p-[5px] text-[15px]"} type={"number"} defaultValue={option.type} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <p className="text-sm text-gray-500">
+                            Selecionados: {selectedIds.length}
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div className={"h-[80%] flex flex-row items-center"}>
-                <div className={"w-1/2"}>Imagem:
-                    <input type={"file"} className={"ml-[15px] w-[423px]"}/>
-                </div>
-                <div className={"w-1/2"}></div>
-            </div>
-            <div className={"h-[80%] flex flex-row items-center"}>
-                <div className={"w-1/2"}>Preço (€)
-                    <input id={"price"} className={"bg-white rounded-[15px] p-[5px] ml-[15px]"}
-                           placeholder={"Insira o custo"}/>
-                </div>
-                <div className={"w-1/2"}></div>
             </div>
         </>
     )
 }
 
-function ingredients(){
+function Ingredients(){
     return(
         <>
             <div className={"h-[80%] flex flex-row items-center"}>
@@ -68,7 +119,7 @@ function ingredients(){
     )
 }
 
-function infoDelete(){
+function InfoDelete(){
     return ("Tem a certeza que pretende eliminar o prato?");
 }
 
@@ -106,12 +157,18 @@ export default function BasePopup({
     title: string,
 }) {
 
+    const [selectedIngredientIds, setSelectedIngredientIds] = useState<string[]>([]);
     const { functionFinder } = useFunctionFinder(onClose);
     const render = () => {
         switch(type){
-            case "dishes": return dishes();
-            case "ingredients": return ingredients();
-            case "infoDelete": return infoDelete();
+            case "dishes": return <Dishes
+                selectedIds={selectedIngredientIds}
+                onChange={setSelectedIngredientIds}
+            />;
+            case "ingredients": return <Ingredients />;
+            case "infoDelete": return <InfoDelete />;
+            default:
+                return null;
         }
     }
 

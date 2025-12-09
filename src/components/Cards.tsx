@@ -15,13 +15,12 @@ export function createCard({
                                ingredients = [],
                                isIngredient,
                            }: ItemUI) {
-    const imagePath = `/src/assets/${isIngredient ? "ingredients" : "food"}/${imageName}`;
 
     return {
         id,
         content: (
             <>
-                <img src={imagePath} style={{
+                <img src={imageName} style={{
                     height: "345px",
                     width: "174px",
                     borderTopLeftRadius: "10px",

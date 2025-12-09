@@ -22,6 +22,12 @@ export default function Pratos(
     const pageMode = localStorage.getItem("pageMode") === "true";
     let type = "dishes";
     let title = "Adição de pratos"
+    const [popupType, setPopupType] = useState("dishes");
+
+    const handleCreateDish = () => {
+        setPopupType("dishes");
+        setShowPopup(true);
+    };
 
     switch (pageMode) {
         case true:
@@ -36,12 +42,16 @@ export default function Pratos(
 
     return (
         <CozinhaBase
-            path="/pratos"
             extraDiv={
-                <button className="bg-[#4c6e43] rounded-[5px] shadow flex flex-row p-[5px] text-[25px] items-center" onClick={() => setShowPopup(true)}>
-                    <FiPlus className="text-[#D9D9D9]" />
-                    <span className={"text-[#D9D9D9]"}>Adicionar</span>
-                </button>
+                !pageMode && (
+                    <button
+                        className="bg-[#4c6e43] rounded-[5px] shadow flex flex-row p-[5px] text-[25px] items-center"
+                        onClick={handleCreateDish}
+                    >
+                        <FiPlus className="text-[#D9D9D9]"/>
+                        <span className={"text-[#D9D9D9]"}>Adicionar</span>
+                    </button>
+                )
             }
             overlay={
                 showPopup && (
