@@ -1,5 +1,8 @@
+// typescript
+import React, { useState } from "react";
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
 import { fetchSustainabilityReport, fetchTop10Desperdicios, openPdfBlobInNewTab } from "../../api/relatorios_requests";
+import LoadingSpinner from "../LoadingSpinner";
 
 type Props = { item: SustainabilityReport | IngredientItem | DishItem; compact?: boolean };
 
@@ -33,6 +36,8 @@ function parseMonthToNumber(month: string | undefined): number {
 }
 
 export default function ClientCard({ item, compact = false }: Props) {
+    const [loading, setLoading] = useState(false);
+
     const cardBaseLarge = "border-black shadow-xl rounded-2xl overflow-hidden bg-[#D9D9D9] transform transition-transform duration-200 ease-out hover:scale-105 hover:shadow-xl group";
     const cardBaseCompact = "border-black shadow-xl rounded-lg overflow-hidden bg-[#D9D9D9] transform transition-transform duration-150 hover:scale-105 hover:shadow-md group";
     const cardBase = compact ? cardBaseCompact : cardBaseLarge;
@@ -46,6 +51,8 @@ export default function ClientCard({ item, compact = false }: Props) {
     const bottomBand = compact ? bottomBandCompact : bottomBandLarge;
 
     const handleDownload = async () => {
+        if (loading) return;
+        setLoading(true);
         try {
             if (isIngredient(item)) {
                 const monthNumber = parseMonthToNumber(item.month);
@@ -57,6 +64,15 @@ export default function ClientCard({ item, compact = false }: Props) {
             }
         } catch (err) {
             console.error("Error downloading report:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onKeyDown = (e: React.KeyboardEvent) => {
+        if ((e.key === "Enter" || e.key === " ") && !loading) {
+            e.preventDefault();
+            handleDownload();
         }
     };
 
@@ -64,10 +80,13 @@ export default function ClientCard({ item, compact = false }: Props) {
     if (isIngredient(item)) {
         return (
             <div
-                className={`${cardBase} aspect-square`}
-                onClick={handleDownload}
+                className={`${cardBase} aspect-square relative`}
+                onClick={() => !loading && handleDownload()}
                 role="button"
                 tabIndex={0}
+                aria-disabled={loading}
+                aria-busy={loading}
+                onKeyDown={onKeyDown}
             >
                 <div className="w-full h-full flex flex-col">
                     <div className="flex-1 w-full overflow-hidden ">
@@ -75,6 +94,12 @@ export default function ClientCard({ item, compact = false }: Props) {
                     </div>
                     <div className={bottomBand + " bg-[#4C6E43]"}>{item.month}</div>
                 </div>
+
+                {loading && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70 pointer-events-auto">
+                        <LoadingSpinner message={""} size={40} ariaLabel="loading-report" />
+                    </div>
+                )}
             </div>
         );
     }
@@ -83,10 +108,13 @@ export default function ClientCard({ item, compact = false }: Props) {
     if (isSustainability(item)) {
         return (
             <div
-                className={`${cardBase} aspect-square`}
-                onClick={handleDownload}
+                className={`${cardBase} aspect-square relative`}
+                onClick={() => !loading && handleDownload()}
                 role="button"
                 tabIndex={0}
+                aria-disabled={loading}
+                aria-busy={loading}
+                onKeyDown={onKeyDown}
             >
                 <div className="w-full h-full flex flex-col">
                     <div className="flex-1 w-full overflow-hidden ">
@@ -94,6 +122,12 @@ export default function ClientCard({ item, compact = false }: Props) {
                     </div>
                     <div className={bottomBand + " bg-[#4C6E43]"}>{item.year}</div>
                 </div>
+
+                {loading && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70 pointer-events-auto">
+                        <LoadingSpinner message={""} size={44} ariaLabel="loading-report" />
+                    </div>
+                )}
             </div>
         );
     }
@@ -108,7 +142,7 @@ export default function ClientCard({ item, compact = false }: Props) {
         : "w-full text-center px-6 py-3 rounded-none text-2xl font-extrabold";
 
     return (
-        <div className={`${cardBase} ${unavailableClass} h-60`}>
+        <div className={`${cardBase} ${unavailableClass} h-60 relative`}>
             <div className="w-full flex items-center p-4 h-full">
                 <div className="w-40 min-w-[96px] flex-shrink-0 flex items-center justify-center bg-gray-100 overflow-hidden ">
                     {dish.image ? (
