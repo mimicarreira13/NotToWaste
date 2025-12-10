@@ -21,13 +21,13 @@ export type IngredientItem = {
     image: string;
 };
 
-export type DishItem = {
-    id: number;
-    name: string;
-    ingredients?: string[];
-    image?: string;
-    available?: boolean;
-};
+ export type DishItem = {
+     id: string | number;
+     name: string;
+     ingredients?: string[];
+     image?: string;
+     available?: boolean;
+ };
 
 export const sustainabilityReports: SustainabilityReport[] = [
     { id: 1, year: 2024, image: sustImg },

@@ -3,7 +3,7 @@ import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
-import { dishes } from "../data/clientItems";
+import useDishes from "../hooks/useDishes";
 import { RelatoriosContent, RelatoriosToggle } from "./Relatorios";
 
 export default function Client() {
@@ -11,6 +11,8 @@ export default function Client() {
     // estado para o segundo toggle (ingredientes / sustentabilidade)
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
     const bandHeight = 190; // altura da banda fixa no topo
+
+    const { dishes } = useDishes();
 
     const DishesIcon = <FaUtensils size={20} aria-hidden />;
     const ReportsIcon = <FaRegFileAlt size={20} aria-hidden />;
