@@ -30,10 +30,11 @@ export type IngredientItem = {
  };
 
 export const sustainabilityReports: SustainabilityReport[] = [
-    { id: 1, year: 2024, image: sustImg },
-    { id: 2, year: 2023, image: sustImg },
-    { id: 3, year: 2022, image: sustImg },
-    { id: 4, year: 2021, image: sustImg }
+    { id: 1, year: 2025, image: sustImg },
+    { id: 2, year: 2024, image: sustImg },
+    { id: 3, year: 2023, image: sustImg },
+    { id: 4, year: 2022, image: sustImg },
+    { id: 5, year: 2021, image: sustImg }
 ];
 
 export const ingredientItems: IngredientItem[] = [
@@ -61,6 +62,8 @@ export const ingredientItems: IngredientItem[] = [
     { id: 23, month: "Dezembro", year: 2024, image: ingImg }
 ];
 
+
+// APAGAR?
 export const dishes: DishItem[] = [
     {
         id: 1,

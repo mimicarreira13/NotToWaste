@@ -1,5 +1,5 @@
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
-import { generateReportPDF } from "../../utils/pdfGenerator";
+import { fetchSustainabilityReport, fetchTop10Desperdicios, openPdfBlobInNewTab } from "../../api/relatorios_requests";
 
 type Props = { item: SustainabilityReport | IngredientItem | DishItem; compact?: boolean };
 
@@ -10,6 +10,26 @@ function isIngredient(i: unknown): i is IngredientItem {
 function isSustainability(i: unknown): i is SustainabilityReport {
     const obj = i as Record<string, unknown>;
     return typeof obj?.year === "number" && !("month" in obj);
+}
+
+function parseMonthToNumber(month: string | undefined): number {
+    if (!month) return 1;
+    const m = month.trim().toLowerCase();
+    const pt: Record<string, number> = {
+        janeiro: 1, fevereiro: 2, março: 3, marco: 3, abril: 4, maio: 5, junho: 6,
+        julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12
+    };
+    const en: Record<string, number> = {
+        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+        july: 7, august: 8, september: 9, october: 10, november: 11, december: 12
+    };
+    if (/^\d+$/.test(m)) {
+        const n = Math.max(1, Math.min(12, Number(m)));
+        return n;
+    }
+    if (pt[m]) return pt[m];
+    if (en[m]) return en[m];
+    return 1;
 }
 
 export default function ClientCard({ item, compact = false }: Props) {
@@ -25,13 +45,18 @@ export default function ClientCard({ item, compact = false }: Props) {
     const bottomBandCompact = "w-full text-white text-center py-2 text-sm";
     const bottomBand = compact ? bottomBandCompact : bottomBandLarge;
 
-    const handleDownload = () => {
-        const logo = "./logo.png";
-
-        if (isIngredient(item)) {
-            generateReportPDF(logo, "ingredientes", item.year, item.month);
-        } else if (isSustainability(item)) {
-            generateReportPDF(logo, "sustentabilidade", item.year);
+    const handleDownload = async () => {
+        try {
+            if (isIngredient(item)) {
+                const monthNumber = parseMonthToNumber(item.month);
+                const blob = await fetchTop10Desperdicios(item.year, monthNumber);
+                openPdfBlobInNewTab(blob, `Relatório ${item.month} ${item.year}`);
+            } else if (isSustainability(item)) {
+                const blob = await fetchSustainabilityReport(item.year);
+                openPdfBlobInNewTab(blob, `Relatório ${item.year}`);
+            }
+        } catch (err) {
+            console.error("Error downloading report:", err);
         }
     };
 
