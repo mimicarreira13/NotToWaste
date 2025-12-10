@@ -2,9 +2,9 @@ import api from "./api";
 
 export type PratoIngrediente = {
     pratoId: string;
-    prato?: unknown | null;
+    prato?: string | null;
     ingredienteId: string;
-    ingrediente?: unknown | null;
+    ingrediente?: string | null;
     quantidade: number;
     id: string;
     dataCriacao?: string;
