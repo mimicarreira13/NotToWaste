@@ -8,7 +8,11 @@ import Cozinha from "./pages/Cozinha.tsx";
 import Food from "./pages/Food";
 import Ingredient from "./pages/Ingredient.tsx";
 import Client from "./pages/Client";
+import Definicoes from "./pages/Definicoes";
 import Pratos from "./pages/Pratos";
+import Stock from "./pages/Stock";
+import Desperdicio from "./pages/Desperdicio";
+import Relatorios from "./pages/Relatorios.tsx";
 
 function App() {
     return (
@@ -23,11 +27,15 @@ function App() {
                             <Route path="/dashboard" element={<Dashboard/>} />
                             <Route path="/cozinha" element={<Cozinha />} />
                             <Route path="/client" element={<Client />} />
+                            <Route path={"/definicoes"} element={<Definicoes />} />
                             <Route path="/cozinha/food/:id" element={<Food mode={false} />} />
                             <Route path="/cozinha/ingredient/:id" element={<Ingredient mode={false} />} />
                             <Route path="/pratos" element={<Pratos />} />
                             <Route path="/pratos/food/:id" element={<Food mode={true} />} />
                             <Route path="/pratos/ingredient/:id" element={<Ingredient  mode={true} />} />
+                            <Route path="/stock" element={<Stock />} />
+                            <Route path="/desperdicio" element={<Desperdicio />} />
+                            <Route path="/relatorios" element={<Relatorios />} />
                         </Routes>
                     </main>
                 </div>

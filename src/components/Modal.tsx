@@ -13,9 +13,10 @@ type ModalProps = {
     children?: React.ReactNode;
     buttons?: ModalButton[];
     onClose: () => void;
+    widthClass?: string;
 };
 
-export default function Modal({ open, title, message, children, buttons, onClose }: ModalProps) {
+export default function Modal({ open, title, message, children, buttons, onClose, widthClass }: ModalProps) {
     const dialogRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -50,7 +51,8 @@ export default function Modal({ open, title, message, children, buttons, onClose
                 aria-labelledby="modal-title"
                 tabIndex={-1}
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden z-[10000]"
+                className={`relative bg-white rounded-lg shadow-xl w-full mx-4 overflow-hidden z-[10000] ${
+                    widthClass ?? 'max-w-md'}`}
             >
                 {/* header band */}
                 {title && (

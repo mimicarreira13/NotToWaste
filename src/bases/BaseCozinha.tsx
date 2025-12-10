@@ -4,6 +4,7 @@ import BackButton from "../components/Back.tsx";
 import Info from "../api/PlatesAndIngredients.tsx";
 import {createCards} from "../components/Cards.tsx";
 import {useNavigate} from "react-router-dom";
+import {useState} from "react";
 
 type ItemUI = {
     id: string;
@@ -75,12 +76,6 @@ export default function CozinhaBase({
     }
 
     const topBar = [
-        {
-          id:"voltar",
-          content: (
-              <BackButton />
-          )
-        },
         {
             id:"categoria",
             content: (

@@ -4,7 +4,7 @@
 
 :root {
   --app-font: Arial, sans-serif;
-  --modal-title-size: 30px; /* pode variar onde abrir o modal */
+  --modal-title-size: 35px; /* pode variar onde abrir o modal */
   --modal-title-line-height: 17px;
   --modal-font-family: Arial, sans-serif;
   --modal-band-color: #4C6E43;

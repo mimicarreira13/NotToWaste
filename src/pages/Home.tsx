@@ -1,6 +1,5 @@
-// src/pages/Home.tsx
 import { useProfile } from "../contexts/ProfileContext";
-
+import { useNavigate } from "react-router-dom";
 import dashboard from "../assets/images/icons/dashboard.png";
 import cozinha from "../assets/images/icons/cozinha.png";
 import definicoes from "../assets/images/icons/definicoes.png";
@@ -9,9 +8,9 @@ import stock from "../assets/images/icons/stock.png";
 import desperdicio from "../assets/images/icons/desperdicio.png";
 
 const permissions: Record<string, string[]> = {
-    Gerente: ["Dashboard", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
+    Gerente: ["Informações e Sustentabilidade", "Cozinha", "Definições", "Gerir Pratos", "Stock", "Desperdício"],
     "Funcionário de Stock": ["Stock", "Desperdício"],
-    "Chef de Cozinha": ["Dashboard", "Cozinha", "Gerir Pratos", "Desperdício"],
+    "Chef de Cozinha": ["Informações e Sustentabilidade", "Gerir Pratos", "Desperdício"],
     Cozinheiro: ["Cozinha", "Desperdício"],
 };
 
@@ -34,9 +33,10 @@ type Card = {
 
 export default function Home() {
     const { profile } = useProfile();
+    const navigate = useNavigate();
 
     const cards: Card[] = [
-        { id: 1, src: dashboard, alt: "Dashboard", route: "/dashboard" },
+        { id: 1, src: dashboard, alt: "Informações e Sustentabilidade", route: "/dashboard" },
         { id: 2, src: cozinha, alt: "Cozinha", route: "/cozinha" },
         { id: 3, src: definicoes, alt: "Definições", route: "/definicoes" },
         { id: 4, src: pratos, alt: "Gerir Pratos", route: "/pratos" },
@@ -54,8 +54,11 @@ export default function Home() {
 
     const roleClass = profile ? `home-grid--${normalizeClassName(profile.alt)}` : "";
 
-    function handleCardClick() {
+    function handleCardClick(card: Card) {
         // placeholder: implementar navegação/ação real para cada cartão
+        if( card.route) {
+            navigate(card.route);
+        }
     }
 
     // O .map fica dentro do return do JSX!
@@ -81,14 +84,14 @@ export default function Home() {
                         <div
                             key={card.id}
                             role="listitem"
-                            onClick={() => handleCardClick()}
+                            onClick={() => handleCardClick(card)}
                             className={
                                 "home-card relative border border-gray-300 rounded-lg shadow-xl p-3 aspect-square flex flex-col items-center justify-between overflow-hidden transition-transform duration-150 hover:shadow-md hover:scale-105 cursor-pointer"
                             }
                             aria-label={card.alt}
                             tabIndex={0}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleCardClick();
+                                if (e.key === "Enter" || e.key === " ") handleCardClick(card);
                             }}
                             style={{ width: `${columnWidth}px`, maxWidth: `${columnWidth}px` }}
                         >
