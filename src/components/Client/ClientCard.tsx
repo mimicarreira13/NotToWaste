@@ -83,9 +83,9 @@ export default function ClientCard({ item, compact = false }: Props) {
         : "w-full text-center px-6 py-3 rounded-none text-2xl font-extrabold";
 
     return (
-        <div className={`${cardBase} ${unavailableClass}`}>
-            <div className="w-full flex items-center p-4">
-                <div className="w-40 min-w-[96px] flex-shrink-0 flex items-center justify-center bg-gray-100 overflow-hidden">
+        <div className={`${cardBase} ${unavailableClass} h-60`}>
+            <div className="w-full flex items-center p-4 h-full">
+                <div className="w-40 min-w-[96px] flex-shrink-0 flex items-center justify-center bg-gray-100 overflow-hidden ">
                     {dish.image ? (
                         <img
                             src={dish.image}
