@@ -1,4 +1,3 @@
-// typescript
 import React, { useState } from "react";
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
 import { fetchSustainabilityReport, fetchTop10Desperdicios, openPdfBlobInNewTab } from "../../api/relatorios_requests";
