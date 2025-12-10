@@ -23,12 +23,14 @@ function mapPratoToDishItem(p: Prato, ingredientNameFor: (id: string) => string)
 
 export default function useDishes() {
     const [dishes, setDishes] = useState<DishItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const cacheRef = useRef<Record<string, string>>({});
 
     useEffect(() => {
         let mounted = true;
 
         (async () => {
+            setLoading(true);
             try {
                 const pratos = await getDishes();
                 const allIds = new Set<string>();
@@ -67,6 +69,8 @@ export default function useDishes() {
             } catch (err) {
                 console.error("Failed to load pratos:", err);
                 if (mounted) setDishes([]);
+            } finally {
+                if (mounted) setLoading(false);
             }
         })();
 
@@ -75,5 +79,5 @@ export default function useDishes() {
         };
     }, []);
 
-    return { dishes };
+    return { dishes, loading  };
 }
