@@ -21,8 +21,12 @@ export type Prato = {
     caminhoImagem?: string | null;
 };
 
-
 export async function getDishes(): Promise<Prato[]> {
     const resp = await api.get("/api/Prato");
     return resp.data.objeto as Prato[];
+}
+
+export async function getIngredientById(id: string) {
+    const resp = await api.get(`/api/Ingrediente/${encodeURIComponent(id)}`);
+    return resp.data.objeto as { id: string; nome: string; [k: string]: unknown } | null;
 }
