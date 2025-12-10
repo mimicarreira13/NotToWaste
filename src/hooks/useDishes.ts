@@ -1,4 +1,3 @@
-// File: `src/hooks/useDishes.ts`
 import { useEffect, useState, useRef } from "react";
 import { getDishes, getIngredientById, type Prato } from "../api/client_requests";
 import type { DishItem } from "../data/clientItems";

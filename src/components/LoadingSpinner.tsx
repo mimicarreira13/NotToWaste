@@ -1,9 +1,8 @@
-// File: src/components/LoadingSpinner.tsx
 import React from "react";
 
 type Props = {
     message?: string;
-    size?: number; // px for the spinner diameter (default 48)
+    size?: number;
     ariaLabel?: string;
 };
 
