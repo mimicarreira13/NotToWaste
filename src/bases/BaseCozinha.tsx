@@ -4,7 +4,6 @@ import BackButton from "../components/Back.tsx";
 import Info from "../api/PlatesAndIngredients.tsx";
 import {createCards} from "../components/Cards.tsx";
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
 
 type ItemUI = {
     id: string;
@@ -24,19 +23,26 @@ type CardUI = {
 export default function CozinhaBase({
                                         overlay,
                                         extraDiv,
+                                        pageState,
+                                        onPageModeChange
                                     }: {
     overlay?: React.ReactNode;
     extraDiv?: React.ReactNode;
+    pageState : boolean;
+    onPageModeChange: (mode: boolean) => void;
 }) {
-    const saved = localStorage.getItem("pageMode") === "true";
-    const [pageMode, setPageMode] = useState(saved);
-    const [search, setSearch] = useState("");
+    const [, setSearch] = useState("");
     const navigate = useNavigate();
     let fColor;
     let iColor;
 
+    const updatePageMode = (value: boolean) => {
+        onPageModeChange(value); // Call parent function
+        localStorage.setItem("pageMode", value.toString());
+        setIsLoading(true);
+    }
 
-    if (pageMode) {
+    if (pageState) {
         iColor = "#303030";
         fColor = "#767676";
     } else {
@@ -69,13 +75,13 @@ export default function CozinhaBase({
         setIsLoading(false);
     }, []);
 
-    const updatePageMode = (value: boolean) => {
-        setPageMode(value);
-        localStorage.setItem("pageMode", value.toString());
-        setIsLoading(true); // Show loading when switching modes
-    }
-
     const topBar = [
+        {
+          id:"back",
+          content: (
+              <BackButton />
+          )
+        },
         {
             id:"categoria",
             content: (
@@ -86,9 +92,20 @@ export default function CozinhaBase({
             )
         },
         {
-            id:"pesquisa",
-            content: (
-                <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px]"}>
+            id:"add-button",
+            content: (extraDiv)
+        }
+    ];
+
+    return (
+        <div className="p-4 mt-20 w-full h-full flex flex-col justify-start self-start">
+            <div className="flex flex-row justify-around w-full">
+            <div className="flex items-center flex-row h-14 w-full mb-3 flex-wrap gap-4 ml-auto mr-auto">
+                {topBar.map(item => (
+                    <div key={item.id}>{item.content}</div>
+                ))}
+            </div>
+                <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px] h-14"}>
                     <FiSearch className="text-black" />
                     <input
                         type="text"
@@ -97,47 +114,28 @@ export default function CozinhaBase({
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-            )
-        }
-    ];
-
-    return (
-        <div className="p-4 mt-20 w-full h-full flex flex-col justify-start self-start">
-            <div className="flex items-center flex-row h-14 w-[80%] mb-3 justify-between flex-wrap gap-4 ml-auto mr-auto">
-                {topBar.map(item => (
-                    <div key={item.id}>{item.content}</div>
-                ))}
-                <div>
-                    {extraDiv}
-                </div>
             </div>
-
-            {/* Show loading while fetching */}
             {isLoading && (
                 <div className="text-center py-10">
                     Carregando...
                 </div>
             )}
-
-            {/* Load data components - they don't render anything visible */}
-            {pageMode ? (
+            {pageState ? (
                 <>
-                    {/* Load ingredients data */}
                     <Info
                         key="ingredients-loader"
                         type="Ingrediente"
                         onData={handleIngredientData}
                     />
-                    {/* Render ingredient cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-[2%] min-h-200"
                          style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                         {ingredientCards.length > 0 ? (
                             ingredientCards.map(card => (
                                 <div
                                     key={card.id}
                                     className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
-                                    onClick={() => navigate(`/cozinha/ingredient/${card.id}`)}
-                                    style={{height: "345px", borderRadius: "10px", width: "444px"}}
+                                    onClick={() => navigate(`/ingredient/${card.id}`)}
+                                    style={{height: "345px", borderRadius: "10px", width: "400px"}}
                                 >
                                     {card.content}
                                 </div>
@@ -151,20 +149,18 @@ export default function CozinhaBase({
                 </>
             ) : (
                 <>
-                    {/* Load food data */}
                     <Info
                         type="Prato"
                         onData={handleFoodData}
                     />
-                    {/* Render food cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2%] min-h-200"
                          style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                         {foodCards.length > 0 ? (
                             foodCards.map(card => (
                                 <div
                                     key={card.id}
                                     className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
-                                    onClick={() => navigate(`/cozinha/prato/${card.id}`)}
+                                    onClick={() => navigate(`/pratos/food/${card.id}`)}
                                     style={{height: "345px", borderRadius: "10px", width: "444px"}}
                                 >
                                     {card.content}

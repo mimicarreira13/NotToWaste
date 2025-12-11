@@ -6,7 +6,6 @@ import BasePopup from "../bases/BasePopup.tsx";
 function useLocalStorageState(key: string, defaultValue: boolean) {
     const stored = localStorage.getItem(key);
     const initial = stored !== null ? stored === "true" : defaultValue;
-
     const [value, setValue] = useState(initial);
 
     useEffect(() => {
@@ -19,52 +18,42 @@ function useLocalStorageState(key: string, defaultValue: boolean) {
 export default function Pratos(
 ) {
     const [showPopup, setShowPopup] = useLocalStorageState("popup", false);
-    const pageMode = localStorage.getItem("pageMode") === "true";
-    let type = "dishes";
-    let title = "Adição de pratos"
-    const [popupType, setPopupType] = useState("dishes");
+    const [pageMode, setPageMode] = useState(() => {
+        return localStorage.getItem("pageMode") === "true";
+    });
 
     const handleCreateDish = () => {
-        setPopupType("dishes");
         setShowPopup(true);
     };
 
-    switch (pageMode) {
-        case true:
-            type = "ingredients";
-            title = "Adição de ingredientes"
-            break;
-        case false:
-            type = "dishes";
-            title = "Adição de pratos"
-            break;
-    }
 
+    console.log("PageMode " + pageMode.valueOf())
     return (
         <CozinhaBase
             extraDiv={
                 !pageMode && (
                     <button
-                        className="bg-[#4c6e43] rounded-[5px] shadow flex flex-row p-[5px] text-[25px] items-center"
+                        className="bg-[#4c6e43] rounded-[5px] shadow flex flex-row p-[5px] text-[25px] items-center hover:p-[6px] hover:shadow hover:ease-in-out"
                         onClick={handleCreateDish}
                     >
                         <FiPlus className="text-[#D9D9D9]"/>
-                        <span className={"text-[#D9D9D9]"}>Adicionar</span>
                     </button>
                 )
             }
             overlay={
                 showPopup && (
                     <BasePopup
-                        type={type}
+                        type={"dishes"}
                         greenButton="Adicionar Prato"
                         redFunction="close"
                         greenFunction="navigate"
                         onClose={() => setShowPopup(false)}
-                        title={title}
+                        title={"Adicionar Prato"}
                     />
                 )
             }
+            pageState={pageMode}
+            onPageModeChange={setPageMode}
         />
     );
 }

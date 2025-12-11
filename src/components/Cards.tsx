@@ -24,8 +24,14 @@ export function createCard({
                     height: "345px",
                     width: "174px",
                     borderTopLeftRadius: "10px",
-                    borderBottomLeftRadius: "10px"
-                }} alt={title}/>
+                    borderBottomLeftRadius: "10px",
+                    objectFit: "cover",
+                }} alt={title}
+                 onError={(e) => {
+                     const target = e.target as HTMLImageElement;
+                     target.src = "/src/assets/placeholder-food.png";
+                 }}
+                />
                 <div className="w-1" style={{backgroundColor: "#4c6e43"}}></div>
                 <div className="flex-col" style={{marginLeft: "20px", height: "345px"}}>
                     <div className="font-black" style={{fontSize: "32px", fontWeight: "bold"}}>{title}</div>
