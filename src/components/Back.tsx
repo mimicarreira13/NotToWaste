@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import {useMemo} from "react";
 
 export default function BackButton() {
     const navigate = useNavigate();

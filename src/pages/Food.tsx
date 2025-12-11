@@ -4,7 +4,6 @@ import {useEffect, useState} from "react";
 import BasePopup from "../bases/BasePopup.tsx";
 import api from "../api/api.ts";
 import { useNavigate } from "react-router-dom";
-import BackButton from "../components/Back.tsx";
 
 interface ApiIngrediente {
     id: string;
