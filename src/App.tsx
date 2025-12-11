@@ -29,10 +29,10 @@ function App() {
                             <Route path="/client" element={<Client />} />
                             <Route path={"/definicoes"} element={<Definicoes />} />
                             <Route path="/cozinha/food/:id" element={<Food mode={false} />} />
-                            <Route path="/cozinha/ingredient/:id" element={<Ingredient mode={false} />} />
+                            <Route path="/ingredient/:id" element={<Ingredient mode={false} />} />
                             <Route path="/pratos" element={<Pratos />} />
                             <Route path="/pratos/food/:id" element={<Food mode={true} />} />
-                            <Route path="/pratos/ingredient/:id" element={<Ingredient  mode={true} />} />
+                            <Route path="/ingredient/:id" element={<Ingredient  mode={true} />} />
                             <Route path="/stock" element={<Stock />} />
                             <Route path="/desperdicio" element={<Desperdicio />} />
                             <Route path="/relatorios" element={<Relatorios />} />
