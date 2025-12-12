@@ -7,10 +7,11 @@ const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 bo
 
 export default function Dashboard() {
     const [openSugestoesModal, setOpenSugestoesModal] = React.useState(false);
-    const [pontuacaoSustentabilidade, setPontuacaoSustentabilidade] = React.useState<number | null>(null);
+    const [pontuacaoSustentabilidade, setPontuacaoSustentabilidade] = React.useState<number>(0);
     const [ranking, setRanking] = React.useState<RankingItem[]>([]);
     const [totalKgDesperdicado, setTotalKgDesperdicado] = React.useState<number>(0);
     const [totalCustoDesperdicio, setTotalCustoDesperdicio] = React.useState<number>(0);
+    const [percentagemDesperdicio, setPercentagemCustoDesperdicio] = React.useState<number>(0);
     const navigate = useNavigate();
 
     React.useEffect(() => {
@@ -39,6 +40,11 @@ export default function Dashboard() {
                     (custoEuros, item) => custoEuros + item.custoDesperdicio,
                     0
                 );
+                const percentagemDesperdicio = rankingData.reduce(
+                    (percentagem, item) => percentagem + item.percentagemDesperdicio,
+                    0
+                );
+                setPercentagemCustoDesperdicio(percentagemDesperdicio);
                 setTotalKgDesperdicado(totalKg);
                 setTotalCustoDesperdicio(totalCusto);
             } catch (err) {
@@ -51,9 +57,9 @@ export default function Dashboard() {
     function getClassificacaoSustentabilidade(score: number | null): string {
         if (score === null || Number.isNaN(score)) return "-";
 
-        if (score <= 30) return "Péssima";
+        if (score <= 25) return "Péssima";
         if (score <= 50) return "Média";
-        if (score <= 70) return "Bom";
+        if (score <= 75) return "Bom";
         if (score <= 99) return "Muito bom";
         return "Excelente"; // 100
     }
@@ -100,7 +106,7 @@ export default function Dashboard() {
                 <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-[6px] text-center mt-auto">Ranking Mensal de
                     Desperdício
                 </div>
-                <div className="bg-[#D9D9D9] text-[#000000] pb-4 p-4 rounded mb-1 text-lg">{totalCustoDesperdicio.toFixed(2)}€ de compras desperdiçadas
+                <div className="bg-[#D9D9D9] text-[#000000] pb-4 p-4 rounded mb-1 text-lg">{percentagemDesperdicio.toFixed(3)}% ({totalCustoDesperdicio.toFixed(2)}€) de compras desperdiçadas
                 </div>
                 <div className="bg-[#D9D9D9] text-[#000000] rounded text-lg">{totalKgDesperdicado}kg</div>
                 <div className="bg-[#BCBCBC] text-[#000000] p-2 text-sm text-left h-[80px] mt-2">
@@ -127,7 +133,7 @@ export default function Dashboard() {
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center">Pontuação de Sustentabilidade</div>
                     <div className="text-[#000000] pt-8 mb-2 text-lg">A sua pontuação é:</div>
                     <div className="text-[#4C6E43] font-medium text-lg">{getClassificacaoSustentabilidade(pontuacaoSustentabilidade)}</div>
-                    <div className="text-3xl font-bold 4C6E43 my-2">{pontuacaoSustentabilidade ?? "--"}</div>
+                    <div className="text-3xl font-bold 4C6E43 my-2">{Math.round(pontuacaoSustentabilidade) ?? "--"}</div>
                 </>
             )
         },
