@@ -68,34 +68,34 @@ export default function Dashboard() {
     {
         id: "card-sugestoes",
         content: (
-            <button onClick={() => setOpenSugestoesModal(true)} className="flex flex-col w-full h-full text-center p-0 m-0" >
+            <button onClick={() => setOpenSugestoesModal(true)} className="flex flex-col w-full h-full text-center m-0" >
                 <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center mt-auto">Ingredientes a terminar o prazo</div>
                 <div className="bg-[#cfcfcf] text-left h-auto">
                     <ul>
                         <ul>
-                            <li className="text-s">Polvo</li>
+                            <li className="text-s px-2">Polvo</li>
                         </ul>
-                        <li className="text-sm">Sugestão de prato: Polvo à Lagareiro</li>
+                        <li className="text-sm px-2">Sugestão de prato: Polvo à Lagareiro</li>
                     </ul>
-                    <span className="float-right text-sm font-semibold">3 dias restantes</span>
+                    <span className="float-right text-sm font-semibold px-2">3 dias restantes</span>
                 </div>
                 <div className="bg-[#bcbcbc] text-left h-auto">
                     <ul>
                         <ul>
-                            <li className="text-s">Ovo</li>
+                            <li className="text-s px-2">Ovo</li>
                         </ul>
-                        <li className="text-sm">Sugestão de Prato: Bitoque</li>
+                        <li className="text-sm px-2">Sugestão de Prato: Bitoque</li>
                     </ul>
-                    <span className="float-right text-sm font-semibold">4 dias restantes</span>
+                    <span className="float-right text-sm font-semibold px-2">4 dias restantes</span>
                 </div>
                 <div className="bg-[#cfcfcf] text-left h-auto">
                     <ul>
                         <ul>
-                            <li className="text-s">Salada</li>
+                            <li className="text-s px-2">Salada</li>
                         </ul>
-                        <li className="text-sm">Sugestão de Prato: Prego</li>
+                        <li className="text-sm px-2">Sugestão de Prato: Prego</li>
                     </ul>
-                    <span className="float-right text-sm font-semibold">6 dias restantes</span></div>
+                    <span className="float-right text-sm font-semibold px-2">6 dias restantes</span></div>
             </button>
         )
     },
@@ -140,7 +140,7 @@ export default function Dashboard() {
         {
             id: "card-relatorio-sustentabilidade",
             content: (
-                <button onClick={()=>navigate("/relatorios")}>
+                <button onClick={()=>navigate("/relatorios?only=sustainability")}>
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Sustentabilidade</div>
                     <div className="flex flex-center">
                         <img src="src/assets/images/icons/sustainability_report.png" className="w-1/3 h-15 mx-auto pt-6" alt="Sustentabilidade"/>
@@ -151,7 +151,7 @@ export default function Dashboard() {
         {
             id: "card-relatorio-ingredientes",
             content: (
-                <button onClick={()=>navigate("/relatorios")}>
+                <button onClick={()=>navigate("/relatorios?only=ingredients")}>
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Ingredientes</div>
                     <div className="flex flex-center">
                         <img src="src/assets/images/icons/ingredients_report.png" className="w-1/3 h-15 mx-auto pt-6" alt="Ingredientes"/>
