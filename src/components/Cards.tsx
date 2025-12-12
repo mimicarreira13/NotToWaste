@@ -1,6 +1,6 @@
 //import {useNavigate} from "react-router-dom";
 
-type CardOptions = {
+type ItemUI = {
     id: string;
     title: string;
     imageName: string;
@@ -14,19 +14,24 @@ export function createCard({
                                imageName,
                                ingredients = [],
                                isIngredient,
-                           }: CardOptions) {
-    const imagePath = `/src/assets/${isIngredient ? "ingredients" : "food"}/${imageName}`;
+                           }: ItemUI) {
 
     return {
         id,
         content: (
             <>
-                <img src={imagePath} style={{
+                <img src={imageName} style={{
                     height: "345px",
                     width: "174px",
                     borderTopLeftRadius: "10px",
-                    borderBottomLeftRadius: "10px"
-                }} alt={title}/>
+                    borderBottomLeftRadius: "10px",
+                    objectFit: "cover",
+                }} alt={title}
+                 onError={(e) => {
+                     const target = e.target as HTMLImageElement;
+                     target.src = "/src/assets/placeholder-food.png";
+                 }}
+                />
                 <div className="w-1" style={{backgroundColor: "#4c6e43"}}></div>
                 <div className="flex-col" style={{marginLeft: "20px", height: "345px"}}>
                     <div className="font-black" style={{fontSize: "32px", fontWeight: "bold"}}>{title}</div>
@@ -44,6 +49,6 @@ export function createCard({
 }
 
 
-export function createCards(data: CardOptions[]) {
+export function createCards(data: ItemUI[]) {
     return data.map(item => createCard(item));
 }

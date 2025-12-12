@@ -5,8 +5,9 @@
         "marca": "Continente",
         "motivo": "Fora de validade",
         "quantidade": "200",
-        "unidade": "Gramas"
-    
+        "unidade": "Gramas",
+        "custo":"2.50",
+        "dataDesperdicio": "2024-06-15"  
     },
 
     {
@@ -15,8 +16,9 @@
         "marca": "SelvagemNatur",
         "motivo": "Bolor",
         "quantidade": "1",
-        "unidade": "Quilo"
-    
+        "unidade": "Quilo",
+        "custo":"4.00",
+        "dataDesperdicio": "2024-06-18"
     }
    
 

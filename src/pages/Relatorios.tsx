@@ -1,4 +1,3 @@
-// File: `src/pages/Relatorios.tsx`
 import { useState } from "react";
 import { GiCarrot } from "react-icons/gi";
 import { MdEco } from "react-icons/md";
@@ -7,23 +6,30 @@ import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
 import ClientYearSections from "../components/Client/ClientYearSections";
 import { sustainabilityReports, ingredientItems } from "../data/clientItems";
+import { useLocation } from "react-router-dom";
 
 export function RelatoriosToggle({
                                      value,
                                      onChange,
+                                     only,
                                  }: {
     value: "ingredients" | "sustainability";
     onChange: (v: "ingredients" | "sustainability") => void;
+    only?: "ingredients" | "sustainability";
 }) {
     const IngredientsIcon = <GiCarrot size={18} aria-hidden />;
     const SustainabilityIcon = <MdEco size={18} aria-hidden />;
 
+    const options = [
+        { id: "ingredients", label: "Ingredientes", icon: IngredientsIcon },
+        { id: "sustainability", label: "Sustentabilidade", icon: SustainabilityIcon },
+    ];
+
+    const filtered = only ? options.filter((o) => o.id === only) : options;
+
     return (
         <ToggleTabs
-            options={[
-                { id: "ingredients", label: "Ingredientes", icon: IngredientsIcon },
-                { id: "sustainability", label: "Sustentabilidade", icon: SustainabilityIcon },
-            ]}
+            options={filtered}
             value={value}
             onChange={(id) => onChange(id as "ingredients" | "sustainability")}
         />
@@ -126,13 +132,17 @@ export function RelatoriosContent({ tab }: { tab: "ingredients" | "sustainabilit
 }
 
 export default function Relatorios() {
-    const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
+    const location = useLocation();
+    const search = new URLSearchParams(location.search);
+    const only = (search.get("only") as "ingredients" | "sustainability" | null) || undefined;
+
+    const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">(only ?? "ingredients");
     const bandHeight = 190;
 
 
     return (
         <div
-            className={`w-full relatorios-page ${reportTab ? "has-second-toggle" : ""}`}
+            className={`w-full relatorios-page ${!only ? "has-second-toggle" : ""}`}
             style={{ paddingLeft: "10%", paddingRight: "10%", paddingTop: 24, paddingBottom: 24 }}
         >
             <div
@@ -142,7 +152,7 @@ export default function Relatorios() {
             />
             <div className="fixed-top-toggles fixed top-32 left-48 right-48 flex items-center justify-between z-40">
                 {/* agora o toggle secundário fica no lado esquerdo quando acessada a página Relatórios */}
-                <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} />
+                <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} only={only} />
 
                 <div>
                     {/* placeholder para o primeiro toggle quando acessada diretamente (lado direito) */}

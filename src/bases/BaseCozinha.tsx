@@ -1,40 +1,48 @@
-import {useNavigate} from "react-router-dom";
 import {FiSearch} from "react-icons/fi";
-import { createCards } from "../components/Cards.tsx";
-import foodDataJSON from "../tmp/datafood.json";
-import ingredientDataJSON from "../tmp/dataingredient.json";
-import {useState} from "react";
+import {type JSX, useCallback, useEffect, useState} from "react";
+import BackButton from "../components/Back.tsx";
+import Info from "../api/PlatesAndIngredients.tsx";
+import {createCards} from "../components/Cards.tsx";
+import {useNavigate} from "react-router-dom";
 
-export type CardOptions = {
+type ItemUI = {
     id: string;
     title: string;
     imageName: string;
-    ingredients?: string[];
+    ingredients: string[];
     isIngredient: boolean;
 }
 
-const foodData = foodDataJSON as CardOptions[];
-const ingredientData = ingredientDataJSON as CardOptions[];
-const foods = createCards(foodData);
-const ingredients = createCards(ingredientData);
+type CardUI = {
+    id: string;
+    content: JSX.Element;
+    title: string;
+};
+
 
 export default function CozinhaBase({
                                         overlay,
                                         extraDiv,
-                                        path,
+                                        pageState,
+                                        onPageModeChange
                                     }: {
     overlay?: React.ReactNode;
     extraDiv?: React.ReactNode;
-    path: string;
+    pageState : boolean;
+    onPageModeChange: (mode: boolean) => void;
 }) {
+    const [, setSearch] = useState("");
     const navigate = useNavigate();
-    const saved = localStorage.getItem("pageMode") === "true";
-    const [pageMode, setPageMode] = useState(saved);
-    const [search, setSearch] = useState("");
     let fColor;
     let iColor;
 
-    if (pageMode) {
+    const updatePageMode = (value: boolean) => {
+        onPageModeChange(value); // Call parent function
+        localStorage.setItem("pageMode", value.toString());
+        setIsLoading(true);
+    }
+
+    if (pageState) {
         iColor = "#303030";
         fColor = "#767676";
     } else {
@@ -42,12 +50,38 @@ export default function CozinhaBase({
         fColor = "#303030";
     }
 
-    const updatePageMode = (value: boolean) => {
-        setPageMode(value);
-        localStorage.setItem("pageMode", value.toString());
-    }
+    const [ingredientCards, setIngredientCards] = useState<CardUI[]>([]);
+    const [foodCards, setFoodCards] = useState<CardUI[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        console.log("Ingredient cards updated:", ingredientCards.length);
+        console.log("Food cards updated:", foodCards.length);
+    }, [ingredientCards, foodCards]);
+
+    const handleIngredientData = useCallback((data: ItemUI[]) => {
+        console.log("Ingredient data received:", data);
+        const cards = createCards(data);
+        console.log("Created ingredient cards:", cards);
+        setIngredientCards(cards);
+        setIsLoading(false);
+    }, []);
+
+    const handleFoodData = useCallback((data: ItemUI[]) => {
+        console.log("Food data received:", data);
+        const cards = createCards(data);
+        console.log("Created food cards:", cards);
+        setFoodCards(cards);
+        setIsLoading(false);
+    }, []);
 
     const topBar = [
+        {
+          id:"back",
+          content: (
+              <BackButton />
+          )
+        },
         {
             id:"categoria",
             content: (
@@ -58,9 +92,20 @@ export default function CozinhaBase({
             )
         },
         {
-            id:"pesquisa",
-            content: (
-                <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px]"}>
+            id:"add-button",
+            content: (extraDiv)
+        }
+    ];
+
+    return (
+        <div className="p-4 mt-20 w-full h-full flex flex-col justify-start self-start">
+            <div className="flex flex-row justify-around w-full">
+            <div className="flex items-center flex-row h-14 w-full mb-3 flex-wrap gap-4 ml-auto mr-auto">
+                {topBar.map(item => (
+                    <div key={item.id}>{item.content}</div>
+                ))}
+            </div>
+                <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px] h-14"}>
                     <FiSearch className="text-black" />
                     <input
                         type="text"
@@ -69,43 +114,65 @@ export default function CozinhaBase({
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-            )
-        }
-    ];
-
-    return (
-        <div className="p-4 mt-20 w-full h-full flex flex-col justify-start self-start">
-            <div className="flex items-center flex-row h-14 w-[80%] mb-3 justify-between flex-wrap gap-4 ml-auto mr-auto">
-                {topBar.map(item => (
-                    <div key={item.id}>{item.content}</div>
-                ))}
-                <div>
-                    {extraDiv}
-                </div>
             </div>
-            {pageMode ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
-                     style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                    {ingredients.map(item => (
-                        item.title.toLowerCase().includes(search.toLowerCase()) && (
-                        <div id={item.id} key={item.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"}
-                                          onClick={() => navigate(path + "/ingredient/" + item.id)}
-                                          style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                    {item.content}
+            {isLoading && (
+                <div className="text-center py-10">
+                    Carregando...
                 </div>
-            )))}
-                </div>
+            )}
+            {pageState ? (
+                <>
+                    <Info
+                        key="ingredients-loader"
+                        type="Ingrediente"
+                        onData={handleIngredientData}
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-[2%] min-h-200"
+                         style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
+                        {ingredientCards.length > 0 ? (
+                            ingredientCards.map(card => (
+                                <div
+                                    key={card.id}
+                                    className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
+                                    onClick={() => navigate(`/ingredient/${card.id}`)}
+                                    style={{height: "345px", borderRadius: "10px", width: "400px"}}
+                                >
+                                    {card.content}
+                                </div>
+                            ))
+                        ) : !isLoading && (
+                            <div className="col-span-3 text-center py-10">
+                                Nenhum ingrediente encontrado
+                            </div>
+                        )}
+                    </div>
+                </>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5%] min-h-200"
-                style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
-                    {foods.map(plate => (
-                        plate.title.toLowerCase().includes(search.toLowerCase()) && (
-                        <div id={plate.id} key={plate.id} className={"bg-[#D9D9D9] rounded-5 shadow flex flex-row"} onClick={() => navigate(path + "/food/" + plate.id)}
-                             style={{"height": "345px", borderRadius: "10px", width: "444px"}}>
-                            {plate.content}
-                        </div>
-                        )))}
-                </div>
+                <>
+                    <Info
+                        type="Prato"
+                        onData={handleFoodData}
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2%] min-h-200"
+                         style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
+                        {foodCards.length > 0 ? (
+                            foodCards.map(card => (
+                                <div
+                                    key={card.id}
+                                    className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
+                                    onClick={() => navigate(`/pratos/food/${card.id}`)}
+                                    style={{height: "345px", borderRadius: "10px", width: "444px"}}
+                                >
+                                    {card.content}
+                                </div>
+                            ))
+                        ) : !isLoading && (
+                            <div className="col-span-3 text-center py-10">
+                                Nenhum prato encontrado
+                            </div>
+                        )}
+                    </div>
+                </>
             )}
             {overlay}
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { AdicionarForm } from "../BotaoAdicionar";
 import Modal from "../Modal";
+import { data } from "react-router-dom";
 
 export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm) {
   const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
@@ -11,6 +12,7 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm) {
     quantidade: "",
     unidade: "",
     custo: "",
+    dataDesperdicio: "",
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -64,12 +66,25 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm) {
       />
       </div>
       <input 
-      name="Custo" 
+      name="custo" 
       value={form.custo} 
       onChange={handleChange} 
       placeholder="Custo" 
       className="w-full px-3 py-2 border rounded" 
       />
+
+      <div className="relative pt-8">
+        <label className="absolute left-1 -top-3 bg-white px-1 text-sm text-gray-600 pt-5">
+            Data de Desperdicio
+        </label>
+        <input
+          type="date"
+          name="dataDesperdicio"
+          value={form.dataDesperdicio}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded"
+        />
+      </div>
 
 
       <div className="flex justify-center gap-20 mt-6">
