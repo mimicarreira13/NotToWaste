@@ -1,6 +1,9 @@
 import Modal from '../components/Modal';
 import React from "react";
-import {getPontuacaoSustentabilidade, type RankingItem, getRankingDesperdicio} from "../api/dashboard.ts"
+import {
+    getPontuacaoSustentabilidade, type RankingItem, getRankingDesperdicio,
+    getNotificacoesIngredientesProximosValidade, type NotificacaoIngrediente
+} from "../api/dashboard.ts"
 import { useNavigate } from "react-router-dom";
 
 const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 border-[#CFCFCF] w-full min-h-[220px] text-center p-0";
@@ -13,6 +16,12 @@ export default function Dashboard() {
     const [totalCustoDesperdicio, setTotalCustoDesperdicio] = React.useState<number>(0);
     const [percentagemDesperdicio, setPercentagemCustoDesperdicio] = React.useState<number>(0);
     const navigate = useNavigate();
+    const [numeroDiasIngrediente] = React.useState<number>(() => {
+        const saved = localStorage.getItem("numeroDiasIngrediente");
+        return saved ? Number(saved) : 7;
+    });
+    const [notificacoesIngredientes, setNotificacoesIngredientes] =
+        React.useState<NotificacaoIngrediente[]>([]);
 
     React.useEffect(() => {
         async function loadPontuacao() {
@@ -27,10 +36,28 @@ export default function Dashboard() {
     }, []);
 
     React.useEffect(() => {
+        async function loadIngredientesPrazo() {
+            try {
+                const objeto = await getNotificacoesIngredientesProximosValidade(
+                    numeroDiasIngrediente
+                );
+                const apenasIngredientes = objeto.filter((n) =>
+                    n.mensagem.toLowerCase().includes("ingrediente")
+                );
+                setNotificacoesIngredientes(apenasIngredientes);
+            } catch (err) {
+                console.error("Erro ao mostrar ingredientes perto de expirar", err);
+            }
+        }
+        loadIngredientesPrazo();
+    }, [numeroDiasIngrediente]);
+
+
+    React.useEffect(() => {
         async function loadRanking() {
             try {
                 const rankingData = await getRankingDesperdicio();
-                console.log("rankingData", rankingData); // verifica no console
+                console.log("rankingData", rankingData);
                 setRanking(rankingData);
                 const totalKg = rankingData.reduce(
                     (custoDesperdicio, item) => custoDesperdicio + item.quantidadeDesperdicada,
@@ -56,7 +83,6 @@ export default function Dashboard() {
 
     function getClassificacaoSustentabilidade(score: number | null): string {
         if (score === null || Number.isNaN(score)) return "-";
-
         if (score <= 25) return "Péssima";
         if (score <= 50) return "Média";
         if (score <= 75) return "Bom";
@@ -64,42 +90,59 @@ export default function Dashboard() {
         return "Excelente"; // 100
     }
 
+    function extrairNomeIngrediente(mensagem: string): string {
+        const match = mensagem.match(/ingrediente\s+'([^']+)'/i);
+        return match ? match[1] : "";
+    }
+
+    function extrairNomePrato(mensagem: string): string {
+        if (mensagem.toLowerCase().includes("prato")) {
+            const match = mensagem.match(/prato\s+'([^']+)'/i);
+            return match ? match[1] : "";
+        }
+        return "";
+    }
+
+    function extrairDiasRestantes(mensagem: string): string {
+        const match = mensagem.match(/(\d+)\s*dia\(s\)/i);
+        return match ? match[1] : "";
+    }
+
     const cards = [
-    {
-        id: "card-sugestoes",
-        content: (
-            <button onClick={() => setOpenSugestoesModal(true)} className="flex flex-col w-full h-full text-center m-0" >
-                <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center mt-auto">Ingredientes a terminar o prazo</div>
-                <div className="bg-[#cfcfcf] text-left h-auto">
-                    <ul>
-                        <ul>
-                            <li className="text-s px-2">Polvo</li>
-                        </ul>
-                        <li className="text-sm px-2">Sugestão de prato: Polvo à Lagareiro</li>
-                    </ul>
-                    <span className="float-right text-sm font-semibold px-2">3 dias restantes</span>
-                </div>
-                <div className="bg-[#bcbcbc] text-left h-auto">
-                    <ul>
-                        <ul>
-                            <li className="text-s px-2">Ovo</li>
-                        </ul>
-                        <li className="text-sm px-2">Sugestão de Prato: Bitoque</li>
-                    </ul>
-                    <span className="float-right text-sm font-semibold px-2">4 dias restantes</span>
-                </div>
-                <div className="bg-[#cfcfcf] text-left h-auto">
-                    <ul>
-                        <ul>
-                            <li className="text-s px-2">Salada</li>
-                        </ul>
-                        <li className="text-sm px-2">Sugestão de Prato: Prego</li>
-                    </ul>
-                    <span className="float-right text-sm font-semibold px-2">6 dias restantes</span></div>
-            </button>
-        )
-    },
-    {
+        {
+            id: "card-sugestoes",
+            content: (
+                <button
+                    onClick={() => setOpenSugestoesModal(true)}
+                    className="flex flex-col w-full h-full text-center m-0"
+                >
+                    <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center">
+                        Ingredientes a terminar o prazo
+                    </div>
+
+                    {notificacoesIngredientes.slice(0, 3).map((n, index) => {
+                        const nome = extrairNomeIngrediente(n.mensagem);
+                        const dias = extrairDiasRestantes(n.mensagem);
+                        const prato = extrairNomePrato(n.mensagem);
+                        const bg = index % 2 === 0 ? "bg-[#cfcfcf]" : "bg-[#bcbcbc]";
+                        return (
+                            <div key={n.id} className={`${bg} text-left h-auto`}>
+                                <ul>
+                                    <ul>
+                                        <li className="text-s px-2">{nome}</li>
+                                    </ul>
+                                    <li className="text-sm px-2">
+                                        Sugestão de prato: {prato}
+                                    </li>
+                                </ul>
+                                <span className="float-right text-sm font-semibold px-2"> {dias} dias restantes</span>
+                            </div>
+                        );
+                    })}
+                </button>
+            ),
+        },
+        {
         id: "card-mes",
         content: (
             <>

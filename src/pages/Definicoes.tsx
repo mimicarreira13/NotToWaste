@@ -4,11 +4,6 @@ import {useNavigate} from "react-router-dom";
 
 export default function Definicoes(){
 
-    const [numeroDiasPrato, setNumeroDiasPrato] = useState(() => {
-        const saved = localStorage.getItem('numeroDiasPrato');
-        return saved ? Number(saved) : 3;
-    });
-
     const [numeroDiasIngrediente, setNumeroDiasIngrediente] = useState(() => {
         const saved = localStorage.getItem('numeroDiasIngrediente');
         return saved ? Number(saved) : 7;
@@ -16,14 +11,6 @@ export default function Definicoes(){
 
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
-
-    function contagemDiasPrato(action: 'increment' | 'decrement') {
-        setNumeroDiasPrato((prev) => {
-            if (action === 'increment') return prev + 1;
-            if (action === 'decrement' && prev > 0) return prev - 1;
-            return prev;
-        });
-    }
 
     function contagemDiasIngrediente(action: 'increment' | 'decrement') {
         setNumeroDiasIngrediente((prev) => {
@@ -34,40 +21,11 @@ export default function Definicoes(){
     }
 
     function guardarAlteracoes() {
-        localStorage.setItem('numeroDiasPrato', String(numeroDiasPrato));
         localStorage.setItem('numeroDiasIngrediente', String(numeroDiasIngrediente));
         setModalOpen(false);
     }
 
     const cardStyle = [
-        {
-            id: "alerta-prato",
-            content:(
-                <>
-                    <div className="text-center bg-[#4C6E43] text-[#FFFFFF] py-2 rounded-lg font-bold width-auto">
-                        Editar Sugestões de Pratos
-                    </div>
-                    <div className="grid grid-cols-5 m-1 px-14 items-center text-lg">
-                        <div className="w-8 h-8 bg-[#FFFFFF] text-black flex justify-center items-center rounded-lg">
-                            <h5>{numeroDiasPrato}</h5>
-                        </div>
-                        <div>
-                            <h5>dia(s)</h5>
-                        </div>
-                        <div className="w-8 h-8 bg-[#4C6E43] text-white flex justify-center items-center rounded-lg text-lg">
-                            <button onClick={() => contagemDiasPrato('increment')}>+</button>
-                        </div>
-                        <div className="w-8 h-8 bg-[#6E4343] text-white flex justify-center items-center rounded-lg text-lg">
-                            <button onClick={() => contagemDiasPrato('decrement')}>-</button>
-                        </div>
-                        <div className="text-end">
-                            <h5>Pratos com ingredientes a</h5>
-                            <h5>{numeroDiasPrato} dias de atingir a validade</h5>
-                        </div>
-                    </div>
-                </>
-            )
-        },
         {
             id: "alerta-ingrediente",
             content:(
