@@ -42,7 +42,6 @@ interface ApiResponse<T> {
     objeto: T;
 }
 
-// Define the UI data structure (similar to your old JSON structure)
 interface FoodUI {
     id: string;
     title: string;
@@ -51,6 +50,11 @@ interface FoodUI {
     ingredients: string[];
     imageName: string;
     available: boolean;
+    pratoIngredientes?: Array<{ // Add this
+        ingredienteId: string;
+        quantidade: number;
+    }>;
+    apiData?: ApiPrato; // Or keep the full API data
 }
 
 function useLocalStorageState(key: string, defaultValue: boolean) {
@@ -66,17 +70,19 @@ function useLocalStorageState(key: string, defaultValue: boolean) {
     return [value, setValue] as const;
 }
 
-// Convert API response to UI format
 function convertApiToUI(apiPrato: ApiPrato): FoodUI {
-    // Extract ingredient names from pratoIngredientes
     const ingredients: string[] = [];
+    const pratoIngredientes: Array<{ingredienteId: string, quantidade: number}> = [];
 
     if (apiPrato.pratoIngredientes && Array.isArray(apiPrato.pratoIngredientes)) {
         apiPrato.pratoIngredientes.forEach((pi: PratoIngrediente) => {
             if (pi.ingrediente?.nome) {
-                // Add ingredient name and quantity
                 const qty = pi.quantidade || 1;
                 ingredients.push(`${pi.ingrediente.nome} (${qty})`);
+                pratoIngredientes.push({
+                    ingredienteId: pi.ingredienteId,
+                    quantidade: qty
+                });
             }
         });
     }
@@ -88,7 +94,9 @@ function convertApiToUI(apiPrato: ApiPrato): FoodUI {
         price: apiPrato.preco,
         ingredients: ingredients.length > 0 ? ingredients : ["Nenhum ingrediente listado"],
         imageName: apiPrato.caminhoImagem || "",
-        available: apiPrato.disponivel
+        available: apiPrato.disponivel,
+        pratoIngredientes: pratoIngredientes,
+        apiData: apiPrato
     };
 }
 
@@ -194,13 +202,12 @@ export default function Food({ mode }: { mode: boolean }) {
 
     return (
         <>
-            <div className={"h-full! align-top! font-[Sansita]"}>
-                <div className={"shadow bg-[#D9D9D9] rounded-[15px] block ml-auto mr-auto "} style={{width:"80%", height:"80%"}}>
+            <div className={"h-full! align-top! font-[Sansita] w-full"}>
+                <div className={"shadow bg-[#D9D9D9] rounded-[15px] block ml-auto mr-auto w-full"} style={{width:"80%", height:"80%"}}>
                     <h1 className={"text-center text-[64px] font-[Sansita]"}>{food.title}</h1>
 
-                    {/* Availability badge */}
                     {!food.available && (
-                        <div className="text-center text-red-600 text-[20px] mb-4 shadow w-[400px] p-[5px] rounded block ml-auto mr-auto">
+                        <div className="text-center text-red-600 text-[20px] mb-4 shadow w-[500px] p-[5px] rounded block ml-auto mr-auto">
                             ⚠️ Este prato não está disponível no momento
                         </div>
                     )}
@@ -230,9 +237,11 @@ export default function Food({ mode }: { mode: boolean }) {
                                     }}
                                 />
                             ) : (
-                                <div className="rounded-[15px] w-full h-[300px] bg-gray-300 flex items-center justify-center">
-                                    <span className="text-gray-500 text-[20px]">Sem imagem</span>
-                                </div>
+                                <img
+                                    src = "/src/assets/placeholder-food.png"
+                                    alt={food.title}
+                                    className="rounded-[15px] w-full h-auto max-h-[300px] object-scale-down"
+                                />
                             )}
                         </div>
                     </div>
@@ -270,12 +279,20 @@ export default function Food({ mode }: { mode: boolean }) {
 
                         {showPopupEdit && (
                             <BasePopup
-                                type="dishes" // Changed from "ingredients" to "dishes"
+                                type="edit"
                                 greenButton="Guardar"
                                 redFunction="close"
                                 greenFunction="close"
                                 onClose={() => setShowPopupEdit(false)}
                                 title={"Edição de Prato"}
+                                dishData={{
+                                    id: food.id,
+                                    nome: food.title,
+                                    preco: food.price,
+                                    descricao: food.description,
+                                    pratoIngredientes: food.pratoIngredientes || [], // You need to pass this
+                                    imagem: food.imageName
+                                }}
                             />
                         )}
                     </div>

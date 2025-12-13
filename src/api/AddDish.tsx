@@ -1,5 +1,5 @@
 // api/AddDish.tsx
-import { useState, type ChangeEvent, forwardRef, useImperativeHandle } from "react";
+import {useState, type ChangeEvent, forwardRef, useImperativeHandle, useEffect} from "react";
 import api from "./api.ts";
 import { useIngredients } from "./useIngredients.ts";
 
@@ -21,16 +21,32 @@ interface DishesProps {
     selectedIds?: string[];
     onChange: (ids: string[]) => void;
     onClose?: () => void;
+    isEdit?: boolean;
+    dishData?: {
+        id?: string;
+        nome?: string;
+        preco?: number;
+        descricao?: string;
+        pratoIngredientes?: Array<{
+            ingredienteId: string;
+            quantidade: number;
+        }>;
+        imagem?: string;
+    };
 }
 
 export interface DishesHandle {
     handleSubmit: () => Promise<void>;
+    handleEdit: (dishId: string) => Promise<void>;
 }
+
 
 export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                                                                  selectedIds = [],
                                                                  onChange,
-                                                                 onClose
+                                                                 onClose,
+                                                                 isEdit = false,
+                                                                 dishData
                                                              }, ref) => {
     const { getOptions, loading } = useIngredients();
     const options = getOptions();
@@ -43,6 +59,29 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+
+    useEffect(() => {
+        if (isEdit && dishData) {
+            console.log("Initializing edit mode with dish data:", dishData);
+
+            setNome(dishData.nome || "");
+            setPreco(dishData.preco || 0);
+            setDescricao(dishData.descricao || "");
+
+            // Initialize selected ingredient IDs and quantities
+            if (dishData.pratoIngredientes && dishData.pratoIngredientes.length > 0) {
+                const ingredientIds = dishData.pratoIngredientes.map(ing => ing.ingredienteId);
+                onChange(ingredientIds);
+
+                // Initialize quantities
+                const quantities: IngredientQuantity = {};
+                dishData.pratoIngredientes.forEach(ing => {
+                    quantities[ing.ingredienteId] = ing.quantidade;
+                });
+                setIngredientQuantities(quantities);
+            }
+        }
+    }, [isEdit, dishData, onChange]);
 
     const handleCheckboxChange = (ingredientId: string) => {
         const newSelected = selectedIds.includes(ingredientId)
@@ -100,10 +139,35 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
         return true;
     };
 
+    const validateImage = (file: File | null): string | null => {
+        if (!file) return null; // No image is okay
+
+        // Check file size (e.g., max 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file.size > maxSize) {
+            return "A imagem é muito grande. Tamanho máximo: 5MB";
+        }
+
+        // Check file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            return "Tipo de arquivo não suportado. Use JPEG, PNG, GIF ou WebP";
+        }
+
+        return null;
+    };
+
+
     const handleSubmit = async () => {
         setSubmitError(null);
 
         if (!validateForm()) {
+            return;
+        }
+
+        const imageError = validateImage(imagem);
+        if (imageError) {
+            setSubmitError(imageError);
             return;
         }
 
@@ -120,7 +184,11 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                 }))
             };
 
-            console.log("Submitting dish data:", dishData);
+            console.log("1. Submitting dish data:", dishData);
+            console.log("2. Image file object:", imagem);
+            console.log("3. Image file name:", imagem?.name);
+            console.log("4. Image file size:", imagem?.size, "bytes");
+            console.log("5. Image file type:", imagem?.type);
 
             const createResponse = await api.post("/api/Prato", dishData, {
                 headers: {
@@ -129,29 +197,59 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                 timeout: 15000
             });
 
+            console.log("6. Create dish response:", createResponse);
+
             if (!createResponse.data.exito) {
                 throw new Error(createResponse.data.mensagem || "Falha ao criar prato");
             }
 
-            const newDishId = createResponse.data.objeto?.id;
-            console.log("Dish created successfully, ID:", newDishId);
+            const newDishId = createResponse.data.objeto;
+            console.log("7. Dish created successfully, ID:", newDishId);
 
             if (imagem && newDishId) {
+                console.log("8. Attempting to upload image for dish ID:", newDishId);
+
                 try {
                     const formData = new FormData();
                     formData.append("imagem", imagem);
 
-                    await api.post(`/api/Prato/${newDishId}/imagem`, formData, {
+                    // Check what's in formData
+                    console.log("9. FormData contents:");
+                    for (let [key, value] of formData.entries()) {
+                        console.log(`  ${key}:`, value);
+                    }
+
+                    console.log("10. Making image upload request...");
+                    const imageResponse = await api.post(`/api/Prato/${newDishId}/imagem`, formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         },
                         timeout: 30000
                     });
 
-                    console.log("Image uploaded successfully");
+                    console.log("11. Image upload response:", imageResponse);
+                    console.log("12. Image upload success:", imageResponse.data);
+
                 } catch (imageError: any) {
-                    console.warn("Image upload failed, but dish was created:", imageError);
+                    console.error("13. Image upload failed:", imageError);
+                    console.error("14. Image error status:", imageError.response?.status);
+                    console.error("15. Image error data:", imageError.response?.data);
+                    console.error("16. Image error message:", imageError.message);
+
+                    // Check if it's a specific error
+                    if (imageError.response) {
+                        console.error("17. Full error response:", {
+                            status: imageError.response.status,
+                            statusText: imageError.response.statusText,
+                            headers: imageError.response.headers,
+                            data: imageError.response.data
+                        });
+                    }
                 }
+            } else {
+                console.log("18. No image to upload or no dish ID available");
+                console.log("19. Has image?", !!imagem);
+                console.log("20. Has dish ID?", !!newDishId);
             }
 
             setSubmitSuccess(true);
@@ -168,7 +266,7 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
             }, 2000);
 
         } catch (error: any) {
-            console.error("Error creating dish:", error);
+            console.error("21. Error in handleSubmit:", error);
 
             let errorMessage = "Falha ao criar prato";
             if (error.response?.data?.mensagem) {
@@ -183,8 +281,97 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
         }
     };
 
+    const handleEdit = async (dishId: string) => {
+        setSubmitError(null);
+
+        if (!validateForm()) {
+            return;
+        }
+
+        if (!dishId) {
+            setSubmitError("ID do prato não fornecido");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // Prepare form data for the PUT request
+            const formData = new FormData();
+
+            // Add text fields
+            formData.append('Nome', nome.trim());
+            formData.append('Preco', preco.toString());
+            formData.append('Descricao', descricao.trim() || "Sem descrição");
+
+            // Format PratoIngredientes array
+            const pratoIngredientes = selectedIds.map(id => ({
+                ingredienteId: id,
+                quantidade: ingredientQuantities[id] || 1
+            }));
+            formData.append('PratoIngredientes', JSON.stringify(pratoIngredientes));
+
+            // Add image if selected
+            if (imagem) {
+                formData.append('imagem', imagem);
+            }
+
+            console.log("Editing dish with ID:", dishId);
+            console.log("Form data:", {
+                nome: nome.trim(),
+                preco,
+                descricao: descricao.trim() || "Sem descrição",
+                pratoIngredientes,
+                hasImage: !!imagem
+            });
+
+            // Make PUT request to edit dish
+            const editResponse = await api.put(`/api/Prato/${dishId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                timeout: 30000
+            });
+
+            console.log("Edit response:", editResponse);
+
+            if (!editResponse.data.exito) {
+                throw new Error(editResponse.data.mensagem || "Falha ao editar prato");
+            }
+
+            setSubmitSuccess(true);
+
+            // Reset form
+            setNome("");
+            setPreco(0);
+            setDescricao("");
+            setImagem(null);
+            onChange([]);
+            setIngredientQuantities({});
+
+            setTimeout(() => {
+                if (onClose) onClose();
+            }, 2000);
+
+        } catch (error: any) {
+            console.error("Error editing dish:", error);
+
+            let errorMessage = "Falha ao editar prato";
+            if (error.response?.data?.mensagem) {
+                errorMessage = error.response.data.mensagem;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            setSubmitError(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     useImperativeHandle(ref, () => ({
-        handleSubmit
+        handleSubmit,
+        handleEdit
     }));
 
     if (loading) {
@@ -248,10 +435,18 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                                 accept="image/*"
                                 onChange={handleFileChange}
                                 disabled={isSubmitting}
+                                id="dish-image-input" // Add ID for debugging
                             />
                             {imagem && (
                                 <div className="text-sm text-gray-600 mt-1 ml-[15px]">
-                                    {imagem.name} ({(imagem.size / 1024).toFixed(0)} KB)
+                                    Selecionado: {imagem.name} ({(imagem.size / 1024).toFixed(0)} KB)
+                                    <br />
+                                    Tipo: {imagem.type}
+                                </div>
+                            )}
+                            {isEdit && dishData?.imagem && !imagem && (
+                                <div className="text-sm text-gray-600 mt-1 ml-[15px]">
+                                    Imagem atual: {dishData.imagem.substring(0, 30)}...
                                 </div>
                             )}
                         </div>
@@ -348,13 +543,13 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
 
                 {submitSuccess && (
                     <div className="text-green-600 bg-green-50 p-2 rounded mb-2">
-                         Prato criado com sucesso! Redirecionando...
+                        {isEdit ? "Prato editado com sucesso! Redirecionando..." : "Prato criado com sucesso! Redirecionando..."}
                     </div>
                 )}
 
                 {isSubmitting && (
                     <div className="text-blue-600 bg-blue-50 p-2 rounded mb-2">
-                        A criar prato...
+                        {isEdit ? "A editar prato..." : "A criar prato..."}
                     </div>
                 )}
             </div>

@@ -1,7 +1,27 @@
-import { useState, useRef } from "react";
+import {useState, useRef, useEffect} from "react";
 import { Dishes, type DishesHandle } from "../api/AddDish.tsx";
 import {useNavigate} from "react-router-dom";
 
+interface DishData {
+    id: string;
+    nome: string;
+    preco: number;
+    descricao: string;
+    pratoIngredientes: Array<{ ingredienteId: string; quantidade: number }>;
+    imagem?: string;
+}
+
+interface BasePopupProps {
+    type: string;
+    greenButton: string;
+    redFunction: string;
+    greenFunction: string;
+    onClose: () => void;
+    title: string;
+    onConfirm?: () => Promise<void> | void;
+    itemName?: string;
+    dishData?: DishData;
+}
 
 function Ingredients(){
     return(
@@ -53,12 +73,18 @@ function InfoDelete({ ItemName }: { ItemName?: string }) {
     );
 }
 
-function useFunctionFinder(close: () => void, onConfirm: (() => void | Promise<void>) | undefined) {
+function useFunctionFinder(
+    close: () => void,
+    onConfirm: (() => void | Promise<void>) | undefined,
+    type: string,
+    dishData?: DishData
+) {
     const navigate = useNavigate();
-    async function functionFinder(type: string) {
-        switch (type) {
+
+    async function functionFinder(funcType: string) {
+        switch (funcType) {
             case "navigate":
-                navigate("/pratos")
+                navigate("/pratos");
                 break;
             case "close":
                 close();
@@ -73,45 +99,82 @@ function useFunctionFinder(close: () => void, onConfirm: (() => void | Promise<v
                     }
                 }
                 break;
+            case "editDish":
+                if (dishData) {
+                    try {
+                        // Call the edit dish API endpoint
+                        await editDish(dishData);
+                        close();
+                    } catch (error) {
+                        console.error("Erro ao editar prato:", error);
+                        throw error; // Re-throw to handle in the component
+                    }
+                }
+                break;
         }
+    }
+
+
+    async function editDish(data: DishData) {
+        const formData = new FormData();
+
+        formData.append('Nome', data.nome);
+        formData.append('Preco', data.preco.toString());
+        formData.append('Descricao', data.descricao);
+        formData.append('PratoIngredientes', JSON.stringify(data.pratoIngredientes));
+
+        if (data.imagem && typeof data.imagem !== 'string') {
+            formData.append('imagem', data.imagem);
+        } else if (data.imagem && data.imagem.startsWith('data:')) {
+            const response = await fetch(data.imagem);
+            const blob = await response.blob();
+            formData.append('imagem', blob, 'dish-image.jpg');
+        }
+
+        const response = await fetch(`/api/Prato/${data.id}`, {
+            method: 'PUT',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao editar prato: ${response.status} - ${errorText}`);
+        }
+
+        return await response.json();
     }
 
     return { functionFinder };
 }
 
-export default function BasePopup({
-                                      type,
-                                      greenButton,
-                                      redFunction,
-                                      greenFunction,
-                                      onClose,
-                                      title,
-                                      onConfirm,
-                                      itemName,
-                                  }: {
-    type: string,
-    greenButton: string,
-    redFunction: string,
-    greenFunction: string,
-    onClose: () => void,
-    title: string,
-    onConfirm?: () => Promise<void> | void,
-    itemName?: string,
-}) {
+export default function BasePopup({type, greenButton, redFunction, greenFunction, onClose, title, onConfirm, itemName, dishData,}: BasePopupProps) {
     const [selectedIngredientIds, setSelectedIngredientIds] = useState<string[]>([]);
-    const { functionFinder } = useFunctionFinder(onClose, onConfirm);
+    const { functionFinder } = useFunctionFinder(onClose, onConfirm, type, dishData);
     const dishesRef = useRef<DishesHandle>(null);
     const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
+
+    useEffect(() => {
+        if (type === "edit" && dishData?.pratoIngredientes) {
+            // Extract ingredient IDs from the dish data
+            const ingredientIds = dishData.pratoIngredientes.map(
+                (ing) => ing.ingredienteId
+            );
+            setSelectedIngredientIds(ingredientIds);
+        }
+    }, [type, dishData]);
 
     const render = () => {
         switch(type) {
             case "dishes":
+            case "edit":
                 return (
                     <Dishes
                         ref={dishesRef}
                         selectedIds={selectedIngredientIds}
                         onChange={setSelectedIngredientIds}
                         onClose={onClose}
+                        isEdit={type === "edit"}
+                        dishData={dishData}
                     />
                 );
             case "ingredients":
@@ -128,12 +191,18 @@ export default function BasePopup({
         if (dishesRef.current) {
             setIsSubmitting(true);
             try {
-                await dishesRef.current.handleSubmit();
+                if (type === "edit" && dishData) {
+                    await dishesRef.current.handleEdit(dishData.id);
+                } else {
+                    await dishesRef.current.handleSubmit();
+                }
             } finally {
                 setIsSubmitting(false);
             }
         }
     };
+
+
 
     let widthPop = "70%";
     let heightPop = "80%";
@@ -167,7 +236,7 @@ export default function BasePopup({
                             <button
                                 className={"bg-[#4c6e43] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px] hover:bg-[#3a5a32] transition-colors"}
                                 onClick={async () => {
-                                    if (type === "dishes") {
+                                    if (type === "dishes" || type === "edit") {
                                         await handleSubmit();
                                     } else {
                                         await functionFinder(greenFunction);

@@ -5,6 +5,8 @@ import Info from "../api/PlatesAndIngredients.tsx";
 import {createCards} from "../components/Cards.tsx";
 import {useNavigate} from "react-router-dom";
 
+
+
 type ItemUI = {
     id: string;
     title: string;
