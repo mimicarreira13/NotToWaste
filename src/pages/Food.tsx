@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import BasePopup from "../bases/BasePopup.tsx";
 import api from "../api/api.ts";
 import { useNavigate } from "react-router-dom";
+import {useProfile} from "../contexts/ProfileContext.tsx";
 
 interface ApiIngrediente {
     id: string;
@@ -54,7 +55,7 @@ interface FoodUI {
         ingredienteId: string;
         quantidade: number;
     }>;
-    apiData?: ApiPrato; // Or keep the full API data
+    apiData?: ApiPrato;
 }
 
 function useLocalStorageState(key: string, defaultValue: boolean) {
@@ -101,13 +102,16 @@ function convertApiToUI(apiPrato: ApiPrato): FoodUI {
 }
 
 export default function Food({ mode }: { mode: boolean }) {
+    const { profile } = useProfile();
     const [showPopupDelete, setShowPopupDelete] = useLocalStorageState("popupDelete", false);
     const [showPopupEdit, setShowPopupEdit] = useLocalStorageState("popupEdit", false);
+    const [showPopupCook, setShowPopupCook] = useLocalStorageState("popupCook", false);
     const { id } = useParams();
     const navigate = useNavigate();
     const [food, setFood] = useState<FoodUI | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const userId = profile?.id;
 
     useEffect(() => {
         if (!id) {
@@ -200,6 +204,54 @@ export default function Food({ mode }: { mode: boolean }) {
         }
     };
 
+    const handleCookDish = async () => {
+        if (!food || !food.pratoIngredientes.length) {
+            console.error("No dish or ingredients found");
+            return;
+        }
+
+        try {
+            // Send a request for each ingredient in the dish
+            const promises = food.pratoIngredientes.map(async (ingredient) => {
+                const requestBody = {
+                    ingredienteId: ingredient.ingredienteId,
+                    utilizadorId: userId, // Make sure to define this constant
+                    quantidade: ingredient.quantidade,
+                    descricao: "",
+                    tipoSaida: 1
+                };
+
+                console.log("Sending stock output request:", requestBody);
+
+                return api.post("/api/SaidaStock", requestBody, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 10000
+                });
+            });
+
+            // Wait for all requests to complete
+            const responses = await Promise.all(promises);
+
+            // Check if all requests were successful
+            const allSuccessful = responses.every(response =>
+                response.status === 200 || response.status === 201
+            );
+
+            if (allSuccessful) {
+                console.log("Dish cooked successfully! All stock outputs recorded.");
+                return true;
+            } else {
+                console.error("Some stock output requests failed");
+                throw new Error("Some stock outputs failed to process");
+            }
+        } catch (error) {
+            console.error("Error cooking dish:", error);
+            throw error;
+        }
+    };
+
     return (
         <>
             <div className={"h-full! align-top! font-[Sansita] w-full"}>
@@ -222,6 +274,14 @@ export default function Food({ mode }: { mode: boolean }) {
                             </div>
                             <div className={"scroll-auto text-stone-600 max-h-[200px] overflow-y-auto pr-4"}>
                                 {food.description}
+                            </div>
+                            <div className={"mt-4 text-[25px] flex flex-row w-full justify-evenly text-center pb-[30px]"}>
+                                <button
+                                    onClick={() => setShowPopupCook(true)}
+                                    className={"bg-[#2d5b8c] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px] hover:bg-[#1f4a7a] transition-colors"}
+                                >
+                                    Cozinhar Prato
+                                </button>
                             </div>
                         </div>
 
@@ -247,6 +307,7 @@ export default function Food({ mode }: { mode: boolean }) {
                     </div>
 
                     <div>
+
                         {mode && (
                             <div className={"mt-4 text-[25px] flex flex-row w-full justify-evenly text-center pb-[30px]"}>
                                 <button
@@ -290,9 +351,23 @@ export default function Food({ mode }: { mode: boolean }) {
                                     nome: food.title,
                                     preco: food.price,
                                     descricao: food.description,
-                                    pratoIngredientes: food.pratoIngredientes || [], // You need to pass this
+                                    pratoIngredientes: food.pratoIngredientes || [],
                                     imagem: food.imageName
                                 }}
+                            />
+                        )}
+
+                        {showPopupCook && (
+                            <BasePopup
+                                type="cook"
+                                greenButton="Sim, Cozinhar"
+                                redFunction="close"
+                                greenFunction="cook"
+                                onClose={() => setShowPopupCook(false)}
+                                title={"Cozinhar Prato"}
+                                onConfirm={handleCookDish}
+                                itemName={food?.title}
+                                dishData={food.apiData}
                             />
                         )}
                     </div>

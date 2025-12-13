@@ -10,6 +10,7 @@ export default function Cozinha() {
         <CozinhaBase
             pageState={pageMode}
             onPageModeChange = {setPageMode}
+            pageType={"cozinha"}
         />
     );
 }

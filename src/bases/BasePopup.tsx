@@ -20,7 +20,7 @@ interface BasePopupProps {
     title: string;
     onConfirm?: () => Promise<void> | void;
     itemName?: string;
-    dishData?: DishData;
+    dishData?: any;
 }
 
 function Ingredients(){
@@ -59,6 +59,34 @@ function Ingredients(){
     )
 }
 
+function CookConfirm({ ItemName, ingredients }: { ItemName?: string, ingredients?: string[] }) {
+    return (
+        <div className="text-center text-[24px] p-4">
+            <p>Tem a certeza que pretende cozinhar o prato?</p>
+            {ItemName && (
+                <p className="font-bold mt-2 text-[28px]">"{ItemName}"</p>
+            )}
+
+            {ingredients && ingredients.length > 0 && (
+                <div className="mt-6">
+                    <p className="text-[20px] font-medium mb-2">Ingredientes a utilizar:</p>
+                    <div className="bg-gray-100 rounded-lg p-3 max-h-40 overflow-y-auto">
+                        {ingredients.map((ingredient, index) => (
+                            <div key={index} className="text-[18px] text-gray-700 py-1 border-b last:border-b-0">
+                                {ingredient}
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-[18px] text-gray-600 mt-3">
+                        Esta ação irá reduzir o stock dos ingredientes listados.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+
 function InfoDelete({ ItemName }: { ItemName?: string }) {
     return (
         <div className="text-center text-[24px] p-4">
@@ -96,6 +124,17 @@ function useFunctionFinder(
                         close();
                     } catch (error) {
                         console.error("Erro ao eliminar:", error);
+                    }
+                }
+                break;
+            case "cook":
+                if (onConfirm) {
+                    try {
+                        await onConfirm();
+                        close();
+                    } catch (error) {
+                        console.error("Erro ao cozinhar prato:", error);
+                        throw error;
                     }
                 }
                 break;
@@ -155,7 +194,6 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
 
     useEffect(() => {
         if (type === "edit" && dishData?.pratoIngredientes) {
-            // Extract ingredient IDs from the dish data
             const ingredientIds = dishData.pratoIngredientes.map(
                 (ing) => ing.ingredienteId
             );
@@ -166,6 +204,14 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
     const render = () => {
         switch(type) {
             case "dishes":
+                return (
+                    <Dishes
+                        ref={dishesRef}
+                        selectedIds={selectedIngredientIds}
+                        onChange={setSelectedIngredientIds}
+                        onClose={onClose}
+                    />
+                );
             case "edit":
                 return (
                     <Dishes
@@ -181,6 +227,14 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
                 return <Ingredients />;
             case "infoDelete":
                 return <InfoDelete ItemName={itemName} />;
+            case "cook":
+                {let ingredients: string[] = [];
+                    if (dishData && dishData.pratoIngredientes) {
+                        ingredients = dishData.pratoIngredientes.map((pi: any) =>
+                            pi.ingrediente ? `${pi.ingrediente.nome} (${pi.quantidade || 1})` : `Ingrediente ID: ${pi.ingredienteId}`
+                        );
+                    }
+                    return <CookConfirm ItemName={itemName} ingredients={ingredients} />;}
             default:
                 return null;
         }
@@ -216,6 +270,13 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
         divGreen = "25%";
     }
 
+    if (type === "cook") {
+        widthPop = "50%";
+        heightPop = "35%";
+        divWhite = "75%";
+        divGreen = "25%";
+    }
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#4c6e43] shadow-lg overflow-auto rounded-[25px]" style={{width: widthPop, height: heightPop}}>
@@ -231,7 +292,7 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
                                 onClick={() => functionFinder(redFunction)}
                                 disabled={isSubmitting}
                             >
-                                Cancelar
+                                {type === "cook" ? "Não" : "Cancelar"}
                             </button>
                             <button
                                 className={"bg-[#4c6e43] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px] hover:bg-[#3a5a32] transition-colors"}
