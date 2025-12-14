@@ -9,13 +9,15 @@ export type RankingItem = {
     caminhoImagem: string | null;
 };
 
-export type NotificacaoIngrediente={
-    id:string;
-    data:string;
-    mensagem:string;
-    ativo:boolean;
-    ingredienteId:string;
-}
+export type NotificacaoIngrediente = {
+    stockId: string;
+    data: string;
+    ativo: boolean;
+    ingredienteId: string;
+    nomeIngrediente: string;
+    diasParaExpirar: number;
+    pratosRelacionados: string[];
+};
 
 export async function getPontuacaoSustentabilidade() {
     const response = await api.get("/api/Dashboard/pontuacao-sustentabilidade");
@@ -27,7 +29,13 @@ export async function getRankingDesperdicio(): Promise<RankingItem[]> {
     return resp.data.objeto as RankingItem[];
 }
 
-export async function getNotificacoesIngredientesProximosValidade(dias: number): Promise<NotificacaoIngrediente[]> {
-    const resp = await api.get(`/api/Notificacoes/GetNotificacoes/${dias}`);
+export async function getNotificacoesIngredientesProximosValidade(): Promise<NotificacaoIngrediente[]> {
+    const resp = await api.get("/api/Notificacoes/ingredientes");
+    console.log("dashboard", resp.data);
     return resp.data.objeto as NotificacaoIngrediente[];
+}
+
+export async function changeNumberDefinicoes(dias:number){
+    const resp = await api.put("/api/Notificacoes/configuracao/dias" , {dias});
+    return resp.data.objeto as {id: string, dias:number};
 }

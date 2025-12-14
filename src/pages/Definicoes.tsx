@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Modal from '../components/Modal';
 import {useNavigate} from "react-router-dom";
+import {changeNumberDefinicoes} from "../api/dashboard.ts";
 
 export default function Definicoes(){
 
@@ -20,9 +21,14 @@ export default function Definicoes(){
         });
     }
 
-    function guardarAlteracoes() {
-        localStorage.setItem('numeroDiasIngrediente', String(numeroDiasIngrediente));
-        setModalOpen(false);
+    async function guardarAlteracoes() {
+        try{
+            localStorage.setItem('numeroDiasIngrediente', String(numeroDiasIngrediente));
+            await changeNumberDefinicoes(numeroDiasIngrediente);
+            setModalOpen(false);
+        }catch(e){
+            console.error("Erro ao mudar o número de dias", e);
+        }
     }
 
     const cardStyle = [
@@ -76,7 +82,7 @@ export default function Definicoes(){
                     </button>
                     <button
                         className="bg-[#4C6E43] px-10 py-2 rounded-lg"
-                        onClick={() => setModalOpen(true)}   // abre o modal
+                        onClick={() => setModalOpen(true)}
                     >
                         Guardar Alterações
                     </button>
@@ -88,7 +94,7 @@ export default function Definicoes(){
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 title="Alterações"
-                message={`Guardadas com sucesso!`}
+                message={`Guardadas com sucesso! Para mais informações visualize em Informações e Sustentabilidade`}
                 buttons={[
                     {
                         label: "Ok",

@@ -6,7 +6,7 @@ import {
 } from "../api/dashboard.ts"
 import { useNavigate } from "react-router-dom";
 
-const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 border-[#CFCFCF] w-full min-h-[220px] text-center p-0";
+const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 border-[#CFCFCF] w-full text-center p-0";
 
 export default function Dashboard() {
     const [openSugestoesModal, setOpenSugestoesModal] = React.useState(false);
@@ -16,10 +16,6 @@ export default function Dashboard() {
     const [totalCustoDesperdicio, setTotalCustoDesperdicio] = React.useState<number>(0);
     const [percentagemDesperdicio, setPercentagemCustoDesperdicio] = React.useState<number>(0);
     const navigate = useNavigate();
-    const [numeroDiasIngrediente] = React.useState<number>(() => {
-        const saved = localStorage.getItem("numeroDiasIngrediente");
-        return saved ? Number(saved) : 7;
-    });
     const [notificacoesIngredientes, setNotificacoesIngredientes] =
         React.useState<NotificacaoIngrediente[]>([]);
 
@@ -38,20 +34,14 @@ export default function Dashboard() {
     React.useEffect(() => {
         async function loadIngredientesPrazo() {
             try {
-                const objeto = await getNotificacoesIngredientesProximosValidade(
-                    numeroDiasIngrediente
-                );
-                const apenasIngredientes = objeto.filter((n) =>
-                    n.mensagem.toLowerCase().includes("ingrediente")
-                );
-                setNotificacoesIngredientes(apenasIngredientes);
+                const objeto = await getNotificacoesIngredientesProximosValidade();
+                setNotificacoesIngredientes(objeto);
             } catch (err) {
                 console.error("Erro ao mostrar ingredientes perto de expirar", err);
             }
         }
         loadIngredientesPrazo();
-    }, [numeroDiasIngrediente]);
-
+    }, []);
 
     React.useEffect(() => {
         async function loadRanking() {
@@ -90,52 +80,30 @@ export default function Dashboard() {
         return "Excelente"; // 100
     }
 
-    function extrairNomeIngrediente(mensagem: string): string {
-        const match = mensagem.match(/ingrediente\s+'([^']+)'/i);
-        return match ? match[1] : "";
-    }
-
-    function extrairNomePrato(mensagem: string): string {
-        if (mensagem.toLowerCase().includes("prato")) {
-            const match = mensagem.match(/prato\s+'([^']+)'/i);
-            return match ? match[1] : "";
-        }
-        return "";
-    }
-
-    function extrairDiasRestantes(mensagem: string): string {
-        const match = mensagem.match(/(\d+)\s*dia\(s\)/i);
-        return match ? match[1] : "";
-    }
-
     const cards = [
         {
             id: "card-sugestoes",
             content: (
                 <button
                     onClick={() => setOpenSugestoesModal(true)}
-                    className="flex flex-col w-full h-full text-center m-0"
-                >
+                    className="flex flex-col w-full text-center m-0">
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 text-center">
                         Ingredientes a terminar o prazo
                     </div>
-
                     {notificacoesIngredientes.slice(0, 3).map((n, index) => {
-                        const nome = extrairNomeIngrediente(n.mensagem);
-                        const dias = extrairDiasRestantes(n.mensagem);
-                        const prato = extrairNomePrato(n.mensagem);
                         const bg = index % 2 === 0 ? "bg-[#cfcfcf]" : "bg-[#bcbcbc]";
+                        const pratoSugestao = n.pratosRelacionados[0] ?? "";
                         return (
-                            <div key={n.id} className={`${bg} text-left h-auto`}>
+                            <div key={n.stockId} className={`${bg} text-left h-auto`}>
                                 <ul>
                                     <ul>
-                                        <li className="text-s px-2">{nome}</li>
+                                        <li className="text-s px-2">{n.nomeIngrediente}</li>
                                     </ul>
                                     <li className="text-sm px-2">
-                                        Sugestão de prato: {prato}
+                                        Sugestão de prato: {pratoSugestao}
                                     </li>
                                 </ul>
-                                <span className="float-right text-sm font-semibold px-2"> {dias} dias restantes</span>
+                                <span className="float-right text-sm font-semibold px-2">{n.diasParaExpirar} {n.diasParaExpirar === 1 ? "dia restante" : "dias restantes"}</span>
                             </div>
                         );
                     })}
@@ -226,36 +194,23 @@ export default function Dashboard() {
                     },
                 ]}
             >
-                {/* Conteúdo da tabela da modal */}
                 <div className="max-full overflow-x-auto">
                     <table className="w-auto text-left text-sm border-collapse">
                         <tbody>
-                        <tr className="bg-[#bcbcbc]">
-                            <td className="px-3 py-2 font-semibold border border-[#949494]">Ovo</td>
-                            <td className="px-3 py-2 border border-[#949494]">
-                                Pratos recomendados: Bitoque, Prego, Prego no Prato, Hamburger
-                                Especial, Tostas Benedict
-                            </td>
-                            <td className="px-3 py-2 border border-[#949494]">Tempo restante: 1 dia</td>
-                            <td className="px-3 py-2 border border-[#949494]">Quantidade restante: 4 kg</td>
-                        </tr>
-                        <tr className="bg-[#bcbcbc]">
-                            <td className="px-3 py-2 font-semibold border border-[#949494]">Polvo</td>
-                            <td className="px-3 py-2 border border-[#949494]">
-                                Pratos recomendados: Polvo Lagareiro, Polvo Salteado, Arroz de Polvo
-                            </td>
-                            <td className="px-3 py-2 border border-[#949494]">Tempo restante: 3 dias</td>
-                            <td className="px-3 py-2 border border-[#949494]">Quantidade restante: 1 kg</td>
-                        </tr>
-                        <tr className="bg-[#bcbcbc]">
-                            <td className="px-3 py-2 font-semibold border border-[#949494]">Alface</td>
-                            <td className="px-3 py-2 border border-[#949494]">
-                                Pratos recomendados: Bitoque, Salada Cesar, Pokebowl, Salada de Atum,
-                                Salada Colorida com Requeijão
-                            </td>
-                            <td className="px-3 py-2 border border-[#949494]">Tempo restante: 4 dias</td>
-                            <td className="px-3 py-2 border border-[#949494]">Quantidade restante: 0,2 kg</td>
-                        </tr>
+                        {notificacoesIngredientes.map((n) => (
+                            <tr key={n.stockId} className="bg-[#bcbcbc]">
+                                <td className="px-3 py-2 font-semibold border border-[#949494]">
+                                    {n.nomeIngrediente}
+                                </td>
+                                <td className="px-3 py-2 border border-[#949494]">
+                                    Pratos recomendados: {n.pratosRelacionados.join(", ")}
+                                </td>
+                                <td className="px-3 py-2 border border-[#949494]">
+                                    Tempo restante: {n.diasParaExpirar}{" "}
+                                    {n.diasParaExpirar === 1 ? "dia" : "dias"}
+                                </td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
