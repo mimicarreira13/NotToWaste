@@ -11,16 +11,15 @@ import { getStock, addStockItem, updateStockItem } from "../api/stock.ts";
 
 
 
-export type IngredientesStockTabela = {
+export type ItemStock = {
 
-    id: number;
+    id: string;
     nome: string;
-    marca: string;
     quantidade: number;
-    unidade: string; 
+    unidade: number; 
     //custo
-    dataAbertura: string; //tirar
     dataValidade: string;
+
     //imAGEM
     
 }
@@ -29,22 +28,19 @@ export default function StockPage()
 {
 
 
-    const [stockData, setStockData] = useState<IngredientesStockTabela[]>([]);
+    const [stockData, setStockData] = useState<ItemStock[]>([]);
 
     useEffect(() => 
     {
         async function load() {
             const data = await getStock();
-            /*const fixData = data.map((item: IngredientesStockTabela ) => ({
-                ...item,
-                quantidade: Number(item.quantidade)
-            }));
-            setStockData(fixData);*/
+            console.log("Página Stock - stock: " , data);
+            setStockData(data);
         }   
         load();
     }, []);
 
-    async function handleUpdateQuantidade(id:number, quantidade:number) 
+    async function handleUpdateQuantidade(id:string, quantidade:number) 
     {
         await updateStockItem(id, { quantidade });
 
@@ -55,29 +51,52 @@ export default function StockPage()
         );
     }
 
-    async function handleAdd(item: IngredientesStockTabela) 
+    async function handleAdd(item: ItemStock) 
     {
         const saved = await addStockItem(item);
         setStockData(prev => [...prev, saved]);
 
     }
 
-    const stockColumns = 
+    function splitNomeMarca(nomeCompleto: string) {
+        const partes = nomeCompleto.split(" ");
+        return {
+            nome: partes.slice(0, -1).join(" "),
+            marca: partes.at(-1) ?? "",
+        };
+    }
+    function unidadeToLabel(unidade: number) {
+        switch (unidade) {
+            case 1:
+            return "Unidade";
+            case 2:
+            return "Quilo";
+            case 3:
+            return "Litro";
+            default:
+            return "-";
+        }
+    }
+
+    const stockColumns : Column<ItemStock>[] =  
     [
 
-        { key: "nome", label: "Nome" },
-        { key: "marca", label: "Marca" },
+        { key: "nome", label: "Nome", render: (row) => splitNomeMarca(row.nome).nome },
+        { key: "marca", label: "Marca", render: (row) => splitNomeMarca(row.nome).marca },
         { key: "quantidade", label: "Quantidade",
-                render: (row: IngredientesStockTabela) => ( // ver no lado da modal form como fazer onAdded(item);
+                render: (row: ItemStock) => ( // ver no lado da modal form como fazer onAdded(item);
             <Contador
                 value={Number(row.quantidade)}
                 onChange={(int) => handleUpdateQuantidade(row.id, int)}
             />
             )
         },
-        { key: "unidade", label: "Unidade" },
-        { key: "dataAbertura", label: "Data Abertura" },
-        { key: "dataValidade", label: "Data Validade" },
+        { key: "unidade", label: "Unidade",  render: (row) => unidadeToLabel(row.unidade), },
+        //{ key: "dataAbertura", label: "Data Abertura" },
+        { key: "dataValidade", label: "Data Validade",  render: (row) =>
+            row.dataValidade
+            ? row.dataValidade.split("T")[0]
+            : "-"  },
 
     ];
 
@@ -85,13 +104,14 @@ export default function StockPage()
 
          <div className="w-full min-h-full flex flex-col p-3 sm:p-6">
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">
-                Stock   
-            </h1>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 pt-16">
 
                 <BackButton />
+
+                <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">
+                    Stock   
+                </h1>
 
                 <BotaoAdicionar 
                         title="Adicionar ingrediente ao Stock" 

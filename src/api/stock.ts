@@ -2,11 +2,12 @@ import api from "./api";
 
 export async function getStock() {
     const response = await api.get("/api/Ingrediente");
+    console.log("Stock Api , get stock", response.data.objeto);
     return response.data.objeto;
 }
 
 export async function addStockItem(item: {
-    id: number;
+    id: string;
     nome: string;
     marca: string;  
     quantidade: number;
@@ -19,7 +20,7 @@ export async function addStockItem(item: {
 }
 
 
-export async function updateStockItem(id: number, item: {
+export async function updateStockItem(id: string, item: {
     quantidade: number;
 }) {
     const response = await api.put(`/api/EntradaStock/${id}`, item);
