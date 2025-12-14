@@ -17,10 +17,12 @@ export function RelatoriosToggle({
                                      value,
                                      onChange,
                                      only,
+                                     selectedBackgroundColor,
                                  }: {
     value: "ingredients" | "sustainability";
     onChange: (v: "ingredients" | "sustainability") => void;
     only?: "ingredients" | "sustainability";
+    selectedBackgroundColor?: string;
 }) {
     const IngredientsIcon = <GiCarrot size={18} aria-hidden />;
     const SustainabilityIcon = <MdEco size={18} aria-hidden />;
@@ -37,6 +39,7 @@ export function RelatoriosToggle({
             options={filtered}
             value={value}
             onChange={(id) => onChange(id as "ingredients" | "sustainability")}
+            selectedBackgroundColor={selectedBackgroundColor}
         />
     );
 }

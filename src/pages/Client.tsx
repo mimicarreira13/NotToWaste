@@ -40,7 +40,9 @@ export default function Client() {
 
                 {/* passa o estado real do segundo toggle para permitir clique */}
                 {selected === "reports" && (
-                    <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} />
+                    <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)}
+                    selectedBackgroundColor={"#772f2f"}
+                    />
                 )}
             </div>
 
