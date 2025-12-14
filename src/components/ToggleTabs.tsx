@@ -23,7 +23,7 @@ export default function ToggleTabs({
                                        selectedBackgroundColor = "#4C6E43",
                                        selectedTextColor = "#FFFFFF",
                                        baseTextColor = "#767676",
-                                       fontSize = "1.2rem",
+                                       fontSize = "1.1rem",
                                        iconSize = 22,
                                    }: ToggleTabsProps) {
     return (

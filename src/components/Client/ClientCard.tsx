@@ -1,3 +1,4 @@
+// File: `src/components/Client/ClientCard.tsx`
 import React, { useState } from "react";
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
 import { fetchSustainabilityReport, fetchTop10Desperdicios, openPdfBlobInNewTab } from "../../api/relatorios_requests";
@@ -14,24 +15,18 @@ function isSustainability(i: unknown): i is SustainabilityReport {
     return typeof obj?.year === "number" && !("month" in obj);
 }
 
-function parseMonthToNumber(month: string | undefined): number {
-    if (!month) return 1;
-    const m = month.trim().toLowerCase();
-    const pt: Record<string, number> = {
-        janeiro: 1, fevereiro: 2, março: 3, marco: 3, abril: 4, maio: 5, junho: 6,
-        julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12
-    };
-    const en: Record<string, number> = {
-        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
-        july: 7, august: 8, september: 9, october: 10, november: 11, december: 12
-    };
-    if (/^\d+$/.test(m)) {
-        const n = Math.max(1, Math.min(12, Number(m)));
-        return n;
-    }
-    if (pt[m]) return pt[m];
-    if (en[m]) return en[m];
-    return 1;
+// helper to map month names to numbers (fallback when monthNumber isn't provided)
+const monthsList = [
+    "janeiro","fevereiro","marco","abril","maio","junho",
+    "julho","agosto","setembro","outubro","novembro","dezembro"
+];
+function normalize(s: string) {
+    return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+function parseMonthFallback(monthName: string): number {
+    const n = normalize(monthName);
+    const idx = monthsList.indexOf(n);
+    return idx !== -1 ? idx + 1 : 1;
 }
 
 export default function ClientCard({ item, compact = false }: Props) {
@@ -49,12 +44,16 @@ export default function ClientCard({ item, compact = false }: Props) {
     const bottomBandCompact = "w-full text-white text-center py-2 text-sm";
     const bottomBand = compact ? bottomBandCompact : bottomBandLarge;
 
+    // make report labels slightly bigger than the default band text
+    const reportLabelClass = compact ? "text-base" : "text-xl";
+
     const handleDownload = async () => {
         if (loading) return;
         setLoading(true);
         try {
             if (isIngredient(item)) {
-                const monthNumber = parseMonthToNumber(item.month);
+                // prefer precomputed monthNumber when available, fallback to parsing
+                const monthNumber = item.monthNumber ?? parseMonthFallback(item.month);
                 const blob = await fetchTop10Desperdicios(item.year, monthNumber);
                 openPdfBlobInNewTab(blob, `Relatório ${item.month} ${item.year}`);
             } else if (isSustainability(item)) {
@@ -91,7 +90,11 @@ export default function ClientCard({ item, compact = false }: Props) {
                     <div className="flex-1 w-full overflow-hidden ">
                         <img src={item.image} alt={item.month} className={imgClasses} />
                     </div>
-                    <div className={bottomBand + " bg-[#4C6E43]"}>{item.month}</div>
+                    <div className={bottomBand + " bg-[#4C6E43] " + reportLabelClass}>
+                        <span className={compact ? "text-xl font-semibold" : "text-3xl font-extrabold"}>
+                            {item.month}
+                        </span>
+                    </div>
                 </div>
 
                 {loading && (
@@ -119,7 +122,7 @@ export default function ClientCard({ item, compact = false }: Props) {
                     <div className="flex-1 w-full overflow-hidden ">
                         <img src={item.image} alt={`Relatório ${item.year}`} className={imgClasses} />
                     </div>
-                    <div className={bottomBand + " bg-[#4C6E43]"}>{item.year}</div>
+                    <div className={bottomBand + " bg-[#4C6E43] " + reportLabelClass}>{item.year}</div>
                 </div>
 
                 {loading && (
