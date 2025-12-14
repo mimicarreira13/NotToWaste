@@ -1,4 +1,3 @@
-// typescript
 import api from "./api";
 
 export async function fetchSustainabilityReport(year: number): Promise<Blob> {
@@ -45,4 +44,39 @@ export function openPdfBlobInNewTab(blob: Blob, title = "Relatório"): void {
   `);
     newTab.document.close();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+
+export async function fetchAvailableSustainabilityYears(): Promise<number[]> {
+    try {
+        const resp = await api.get("/api/Dashboard/anos-sustentabilidade");
+        const data = resp.data;
+        if (data && Array.isArray(data.objeto)) {
+            return (data.objeto as number[]).slice().sort((a, b) => b - a);
+        }
+        return [];
+    } catch (err) {
+        console.error("Error fetching available sustainability years:", err);
+        return [];
+    }
+}
+
+export async function fetchAvailableIngredientYearsMonths(): Promise<Record<number, string[]>> {
+    try {
+        // If your real endpoint is different, update this path.
+        const resp = await api.get("/api/Dashboard/anos-meses-ingredientes");
+        const data = resp.data;
+        const out: Record<number, string[]> = {};
+        if (data && typeof data.objeto === "object" && data.objeto !== null) {
+            Object.keys(data.objeto).forEach((k) => {
+                const year = Number(k);
+                const months = Array.isArray(data.objeto[k]) ? data.objeto[k].map(String) : [];
+                out[year] = months;
+            });
+        }
+        return out;
+    } catch (err) {
+        console.error("Error fetching ingredient years/months:", err);
+        return {};
+    }
 }

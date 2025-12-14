@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GiCarrot } from "react-icons/gi";
 import { MdEco } from "react-icons/md";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
 import ClientYearSections from "../components/Client/ClientYearSections";
-import { sustainabilityReports, ingredientItems } from "../data/clientItems";
 import { useLocation } from "react-router-dom";
+import sustImg from "../assets/images/reports/sustentabilidade.png";
+import ingImg from "../assets/images/reports/ingredients.png";
+import {
+    fetchAvailableSustainabilityYears,
+    fetchAvailableIngredientYearsMonths,
+} from "../api/relatorios_requests";
 
 export function RelatoriosToggle({
                                      value,
@@ -36,23 +41,82 @@ export function RelatoriosToggle({
     );
 }
 
+function capitalizeMonth(m: string) {
+    if (!m) return m;
+    return m.charAt(0).toUpperCase() + m.slice(1);
+}
+
 export function RelatoriosContent({ tab }: { tab: "ingredients" | "sustainability" }) {
+    // local states for lists and loading
+    const [sustainabilityYears, setSustainabilityYears] = useState<number[]>([]);
+    const [ingredientYearsMonths, setIngredientYearsMonths] = useState<Record<number, string[]>>({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            setLoading(true);
+            try {
+                const [yrs, ing] = await Promise.all([
+                    fetchAvailableSustainabilityYears(),
+                    fetchAvailableIngredientYearsMonths(),
+                ]);
+                if (!mounted) return;
+                setSustainabilityYears(yrs);
+                setIngredientYearsMonths(ing);
+            } catch (err) {
+                console.error("Failed to load report lists:", err);
+                if (mounted) {
+                    setSustainabilityYears([]);
+                    setIngredientYearsMonths({});
+                }
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    // build items to match previous ClientCard expectations
+    const sustainabilityItems = sustainabilityYears.map((y) => ({ id: y, year: y, image: sustImg }));
+    // flatten ingredient years/months into IngredientItem[]
+    const ingredientItems = Object.keys(ingredientYearsMonths)
+        .map((k) => Number(k))
+        .sort((a, b) => b - a)
+        .flatMap((year) => {
+            const months = ingredientYearsMonths[year] ?? [];
+            return months.map((m, idx) => ({
+                id: `${year}-${m}-${idx}`,
+                month: capitalizeMonth(m),
+                year,
+                image: ingImg,
+            }));
+        });
+
     return (
         <div style={{ marginTop: 220 }}>
-            {tab === "sustainability" && (
+            {loading && (
+                <div className="w-full flex items-center justify-center" style={{ minHeight: 120 }}>
+                    <div>Loading report lists…</div>
+                </div>
+            )}
+
+            {!loading && tab === "sustainability" && (
                 <div className="sust_grid">
                     <ClientGrid
                         variant="sustainability"
-                        items={sustainabilityReports}
+                        items={sustainabilityItems}
                         columns={4}
-                        renderItem={(r) => <ClientCard item={r} />}
+                        renderItem={(r: any) => <ClientCard item={r} />}
                     />
                 </div>
             )}
 
-            {tab === "ingredients" && (
+            {!loading && tab === "ingredients" && (
                 <div className="first-year-wrap">
-                    <ClientYearSections items={ingredientItems} columns={6} compact />
+                    <ClientYearSections items={ingredientItems as any} columns={6} compact />
                 </div>
             )}
 
@@ -150,12 +214,7 @@ export default function Relatorios() {
                 aria-hidden="true"
             />
             <div className="fixed-top-toggles fixed top-32 left-48 right-48 flex items-center justify-between z-40">
-                {/* agora o toggle secundário fica no lado esquerdo quando acessada a página Relatórios */}
                 <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} only={only} />
-
-                <div>
-                    {/* placeholder para o primeiro toggle quando acessada diretamente (lado direito) */}
-                </div>
             </div>
 
             <RelatoriosContent tab={reportTab} />
