@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import desperdicioDataJSON from "../tmp/dataDesperdicio.json";
 import { Tabela } from "../components/Tabelas/CriarTabela";
 import type { Column } from "../components/Tabelas/CriarTabela";
@@ -5,40 +6,74 @@ import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
+import { getDesperdicio, addDesperdicioItem, updateDesperdicioItem } from "../api/desperdicio.ts";
 
-export type IngredientesTabela = {
+export type ItemDesperdicio = {
 
-    id: number;
-    nome: string;
-    marca: string;
-    motivo: string;
-    quantidade: string;
-    unidade: string;
-    
+    id: string;
+    ingredienteId: string;
+    descricao: string;
+    quantidade: number;
+    dataMovimento?: string;
+}
+type Ingrediente = {
+  id: string;
+  nome: string;
 }
     
-const desperdicioData = desperdicioDataJSON as IngredientesTabela[];
+//const desperdicioData = desperdicioDataJSON as ItemDesperdicio[];
 
-const desperdicioColumns: Column<IngredientesTabela>[] = [
-
-    { key: "nome", label: "Nome" },
-    { key: "marca", label: "Marca" },
-    { key: "motivo", label: "Motivo" },
-    { key: "quantidade", label: "Quantidade",
-        render: (row, updateRow) => (
-      <Contador
-        value={Number(row.quantidade)}
-        onChange={(int) => updateRow({ quantidade: String(int) })}
-      />
-    )
-     },
-    { key: "unidade", label: "Unidade" },
-    {key: "custo", label: "Custo"},
-    {key: "dataDesperdicio", label: "Data do Desperdício"}
-
-];
 
 export default function Desperdicio() {
+
+    const [desperdicioData, setDesperdicioData] = useState<ItemDesperdicio[]>([]);
+    const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
+    useEffect(() => {
+        async function load() {
+            const response = await getDesperdicio();
+            console.log( "Página desperdicio: " , response);
+            setDesperdicioData(response);
+        }
+        load();
+    }, []);
+
+    async function handleAdd(item: ItemDesperdicio) 
+    {
+        const saved = await addDesperdicioItem(item);
+        setDesperdicioData(prev => [...prev, saved]);
+    }
+
+    async function handleUpdateQuantidade(id: string, quantidade: number) 
+    {
+        //await updateDesperdicioItem(id, { quantidade });  // chamada a api falta ter no backend
+
+        setDesperdicioData(prev =>
+            prev.map(item =>
+                item.id === id ? { ...item, quantidade } : item
+            )
+        );
+    }
+
+    const desperdicioColumns: Column<ItemDesperdicio>[] = 
+    [
+        { key: "ingredienteId", label: "Nome" }, //select endoreço api ingredientes get 
+        { key: "descricao", label: "Motivo" }, //select
+        { key: "quantidade", label: "Quantidade",
+            render: (row) => (
+                <Contador
+                    value={row.quantidade}
+                    onChange={(int) => handleUpdateQuantidade(row.id, int)}
+                />
+            )
+        },
+        { key: "dataMovimento", label: "Data de Registo",  render: (row) =>
+            row.dataMovimento
+            ? row.dataMovimento.split("T")[0]
+            : "-" 
+        },
+
+    ];
+
     return (
 
         <div className="w-full min-h-full flex flex-col p-3 sm:p-6">   
@@ -56,6 +91,7 @@ export default function Desperdicio() {
                 title="Adicionar ingrediente ao Desperdício" 
                 modalComponent={DesperdicioFormulario} 
                 buttonLabel="Adicionar" 
+                onAdded={handleAdd} 
                 />
 
             </div>

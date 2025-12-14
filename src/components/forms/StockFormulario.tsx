@@ -21,8 +21,15 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    // valida, envia ao backend, etc.
-    onAdded?.(form);
+    onAdded?.({
+      id: 0, 
+      nome: form.nome,
+      marca: form.marca,
+      quantidade: Number(form.quantidade),
+      unidade: form.unidade,
+      dataAbertura: form.dataAbertura,
+      dataValidade: form.dataValidade,
+    });
     onClose();
   }
 

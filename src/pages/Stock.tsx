@@ -1,45 +1,85 @@
 
-import stockDataJSON from "../tmp/dataStock.json";
+import React, { useEffect, useState } from "react";
+//import stockDataJSON from "../tmp/dataStock.json";
 import { Tabela } from "../components/Tabelas/CriarTabela";
 import type { Column } from "../components/Tabelas/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import StockFormulario from "../components/forms/StockFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
+import { getStock, addStockItem, updateStockItem } from "../api/stock.ts";
+
+
 
 export type IngredientesStockTabela = {
 
     id: number;
     nome: string;
     marca: string;
-    quantidade: string;
-    unidade: string;
-    dataAbertura: string;
+    quantidade: number;
+    unidade: string; 
+    //custo
+    dataAbertura: string; //tirar
     dataValidade: string;
+    //imAGEM
     
 }
-    
-const stockData = stockDataJSON as IngredientesStockTabela[];
 
-const stockColumns: Column<IngredientesStockTabela>[] = [
+export default function StockPage() 
+{
 
-    { key: "nome", label: "Nome" },
-    { key: "marca", label: "Marca" },
-    { key: "quantidade", label: "Quantidade",
-            render: (row, updateRow) => (
-          <Contador
-            value={Number(row.quantidade)}
-            onChange={(int) => updateRow({ quantidade: String(int) })}
-          />
-        )
-    },
-    { key: "unidade", label: "Unidade" },
-    { key: "dataAbertura", label: "Data Abertura" },
-    { key: "dataValidade", label: "Data Validade" },
 
-];
+    const [stockData, setStockData] = useState<IngredientesStockTabela[]>([]);
 
-export default function StockPage() {
+    useEffect(() => 
+    {
+        async function load() {
+            const data = await getStock();
+            /*const fixData = data.map((item: IngredientesStockTabela ) => ({
+                ...item,
+                quantidade: Number(item.quantidade)
+            }));
+            setStockData(fixData);*/
+        }   
+        load();
+    }, []);
+
+    async function handleUpdateQuantidade(id:number, quantidade:number) 
+    {
+        await updateStockItem(id, { quantidade });
+
+        setStockData((prev) =>
+            prev.map((item) => 
+            item.id === id ? { ...item, quantidade} : item
+            )
+        );
+    }
+
+    async function handleAdd(item: IngredientesStockTabela) 
+    {
+        const saved = await addStockItem(item);
+        setStockData(prev => [...prev, saved]);
+
+    }
+
+    const stockColumns = 
+    [
+
+        { key: "nome", label: "Nome" },
+        { key: "marca", label: "Marca" },
+        { key: "quantidade", label: "Quantidade",
+                render: (row: IngredientesStockTabela) => ( // ver no lado da modal form como fazer onAdded(item);
+            <Contador
+                value={Number(row.quantidade)}
+                onChange={(int) => handleUpdateQuantidade(row.id, int)}
+            />
+            )
+        },
+        { key: "unidade", label: "Unidade" },
+        { key: "dataAbertura", label: "Data Abertura" },
+        { key: "dataValidade", label: "Data Validade" },
+
+    ];
 
     return (
 
@@ -56,7 +96,8 @@ export default function StockPage() {
                 <BotaoAdicionar 
                         title="Adicionar ingrediente ao Stock" 
                         modalComponent={StockFormulario} 
-                        buttonLabel="Adicionar"       
+                        buttonLabel="Adicionar" 
+                        onAdded={handleAdd}      
                 />
 
             </div>

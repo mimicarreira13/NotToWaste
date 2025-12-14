@@ -24,15 +24,6 @@ export function Tabela<T extends Record<string, any>>({
   className,
 }: TableProps<T>) {
 
-
-  const [rows, setRows] = useState(data);
-
-  function updateRow(index: number, patch: Partial<T>) {
-    setRows((prev) =>
-      prev.map((row, i) => (i === index ? { ...row, ...patch } : row))
-    );
-  }
-
   return (
     <div className={`rounded-lg overflow-x-auto border bg-white shadow ${className ?? ""}`}>
       <table className="w-full border-collapse">
@@ -52,7 +43,7 @@ export function Tabela<T extends Record<string, any>>({
         </thead>
 
         <tbody>
-          {rows.map((row, idx) => (
+          {data.map((row, idx) => (
             <tr
               key={rowKey ? String(rowKey(row, idx)) : String((row as any).id ?? idx)}
               className="odd:bg-neutral-300 even:bg-neutral-200"
@@ -65,7 +56,7 @@ export function Tabela<T extends Record<string, any>>({
                   } font-semibold text-justify`}
                 >
                   {col.render
-                    ? col.render(row, (patch) => updateRow(idx, patch))
+                    ? col.render(row, () =>{})
                     : (row as any)[col.key as string]}
                 </td>
               ))}
