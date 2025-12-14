@@ -58,13 +58,6 @@ export default function StockPage()
 
     }
 
-    function splitNomeMarca(nomeCompleto: string) {
-        const partes = nomeCompleto.split(" ");
-        return {
-            nome: partes.slice(0, -1).join(" "),
-            marca: partes.at(-1) ?? "",
-        };
-    }
     function unidadeToLabel(unidade: number) {
         switch (unidade) {
             case 1:
@@ -81,8 +74,7 @@ export default function StockPage()
     const stockColumns : Column<ItemStock>[] =  
     [
 
-        { key: "nome", label: "Nome", render: (row) => splitNomeMarca(row.nome).nome },
-        { key: "marca", label: "Marca", render: (row) => splitNomeMarca(row.nome).marca },
+        { key: "nome", label: "Nome" },
         { key: "quantidade", label: "Quantidade",
                 render: (row: ItemStock) => ( // ver no lado da modal form como fazer onAdded(item);
             <Contador
@@ -92,7 +84,7 @@ export default function StockPage()
             )
         },
         { key: "unidade", label: "Unidade",  render: (row) => unidadeToLabel(row.unidade), },
-        //{ key: "dataAbertura", label: "Data Abertura" },
+       
         { key: "dataValidade", label: "Data Validade",  render: (row) =>
             row.dataValidade
             ? row.dataValidade.split("T")[0]
