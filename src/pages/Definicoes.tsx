@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import Modal from '../components/Modal';
 import {useNavigate} from "react-router-dom";
+import {changeNumberDefinicoes} from "../api/dashboard.ts";
 
 export default function Definicoes(){
-
-    const [numeroDiasPrato, setNumeroDiasPrato] = useState(() => {
-        const saved = localStorage.getItem('numeroDiasPrato');
-        return saved ? Number(saved) : 3;
-    });
 
     const [numeroDiasIngrediente, setNumeroDiasIngrediente] = useState(() => {
         const saved = localStorage.getItem('numeroDiasIngrediente');
@@ -17,14 +13,6 @@ export default function Definicoes(){
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
 
-    function contagemDiasPrato(action: 'increment' | 'decrement') {
-        setNumeroDiasPrato((prev) => {
-            if (action === 'increment') return prev + 1;
-            if (action === 'decrement' && prev > 0) return prev - 1;
-            return prev;
-        });
-    }
-
     function contagemDiasIngrediente(action: 'increment' | 'decrement') {
         setNumeroDiasIngrediente((prev) => {
             if (action === 'increment') return prev + 1;
@@ -33,41 +21,17 @@ export default function Definicoes(){
         });
     }
 
-    function guardarAlteracoes() {
-        localStorage.setItem('numeroDiasPrato', String(numeroDiasPrato));
-        localStorage.setItem('numeroDiasIngrediente', String(numeroDiasIngrediente));
-        setModalOpen(false);
+    async function guardarAlteracoes() {
+        try{
+            localStorage.setItem('numeroDiasIngrediente', String(numeroDiasIngrediente));
+            await changeNumberDefinicoes(numeroDiasIngrediente);
+            setModalOpen(false);
+        }catch(e){
+            console.error("Erro ao mudar o número de dias", e);
+        }
     }
 
     const cardStyle = [
-        {
-            id: "alerta-prato",
-            content:(
-                <>
-                    <div className="text-center bg-[#4C6E43] text-[#FFFFFF] py-2 rounded-lg font-bold width-auto">
-                        Editar Sugestões de Pratos
-                    </div>
-                    <div className="grid grid-cols-5 m-1 px-14 items-center text-lg">
-                        <div className="w-8 h-8 bg-[#FFFFFF] text-black flex justify-center items-center rounded-lg">
-                            <h5>{numeroDiasPrato}</h5>
-                        </div>
-                        <div>
-                            <h5>dia(s)</h5>
-                        </div>
-                        <div className="w-8 h-8 bg-[#4C6E43] text-white flex justify-center items-center rounded-lg text-lg">
-                            <button onClick={() => contagemDiasPrato('increment')}>+</button>
-                        </div>
-                        <div className="w-8 h-8 bg-[#6E4343] text-white flex justify-center items-center rounded-lg text-lg">
-                            <button onClick={() => contagemDiasPrato('decrement')}>-</button>
-                        </div>
-                        <div className="text-end">
-                            <h5>Pratos com ingredientes a</h5>
-                            <h5>{numeroDiasPrato} dias de atingir a validade</h5>
-                        </div>
-                    </div>
-                </>
-            )
-        },
         {
             id: "alerta-ingrediente",
             content:(
@@ -118,7 +82,7 @@ export default function Definicoes(){
                     </button>
                     <button
                         className="bg-[#4C6E43] px-10 py-2 rounded-lg"
-                        onClick={() => setModalOpen(true)}   // abre o modal
+                        onClick={() => setModalOpen(true)}
                     >
                         Guardar Alterações
                     </button>
@@ -130,7 +94,7 @@ export default function Definicoes(){
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 title="Alterações"
-                message={`Guardadas com sucesso!`}
+                message={`Guardadas com sucesso! Para mais informações visualize em Informações e Sustentabilidade`}
                 buttons={[
                     {
                         label: "Ok",

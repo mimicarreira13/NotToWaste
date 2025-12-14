@@ -139,6 +139,7 @@ export default function Relatorios() {
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">(only ?? "ingredients");
     const bandHeight = 190;
 
+
     return (
         <div
             className={`w-full relatorios-page ${!only ? "has-second-toggle" : ""}`}
