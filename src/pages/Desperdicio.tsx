@@ -97,15 +97,16 @@ export default function Desperdicio() {
 
         <div className="w-full min-h-full flex flex-col p-3 sm:p-6">   
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">
-                Desperdício
-            </h1>
-
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 pt-16">
             
             
                 <BackButton />
-            
+
+                <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">
+                    Desperdício
+                </h1>
+
                 <BotaoAdicionar 
                 title="Adicionar ingrediente ao Desperdício" 
                 modalComponent={DesperdicioFormulario} 
