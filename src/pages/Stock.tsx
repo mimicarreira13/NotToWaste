@@ -17,7 +17,7 @@ export type ItemStock = {
     nome: string;
     quantidade: number;
     unidade: number; 
-    //custo
+    custo: number;
     dataValidade: string;
 
     //imAGEM
@@ -84,7 +84,7 @@ export default function StockPage()
             )
         },
         { key: "unidade", label: "Unidade",  render: (row) => unidadeToLabel(row.unidade), },
-       
+        { key: "custo", label: "Custo"},
         { key: "dataValidade", label: "Data Validade",  render: (row) =>
             row.dataValidade
             ? row.dataValidade.split("T")[0]
@@ -114,11 +114,13 @@ export default function StockPage()
 
             </div>
 
-            <Tabela 
-                data={stockData} 
-                columns={stockColumns} 
-                rowKey={(i) => i.id} 
-            />
+            <div className="flex-1 overflow-y-auto max-h-[50vh]">
+                <Tabela 
+                    data={stockData} 
+                    columns={stockColumns} 
+                    rowKey={(i) => i.id} 
+                />
+            </div>
 
         </div>
     );

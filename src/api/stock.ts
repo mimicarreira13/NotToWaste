@@ -9,10 +9,9 @@ export async function getStock() {
 export async function addStockItem(item: {
     id: string;
     nome: string;
-    marca: string;  
     quantidade: number;
-    unidade: string;
-    dataAbertura: string;
+    unidade: number;
+    custo: number;
     dataValidade: string;
 }) {
     const response = await api.post("/api/Ingrediente", item);

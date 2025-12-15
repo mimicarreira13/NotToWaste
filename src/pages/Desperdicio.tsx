@@ -14,6 +14,7 @@ export type ItemDesperdicio = {
     ingredienteId: string;
     descricao: string;
     quantidade: number;
+    unidadeIngrediente: number;
     dataMovimento?: string;
 }
 type Ingrediente = {
@@ -71,6 +72,19 @@ export default function Desperdicio() {
         );
     }
 
+    function unidadeToLabel(unidade: number) {
+        switch (unidade) {
+            case 1:
+            return "Unidade";
+            case 2:
+            return "Quilo";
+            case 3:
+            return "Litro";
+            default:
+            return "-";
+        }
+    }
+
     const desperdicioColumns: Column<ItemDesperdicio>[] = 
     [
         { key: "ingredienteId", label: "Nome", render: (row) =>
@@ -85,6 +99,7 @@ export default function Desperdicio() {
                 />
             )
         },
+        { key: "unidadeIngrediente", label: "Unidade",  render: (row) => unidadeToLabel(row.unidadeIngrediente) },
         { key: "dataMovimento", label: "Data de Registo",  render: (row) =>
             row.dataMovimento
             ? row.dataMovimento.split("T")[0]
@@ -115,11 +130,14 @@ export default function Desperdicio() {
                 />
 
             </div>
+
+            <div className="flex-1 overflow-y-auto max-h-[50vh]">
                 <Tabela 
                     data={desperdicioData} 
                     columns={desperdicioColumns} 
                     rowKey={(i) => i.id} 
                 />
+            </div>
 
         </div>
     );
