@@ -5,24 +5,63 @@ import Modal from "../Modal";
 export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
   const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
   const [form, setForm] = useState({
+    id: "",
     nome: "",
-    marca: "",
-    quantidade: "",
-    unidade: "",
-    custo: "",
-    dataAbertura: "",
+    quantidade: 0,
+    unidade: 0,
+    custo: 0,
     dataValidade: "",
     imagem: "",
   });
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  }
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+       const { name, value } = e.target;
+  
+     
+        if (name === "quantidade") {
+          // permite string vazia (para apagar)
+          if (value === "") {
+            setForm(prev => ({ ...prev, quantidade: 0 }));
+            return;
+          }
+  
+          // só números positivos
+          const num = Number(value);
+  
+         if (!Number.isInteger(num) || num < 1) {
+          return;
+        }
+  
+          setForm(prev => ({ ...prev, quantidade: num }));
+          return;
+        }
+  
+        if (name === "unidade") {
+          setForm(prev => ({ ...prev, unidade: Number(value) }));
+          return;
+        }
+        if (name === "custo") {
+          // permite string vazia (para apagar)
+          if (value === "") { 
+            setForm(prev => ({ ...prev, custo: 0 }));
+            return;
+          }
+        }
+  
+      setForm(prev => ({...prev,[name]: value}));
+    }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    // valida, envia ao backend, etc.
-    onAdded?.(form);
+    onAdded?.({
+      id: "", 
+      nome: form.nome,
+      quantidade: Number(form.quantidade),
+      unidade: Number(form.unidade),
+      custo: Number(form.custo),
+      dataValidade: form.dataValidade,
+      imagem: (form as any).imagem,
+    });
     onClose();
   }
 
@@ -32,66 +71,63 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
         name="nome" 
         value={form.nome} 
         onChange={handleChange} 
-        placeholder="Nome" 
-        className="w-full px-3 py-2 border rounded" 
-      />
-      <input 
-        name="marca" 
-        value={form.marca} 
-        onChange={handleChange} 
-        placeholder="Marca" 
+        placeholder="Nome Marca" 
         className="w-full px-3 py-2 border rounded" 
       />
 
-    <div className="flex gap-2">
-      <input
-      name="quantidade"
-      value={form.quantidade}
-      onChange={handleChange}
-      placeholder="Quantidade"
-      className="flex-1 px-3 py-2 border rounded"
-      />
-      <input
-      name="unidade"
-      value={form.unidade}
-      onChange={handleChange}
-      placeholder="Unidade"
-      className="w-32 px-3 py-2 border rounded"
-      />
-    </div>
+      <div className="flex gap-2">
+        <input
+          name="quantidade"
+          min={1} 
+          max={99999}
+          type ="number"
+          inputMode="numeric"
+          pattern="[1-9]*"
+          value={form.quantidade}
+          onChange={handleChange}
+          placeholder="Quantidade"
+          className="flex-1 px-3 py-2 border rounded"
+        />
+    
+        <select
+          name="unidade"
+          value={form.unidade}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded"
+          required
+        >
+          
+          <option value={1}>Unidade</option>
+          <option value={2}>Quilo</option>
+          <option value={3}>Litro</option>
+        
+        </select>
+      </div>
+    
     <input
       name="custo"
+      min={1} 
+      max={99999}
+      type ="number"
+      inputMode="numeric"
+      pattern="[1-9]*"
       value={form.custo}
       onChange={handleChange}
       placeholder="Custo"
       className="w-full px-3 py-2 border rounded"
       />
-    
 
     <div className="relative pt-8">
       <label className="absolute left-3 -top-3 bg-white px-1 text-sm text-gray-600 pt-5">
-        Data de abertura
+          Data de validade
       </label>
       <input
         type="date"
-        name="dataAbertura"
-        value={form.dataAbertura}
+        name="dataValidade"
+        value={form.dataValidade}
         onChange={handleChange}
         className="w-full px-3 py-2 border rounded"
       />
-    </div>
-
-  <div className="relative pt-8">
-    <label className="absolute left-3 -top-3 bg-white px-1 text-sm text-gray-600 pt-5">
-        Data de validade
-    </label>
-    <input
-      type="date"
-      name="dataValidade"
-      value={form.dataValidade}
-      onChange={handleChange}
-      className="w-full px-3 py-2 border rounded"
-    />
     </div>
 
     {/*Para selecionar uma imagem, fazer preview e armazenar dataURL em form.imagem */}

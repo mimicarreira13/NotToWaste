@@ -11,9 +11,10 @@ type BotaoAdicionarProps = {
   title?: string;
   modalComponent?: React.ComponentType<AdicionarForm>;
   buttonLabel?: string;
+  onAdded?: (item: any) => void;
 };
 
-export default function BotaoAdicionar({ title, modalComponent: ModalComponent, buttonLabel = "Adicionar" }: BotaoAdicionarProps) {
+export default function BotaoAdicionar({ title, modalComponent: ModalComponent, buttonLabel = "Adicionar" , onAdded}: BotaoAdicionarProps) {
   const [showPopup, setShowPopup] = useState(false);
 
   return (
@@ -32,9 +33,9 @@ export default function BotaoAdicionar({ title, modalComponent: ModalComponent, 
           <ModalComponent
             onClose={() => setShowPopup(false)}
             onAdded={(item) => {
-              //emitir um evento, fazer refresh ou passar callback via props 
+               onAdded?.(item); 
               setShowPopup(false);
-              //console.log("adicionado:", item);
+              console.log("adicionado:", item);
             }}
           />
         </ModalSemOk>

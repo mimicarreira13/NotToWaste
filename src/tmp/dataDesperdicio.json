@@ -4,9 +4,9 @@
         "nome": "Esparguete",
         "marca": "Continente",
         "motivo": "Fora de validade",
-        "quantidade": "200",
+        "quantidade": 200,
         "unidade": "Gramas",
-        "custo":"2.50",
+        "custo":2.50,
         "dataDesperdicio": "2024-06-15"  
     },
 
@@ -15,9 +15,9 @@
         "nome": "Cogumelos",
         "marca": "SelvagemNatur",
         "motivo": "Bolor",
-        "quantidade": "1",
+        "quantidade": 1,
         "unidade": "Quilo",
-        "custo":"4.00",
+        "custo":4.00,
         "dataDesperdicio": "2024-06-18"
     }
    
