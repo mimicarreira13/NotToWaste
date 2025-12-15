@@ -1,4 +1,3 @@
-//import {useNavigate} from "react-router-dom";
 
 type ItemUI = {
     id: string;

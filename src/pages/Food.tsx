@@ -2,6 +2,7 @@ import {useParams} from "react-router-dom";
 import {FiAlertTriangle} from "react-icons/fi";
 import {useEffect, useState} from "react";
 import BasePopup from "../bases/BasePopup.tsx";
+import type { AxiosError } from "axios";
 import api from "../api/api.ts";
 import { useNavigate } from "react-router-dom";
 import {useProfile} from "../contexts/ProfileContext.tsx";
@@ -51,10 +52,7 @@ interface FoodUI {
     ingredients: string[];
     imageName: string;
     available: boolean;
-    pratoIngredientes?: Array<{ // Add this
-        ingredienteId: string;
-        quantidade: number;
-    }>;
+    pratoIngredientes: Array<{ingredienteId: string, quantidade: number}>;
     apiData?: ApiPrato;
 }
 
@@ -101,8 +99,8 @@ function convertApiToUI(apiPrato: ApiPrato): FoodUI {
     };
 }
 
+
 export default function Food({ mode }: { mode: boolean }) {
-    const { profile } = useProfile();
     const [showPopupDelete, setShowPopupDelete] = useLocalStorageState("popupDelete", false);
     const [showPopupEdit, setShowPopupEdit] = useLocalStorageState("popupEdit", false);
     const [showPopupCook, setShowPopupCook] = useLocalStorageState("popupCook", false);
@@ -111,7 +109,18 @@ export default function Food({ mode }: { mode: boolean }) {
     const [food, setFood] = useState<FoodUI | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const userId = profile?.id;
+    let userId;
+    const userShutUp= useProfile().profile;
+    let userType;
+    if (userShutUp) {
+        userType = userShutUp.id
+    } else
+        userType = "4";
+    if (userType === "3")
+        userId = "644c931f-1bdd-42be-bad6-77adb3b172ca";
+    else
+        userId = "f00ba082-ce05-4076-aad0-fc1c8c99fe02";
+
 
     useEffect(() => {
         if (!id) {
@@ -137,15 +146,19 @@ export default function Food({ mode }: { mode: boolean }) {
                 } else {
                     setError(response.data.mensagem || "Falha ao carregar prato");
                 }
-            } catch (err: any) {
-                console.error("Error fetching food:", err);
+            } catch (err) {
+                const error = err as AxiosError<ApiResponse<ApiPrato>>;
+                console.error("Error fetching food:", error);
 
-                if (err.response?.status === 404) {
+                if (error.response?.status === 404) {
                     setError("Prato não encontrado");
-                } else if (err.code === "ECONNABORTED") {
+                } else if (error.code === "ECONNABORTED") {
                     setError("O servidor demorou muito a responder");
                 } else {
-                    setError("Falha ao carregar dados do prato");
+                    const errorMessage = error.response?.data?.mensagem ||
+                        error.message ||
+                        "Falha ao carregar dados do prato";
+                    setError(errorMessage);
                 }
             } finally {
                 setLoading(false);
@@ -155,7 +168,6 @@ export default function Food({ mode }: { mode: boolean }) {
         fetchFood();
     }, [id]);
 
-    // If loading
     if (loading) {
         return (
             <div className="h-full align-top font-[Sansita] flex items-center justify-center">
@@ -164,7 +176,6 @@ export default function Food({ mode }: { mode: boolean }) {
         );
     }
 
-    // If error
     if (error) {
         return (
             <div className="h-full align-top font-[Sansita] flex flex-col items-center justify-center">
@@ -175,7 +186,6 @@ export default function Food({ mode }: { mode: boolean }) {
         );
     }
 
-    // If no food found
     if (!food) {
         return (
             <div className="h-full align-top font-[Sansita] flex flex-col items-center justify-center">
@@ -204,20 +214,19 @@ export default function Food({ mode }: { mode: boolean }) {
         }
     };
 
-    const handleCookDish = async () => {
-        if (!food || !food.pratoIngredientes.length) {
+    const handleCookDish= async (): Promise<void> => {
+        if (!food || !food.pratoIngredientes || food.pratoIngredientes.length === 0) {
             console.error("No dish or ingredients found");
             return;
         }
 
         try {
-            // Send a request for each ingredient in the dish
             const promises = food.pratoIngredientes.map(async (ingredient) => {
                 const requestBody = {
                     ingredienteId: ingredient.ingredienteId,
-                    utilizadorId: userId, // Make sure to define this constant
+                    utilizadorId: userId,
                     quantidade: ingredient.quantidade,
-                    descricao: "",
+                    descricao: "Cozinhar prato: " + food.title,
                     tipoSaida: 1
                 };
 
@@ -231,17 +240,14 @@ export default function Food({ mode }: { mode: boolean }) {
                 });
             });
 
-            // Wait for all requests to complete
             const responses = await Promise.all(promises);
 
-            // Check if all requests were successful
             const allSuccessful = responses.every(response =>
                 response.status === 200 || response.status === 201
             );
 
             if (allSuccessful) {
                 console.log("Dish cooked successfully! All stock outputs recorded.");
-                return true;
             } else {
                 console.error("Some stock output requests failed");
                 throw new Error("Some stock outputs failed to process");

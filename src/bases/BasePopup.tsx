@@ -11,6 +11,38 @@ interface DishData {
     imagem?: string;
 }
 
+interface ApiPrato {
+    id: string;
+    nome: string;
+    descricao: string;
+    disponivel: boolean;
+    preco: number;
+    caminhoImagem: string | null;
+    pratoIngredientes: Array<{
+        pratoId: string;
+        ingredienteId: string;
+        ingrediente: {
+            id: string;
+            nome: string;
+            quantidade: number;
+        } | null;
+        quantidade: number;
+        id: string;
+    }>;
+}
+
+interface FoodUI {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    ingredients: string[];
+    imageName: string;
+    available: boolean;
+    pratoIngredientes: Array<{ingredienteId: string; quantidade: number}>;
+    apiData?: ApiPrato;
+}
+
 interface BasePopupProps {
     type: string;
     greenButton: string;
@@ -20,7 +52,7 @@ interface BasePopupProps {
     title: string;
     onConfirm?: () => Promise<void> | void;
     itemName?: string;
-    dishData?: any;
+    dishData?: DishData | ApiPrato | FoodUI;
 }
 
 function Ingredients(){
@@ -59,7 +91,10 @@ function Ingredients(){
     )
 }
 
-function CookConfirm({ ItemName, ingredients }: { ItemName?: string, ingredients?: string[] }) {
+function CookConfirm({ ItemName, ingredients }: {
+    ItemName?: string;
+    ingredients?: string[]
+}) {
     return (
         <div className="text-center text-[24px] p-4">
             <p>Tem a certeza que pretende cozinhar o prato?</p>
@@ -104,8 +139,7 @@ function InfoDelete({ ItemName }: { ItemName?: string }) {
 function useFunctionFinder(
     close: () => void,
     onConfirm: (() => void | Promise<void>) | undefined,
-    type: string,
-    dishData?: DishData
+    dishData?: DishData | ApiPrato | FoodUI
 ) {
     const navigate = useNavigate();
 
@@ -139,14 +173,13 @@ function useFunctionFinder(
                 }
                 break;
             case "editDish":
-                if (dishData) {
+                if (dishData && 'id' in dishData && 'nome' in dishData) {
                     try {
-                        // Call the edit dish API endpoint
-                        await editDish(dishData);
+                        await editDish(dishData as DishData);
                         close();
                     } catch (error) {
                         console.error("Erro ao editar prato:", error);
-                        throw error; // Re-throw to handle in the component
+                        throw error;
                     }
                 }
                 break;
@@ -188,13 +221,14 @@ function useFunctionFinder(
 
 export default function BasePopup({type, greenButton, redFunction, greenFunction, onClose, title, onConfirm, itemName, dishData,}: BasePopupProps) {
     const [selectedIngredientIds, setSelectedIngredientIds] = useState<string[]>([]);
-    const { functionFinder } = useFunctionFinder(onClose, onConfirm, type, dishData);
+    const { functionFinder } = useFunctionFinder(onClose, onConfirm, dishData);
     const dishesRef = useRef<DishesHandle>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (type === "edit" && dishData?.pratoIngredientes) {
-            const ingredientIds = dishData.pratoIngredientes.map(
+        if (type === "edit" && dishData && 'pratoIngredientes' in dishData) {
+            const editData = dishData as DishData;
+            const ingredientIds = editData.pratoIngredientes.map(
                 (ing) => ing.ingredienteId
             );
             setSelectedIngredientIds(ingredientIds);
@@ -213,28 +247,38 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
                     />
                 );
             case "edit":
+                { const editDishData = dishData as DishData;
                 return (
                     <Dishes
                         ref={dishesRef}
                         selectedIds={selectedIngredientIds}
                         onChange={setSelectedIngredientIds}
                         onClose={onClose}
-                        isEdit={type === "edit"}
-                        dishData={dishData}
+                        isEdit={true}
+                        dishData={editDishData}
                     />
-                );
+                ); }
             case "ingredients":
                 return <Ingredients />;
             case "infoDelete":
                 return <InfoDelete ItemName={itemName} />;
             case "cook":
-                {let ingredients: string[] = [];
-                    if (dishData && dishData.pratoIngredientes) {
-                        ingredients = dishData.pratoIngredientes.map((pi: any) =>
+                { let ingredients: string[] = [];
+
+                if (dishData) {
+                    if ('pratoIngredientes' in dishData && Array.isArray(dishData.pratoIngredientes)) {
+                        const apiDish = dishData as ApiPrato;
+                        ingredients = apiDish.pratoIngredientes.map((pi) =>
                             pi.ingrediente ? `${pi.ingrediente.nome} (${pi.quantidade || 1})` : `Ingrediente ID: ${pi.ingredienteId}`
                         );
                     }
-                    return <CookConfirm ItemName={itemName} ingredients={ingredients} />;}
+                    else if ('ingredients' in dishData && Array.isArray(dishData.ingredients)) {
+                        const foodUI = dishData as FoodUI;
+                        ingredients = foodUI.ingredients;
+                    }
+                }
+
+                return <CookConfirm ItemName={itemName} ingredients={ingredients} />; }
             default:
                 return null;
         }
@@ -272,9 +316,9 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
 
     if (type === "cook") {
         widthPop = "50%";
-        heightPop = "35%";
-        divWhite = "75%";
-        divGreen = "25%";
+        heightPop = "55%";
+        divWhite = "85%";
+        divGreen = "15%";
     }
 
     return (

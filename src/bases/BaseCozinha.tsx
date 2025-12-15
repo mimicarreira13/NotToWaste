@@ -5,8 +5,6 @@ import Info from "../api/PlatesAndIngredients.tsx";
 import {createCards} from "../components/Cards.tsx";
 import {useNavigate} from "react-router-dom";
 
-
-
 type ItemUI = {
     id: string;
     title: string;
@@ -41,7 +39,7 @@ export default function CozinhaBase({
     let iColor;
 
     const updatePageMode = (value: boolean) => {
-        onPageModeChange(value); // Call parent function
+        onPageModeChange(value);
         localStorage.setItem("pageMode", value.toString());
         setIsLoading(true);
     }

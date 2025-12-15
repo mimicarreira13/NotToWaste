@@ -1,6 +1,6 @@
-// api/useIngredients.ts
 import { useState, useEffect } from "react";
-import api from "./api.ts"; // Adjust the path as needed
+import api from "./api.ts";
+import { isAxiosError } from "axios";
 
 type Ingredient = {
     id: string;
@@ -11,6 +11,13 @@ type Ingredient = {
     dataValidade: string | null;
     unidade: number;
 };
+
+interface ApiErrorResponse {
+    exito?: boolean;
+    mensagem?: string;
+    errors?: Record<string, string[]>;
+    [key: string]: unknown;
+}
 
 type Mensagem<T> = {
     exito: boolean;
@@ -23,6 +30,26 @@ type IngredientOption = {
     id: string;
     name: string;
 };
+
+export function extractErrorMessage(error: unknown): string {
+    if (isAxiosError(error)) {
+        if (error.response?.data && typeof error.response.data === 'object') {
+            const data = error.response.data as ApiErrorResponse;
+            return data.mensagem || error.message || "Erro desconhecido";
+        }
+        return error.message || "Erro de rede";
+    }
+
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    if (typeof error === 'string') {
+        return error;
+    }
+
+    return "Ocorreu um erro desconhecido";
+}
 
 function unidade(uni : number) {
     switch (uni) {
@@ -55,9 +82,10 @@ export function useIngredients() {
                 } else {
                     setError(response.data.mensagem || "Failed to fetch ingredients");
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error("Error fetching ingredients:", err);
-                setError(err.message || "Failed to fetch ingredients");
+                const errorMessage = extractErrorMessage(err);
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -66,7 +94,6 @@ export function useIngredients() {
         fetchIngredients();
     }, []);
 
-    // Helper function to get options for select
     const getOptions = (): IngredientOption[] => {
         return ingredients.map(ing => ({
             id: ing.id,
@@ -75,7 +102,6 @@ export function useIngredients() {
         }));
     };
 
-    // Helper function to get ingredient by ID
     const getIngredientById = (id: string): Ingredient | undefined => {
         return ingredients.find(ing => ing.id === id);
     };
