@@ -8,7 +8,7 @@ interface ApiIngrediente {
     id: string;
     nome: string;
     quantidade: number;
-    caminhoImagem: string | null;
+    caminhoImagem: string;
     custo: number;
     dataValidade: string | null;
     unidade: UnidadeMedida;
@@ -26,7 +26,7 @@ type Mensagem<T = never> = ApiResponse<T>;
 type ItemUI = {
     id: string;
     title: string;
-    imageName: string | null;
+    imageName: string;
     ingredients: string[];
     isIngredient: boolean;
 }
@@ -36,28 +36,6 @@ type InfoProps = {
     id?: string;
     onData?: (data: ItemUI[]) => void;
 };
-
-
-
-// type Mensagem<T = any> = {
-//     exito: boolean;
-//     mensagem: string;
-//     objeto: T[]; // This defines 'objeto' as an array of items
-// }
-//
-// type ItemUI = {
-//     id: string;
-//     title: string;
-//     imageName: string;
-//     ingredients: string[];
-//     isIngredient: boolean;
-// }
-//
-// type InfoProps = {
-//     type: string;
-//     id?: string;
-//     onData?: (data: ItemUI[]) => void;
-// };
 
 export default function Info({type, id, onData} : InfoProps) {
     const [, setInfo] = useState<Mensagem | null>(null);
@@ -135,7 +113,7 @@ function convertIngredientToItemUI(item: ApiIngrediente): ItemUI {
     return {
         id: item.id || "",
         title: item.nome || "Sem nome",
-        imageName: item.caminhoImagem || null,
+        imageName: item.caminhoImagem,
         ingredients: [],
         isIngredient: true
     };

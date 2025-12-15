@@ -11,6 +11,38 @@ interface DishData {
     imagem?: string;
 }
 
+interface ApiPrato {
+    id: string;
+    nome: string;
+    descricao: string;
+    disponivel: boolean;
+    preco: number;
+    caminhoImagem: string | null;
+    pratoIngredientes: Array<{
+        pratoId: string;
+        ingredienteId: string;
+        ingrediente: {
+            id: string;
+            nome: string;
+            quantidade: number;
+        } | null;
+        quantidade: number;
+        id: string;
+    }>;
+}
+
+interface FoodUI {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    ingredients: string[];
+    imageName: string;
+    available: boolean;
+    pratoIngredientes: Array<{ingredienteId: string; quantidade: number}>;
+    apiData?: ApiPrato;
+}
+
 interface BasePopupProps {
     type: string;
     greenButton: string;
@@ -20,7 +52,7 @@ interface BasePopupProps {
     title: string;
     onConfirm?: () => Promise<void> | void;
     itemName?: string;
-    dishData?: DishData;
+    dishData?: DishData | ApiPrato | FoodUI;
 }
 
 function Ingredients(){
@@ -59,6 +91,37 @@ function Ingredients(){
     )
 }
 
+function CookConfirm({ ItemName, ingredients }: {
+    ItemName?: string;
+    ingredients?: string[]
+}) {
+    return (
+        <div className="text-center text-[24px] p-4">
+            <p>Tem a certeza que pretende cozinhar o prato?</p>
+            {ItemName && (
+                <p className="font-bold mt-2 text-[28px]">"{ItemName}"</p>
+            )}
+
+            {ingredients && ingredients.length > 0 && (
+                <div className="mt-6">
+                    <p className="text-[20px] font-medium mb-2">Ingredientes a utilizar:</p>
+                    <div className="bg-gray-100 rounded-lg p-3 max-h-40 overflow-y-auto">
+                        {ingredients.map((ingredient, index) => (
+                            <div key={index} className="text-[18px] text-gray-700 py-1 border-b last:border-b-0">
+                                {ingredient}
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-[18px] text-gray-600 mt-3">
+                        Esta ação irá reduzir o stock dos ingredientes listados.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+
 function InfoDelete({ ItemName }: { ItemName?: string }) {
     return (
         <div className="text-center text-[24px] p-4">
@@ -76,8 +139,7 @@ function InfoDelete({ ItemName }: { ItemName?: string }) {
 function useFunctionFinder(
     close: () => void,
     onConfirm: (() => void | Promise<void>) | undefined,
-    type: string,
-    dishData?: DishData
+    dishData?: DishData | ApiPrato | FoodUI
 ) {
     const navigate = useNavigate();
 
@@ -99,15 +161,25 @@ function useFunctionFinder(
                     }
                 }
                 break;
-            case "editDish":
-                if (dishData) {
+            case "cook":
+                if (onConfirm) {
                     try {
-                        // Call the edit dish API endpoint
-                        await editDish(dishData);
+                        await onConfirm();
+                        close();
+                    } catch (error) {
+                        console.error("Erro ao cozinhar prato:", error);
+                        throw error;
+                    }
+                }
+                break;
+            case "editDish":
+                if (dishData && 'id' in dishData && 'nome' in dishData) {
+                    try {
+                        await editDish(dishData as DishData);
                         close();
                     } catch (error) {
                         console.error("Erro ao editar prato:", error);
-                        throw error; // Re-throw to handle in the component
+                        throw error;
                     }
                 }
                 break;
@@ -149,14 +221,14 @@ function useFunctionFinder(
 
 export default function BasePopup({type, greenButton, redFunction, greenFunction, onClose, title, onConfirm, itemName, dishData,}: BasePopupProps) {
     const [selectedIngredientIds, setSelectedIngredientIds] = useState<string[]>([]);
-    const { functionFinder } = useFunctionFinder(onClose, onConfirm, type, dishData);
+    const { functionFinder } = useFunctionFinder(onClose, onConfirm, dishData);
     const dishesRef = useRef<DishesHandle>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (type === "edit" && dishData?.pratoIngredientes) {
-            // Extract ingredient IDs from the dish data
-            const ingredientIds = dishData.pratoIngredientes.map(
+        if (type === "edit" && dishData && 'pratoIngredientes' in dishData) {
+            const editData = dishData as DishData;
+            const ingredientIds = editData.pratoIngredientes.map(
                 (ing) => ing.ingredienteId
             );
             setSelectedIngredientIds(ingredientIds);
@@ -166,21 +238,47 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
     const render = () => {
         switch(type) {
             case "dishes":
-            case "edit":
                 return (
                     <Dishes
                         ref={dishesRef}
                         selectedIds={selectedIngredientIds}
                         onChange={setSelectedIngredientIds}
                         onClose={onClose}
-                        isEdit={type === "edit"}
-                        dishData={dishData}
                     />
                 );
+            case "edit":
+                { const editDishData = dishData as DishData;
+                return (
+                    <Dishes
+                        ref={dishesRef}
+                        selectedIds={selectedIngredientIds}
+                        onChange={setSelectedIngredientIds}
+                        onClose={onClose}
+                        isEdit={true}
+                        dishData={editDishData}
+                    />
+                ); }
             case "ingredients":
                 return <Ingredients />;
             case "infoDelete":
                 return <InfoDelete ItemName={itemName} />;
+            case "cook":
+                { let ingredients: string[] = [];
+
+                if (dishData) {
+                    if ('pratoIngredientes' in dishData && Array.isArray(dishData.pratoIngredientes)) {
+                        const apiDish = dishData as ApiPrato;
+                        ingredients = apiDish.pratoIngredientes.map((pi) =>
+                            pi.ingrediente ? `${pi.ingrediente.nome} (${pi.quantidade || 1})` : `Ingrediente ID: ${pi.ingredienteId}`
+                        );
+                    }
+                    else if ('ingredients' in dishData && Array.isArray(dishData.ingredients)) {
+                        const foodUI = dishData as FoodUI;
+                        ingredients = foodUI.ingredients;
+                    }
+                }
+
+                return <CookConfirm ItemName={itemName} ingredients={ingredients} />; }
             default:
                 return null;
         }
@@ -216,6 +314,13 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
         divGreen = "25%";
     }
 
+    if (type === "cook") {
+        widthPop = "50%";
+        heightPop = "55%";
+        divWhite = "85%";
+        divGreen = "15%";
+    }
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#4c6e43] shadow-lg overflow-auto rounded-[25px]" style={{width: widthPop, height: heightPop}}>
@@ -231,7 +336,7 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
                                 onClick={() => functionFinder(redFunction)}
                                 disabled={isSubmitting}
                             >
-                                Cancelar
+                                {type === "cook" ? "Não" : "Cancelar"}
                             </button>
                             <button
                                 className={"bg-[#4c6e43] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px] hover:bg-[#3a5a32] transition-colors"}

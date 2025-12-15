@@ -54,6 +54,7 @@ export default function Pratos(
             }
             pageState={pageMode}
             onPageModeChange={setPageMode}
+            pageType={"pratos"}
         />
     );
 }

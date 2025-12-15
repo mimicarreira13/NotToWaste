@@ -5,8 +5,6 @@ import Info from "../api/PlatesAndIngredients.tsx";
 import {createCards} from "../components/Cards.tsx";
 import {useNavigate} from "react-router-dom";
 
-
-
 type ItemUI = {
     id: string;
     title: string;
@@ -26,12 +24,14 @@ export default function CozinhaBase({
                                         overlay,
                                         extraDiv,
                                         pageState,
-                                        onPageModeChange
+                                        onPageModeChange,
+                                        pageType
                                     }: {
     overlay?: React.ReactNode;
     extraDiv?: React.ReactNode;
     pageState : boolean;
     onPageModeChange: (mode: boolean) => void;
+    pageType : string;
 }) {
     const [, setSearch] = useState("");
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function CozinhaBase({
     let iColor;
 
     const updatePageMode = (value: boolean) => {
-        onPageModeChange(value); // Call parent function
+        onPageModeChange(value);
         localStorage.setItem("pageMode", value.toString());
         setIsLoading(true);
     }
@@ -162,7 +162,7 @@ export default function CozinhaBase({
                                 <div
                                     key={card.id}
                                     className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
-                                    onClick={() => navigate(`/pratos/food/${card.id}`)}
+                                    onClick={() => navigate(`/${pageType}/food/${card.id}`)}
                                     style={{height: "345px", borderRadius: "10px", width: "444px"}}
                                 >
                                     {card.content}

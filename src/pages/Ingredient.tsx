@@ -3,8 +3,16 @@ import {FiAlertTriangle} from "react-icons/fi";
 import {useEffect, useState} from "react";
 import BasePopup from "../bases/BasePopup.tsx";
 import api from "../api/api.ts";
+import {isAxiosError} from "axios";
 
 type UnidadeMedida = 1 | 2 | 3; // 1=Unidades, 2=Kg, 3=L
+
+interface ApiErrorResponse {
+    exito?: boolean;
+    mensagem?: string;
+    errors?: Record<string, string[]>;
+    [key: string]: unknown;
+}
 
 interface ApiIngrediente {
     id: string;
@@ -22,7 +30,7 @@ interface ApiResponse<T> {
     objeto: T;
 }
 
-// Define the UI data structure (similar to your old JSON structure)
+
 interface IngredientUI {
     id: string;
     title: string;
@@ -46,7 +54,7 @@ function useLocalStorageState(key: string, defaultValue: boolean) {
     return [value, setValue] as const;
 }
 
-// Helper function to format date
+
 function formatDate(dateString: string | null): string {
     if (!dateString) return "Não definida";
 
@@ -62,7 +70,7 @@ function formatDate(dateString: string | null): string {
     }
 }
 
-// Helper function to get unit name
+
 function getUnitName(unidade: UnidadeMedida): string {
     switch (unidade) {
         case 1: return "Unidades";
@@ -72,7 +80,7 @@ function getUnitName(unidade: UnidadeMedida): string {
     }
 }
 
-// Convert API response to UI format
+
 function convertApiToUI(apiIngrediente: ApiIngrediente): IngredientUI {
     return {
         id: apiIngrediente.id,
@@ -116,16 +124,33 @@ export default function Ingredient({ mode }: { mode: boolean }) {
                 } else {
                     setError(response.data.mensagem || "Falha ao carregar ingrediente");
                 }
-            } catch (err: any) {
+            }  catch (err: unknown) {
                 console.error("Error fetching ingredient:", err);
 
-                if (err.response?.status === 404) {
-                    setError("Ingrediente não encontrado");
-                } else if (err.code === "ECONNABORTED") {
-                    setError("O servidor demorou muito a responder");
-                } else {
-                    setError("Falha ao carregar dados do ingrediente");
+                let errorMessage = "Falha ao carregar dados do ingrediente";
+
+                if (isAxiosError(err)) {
+                    if (err.response?.status === 404) {
+                        errorMessage = "Ingrediente não encontrado";
+                    } else if (err.code === "ECONNABORTED") {
+                        errorMessage = "O servidor demorou muito a responder";
+                    } else if (err.response?.data && typeof err.response.data === 'object') {
+                        const errorData = err.response.data as ApiErrorResponse;
+                        if (errorData.mensagem) {
+                            errorMessage = errorData.mensagem;
+                        } else if (err.message) {
+                            errorMessage = err.message;
+                        }
+                    } else if (err.message) {
+                        errorMessage = err.message;
+                    }
+                } else if (err instanceof Error) {
+                    errorMessage = err.message;
+                } else if (typeof err === 'string') {
+                    errorMessage = err;
                 }
+
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -191,13 +216,12 @@ export default function Ingredient({ mode }: { mode: boolean }) {
                                             alt={ingredient.title}
                                             className="w-[90%] h-[90%] rounded-[15px] block ml-auto mr-auto mb-[20px] object-cover"
                                             onError={(e) => {
-                                                // Fallback if image fails to load
                                                 const target = e.target as HTMLImageElement;
                                                 target.src = "/src/assets/placeholder-ingredient.png";
                                             }}
                                         />
                                     ) : (
-                                        <div className="w-[90%] h-[90%] rounded-[15px] block ml-auto mr-auto mb-[20px] bg-gray-300 flex items-center justify-center">
+                                        <div className="w-[90%] h-[90%] rounded-[15px] block ml-auto mr-auto mb-[20px] bg-gray-300 items-center justify-center">
                                             <span className="text-gray-500 text-[20px]">Sem imagem</span>
                                         </div>
                                     )}

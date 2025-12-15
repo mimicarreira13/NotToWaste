@@ -1,7 +1,7 @@
-// api/AddDish.tsx
 import {useState, type ChangeEvent, forwardRef, useImperativeHandle, useEffect} from "react";
 import api from "./api.ts";
 import { useIngredients } from "./useIngredients.ts";
+import {isAxiosError} from "axios"
 
 interface DishFormData {
     nome: string;
@@ -40,6 +40,12 @@ export interface DishesHandle {
     handleEdit: (dishId: string) => Promise<void>;
 }
 
+interface ApiErrorResponse {
+    exito?: boolean;
+    mensagem?: string;
+    errors?: Record<string, string[]>;
+    [key: string]: unknown;
+}
 
 export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                                                                  selectedIds = [],
@@ -68,12 +74,10 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
             setPreco(dishData.preco || 0);
             setDescricao(dishData.descricao || "");
 
-            // Initialize selected ingredient IDs and quantities
             if (dishData.pratoIngredientes && dishData.pratoIngredientes.length > 0) {
                 const ingredientIds = dishData.pratoIngredientes.map(ing => ing.ingredienteId);
                 onChange(ingredientIds);
 
-                // Initialize quantities
                 const quantities: IngredientQuantity = {};
                 dishData.pratoIngredientes.forEach(ing => {
                     quantities[ing.ingredienteId] = ing.quantidade;
@@ -140,15 +144,14 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
     };
 
     const validateImage = (file: File | null): string | null => {
-        if (!file) return null; // No image is okay
+        if (!file) return null;
 
-        // Check file size (e.g., max 5MB)
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+
+        const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
             return "A imagem é muito grande. Tamanho máximo: 5MB";
         }
 
-        // Check file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
             return "Tipo de arquivo não suportado. Use JPEG, PNG, GIF ou WebP";
@@ -213,9 +216,8 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                     const formData = new FormData();
                     formData.append("imagem", imagem);
 
-                    // Check what's in formData
                     console.log("9. FormData contents:");
-                    for (let [key, value] of formData.entries()) {
+                    for (const [key, value] of formData.entries()) {
                         console.log(`  ${key}:`, value);
                     }
 
@@ -230,20 +232,23 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                     console.log("11. Image upload response:", imageResponse);
                     console.log("12. Image upload success:", imageResponse.data);
 
-                } catch (imageError: any) {
+                } catch (err: unknown) {
                     console.error("13. Image upload failed:", imageError);
-                    console.error("14. Image error status:", imageError.response?.status);
-                    console.error("15. Image error data:", imageError.response?.data);
-                    console.error("16. Image error message:", imageError.message);
+                    if (isAxiosError(err)) {
+                        console.error("14. Image error status:", err.response?.status);
+                        console.error("15. Image error data:", err.response?.data);
+                        console.error("16. Image error message:", err.message);
 
-                    // Check if it's a specific error
-                    if (imageError.response) {
-                        console.error("17. Full error response:", {
-                            status: imageError.response.status,
-                            statusText: imageError.response.statusText,
-                            headers: imageError.response.headers,
-                            data: imageError.response.data
-                        });
+                        if (err.response) {
+                            console.error("17. Full error response:", {
+                                status: err.response.status,
+                                statusText: err.response.statusText,
+                                headers: err.response.headers,
+                                data: err.response.data
+                            });
+                        }
+                    } else if (err instanceof Error) {
+                        console.error("16. Image error message:", err.message);
                     }
                 }
             } else {
@@ -263,16 +268,27 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
 
             setTimeout(() => {
                 if (onClose) onClose();
+                window.location.reload();
             }, 2000);
 
-        } catch (error: any) {
-            console.error("21. Error in handleSubmit:", error);
+        }  catch (err: unknown) {
+            console.error("21. Error in handleSubmit:", err);
 
             let errorMessage = "Falha ao criar prato";
-            if (error.response?.data?.mensagem) {
-                errorMessage = error.response.data.mensagem;
-            } else if (error.message) {
-                errorMessage = error.message;
+            if (isAxiosError(err)) {
+                const axiosError = err;
+                if (axiosError.response?.data && typeof axiosError.response.data === 'object') {
+                    const errorData = axiosError.response.data as ApiErrorResponse;
+                    if (errorData.mensagem) {
+                        errorMessage = errorData.mensagem;
+                    }
+                } else if (axiosError.message) {
+                    errorMessage = axiosError.message;
+                }
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err === 'string') {
+                errorMessage = err;
             }
 
             setSubmitError(errorMessage);
@@ -296,22 +312,18 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
         setIsSubmitting(true);
 
         try {
-            // Prepare form data for the PUT request
             const formData = new FormData();
 
-            // Add text fields
             formData.append('Nome', nome.trim());
             formData.append('Preco', preco.toString());
             formData.append('Descricao', descricao.trim() || "Sem descrição");
 
-            // Format PratoIngredientes array
             const pratoIngredientes = selectedIds.map(id => ({
                 ingredienteId: id,
                 quantidade: ingredientQuantities[id] || 1
             }));
             formData.append('PratoIngredientes', JSON.stringify(pratoIngredientes));
 
-            // Add image if selected
             if (imagem) {
                 formData.append('imagem', imagem);
             }
@@ -325,7 +337,6 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                 hasImage: !!imagem
             });
 
-            // Make PUT request to edit dish
             const editResponse = await api.put(`/api/Prato/${dishId}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -341,7 +352,6 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
 
             setSubmitSuccess(true);
 
-            // Reset form
             setNome("");
             setPreco(0);
             setDescricao("");
@@ -353,15 +363,26 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                 if (onClose) onClose();
             }, 2000);
 
-        } catch (error: any) {
-            console.error("Error editing dish:", error);
+        }  catch (err: unknown) {
+            console.error("Error editing dish:", err);
 
             let errorMessage = "Falha ao editar prato";
-            if (error.response?.data?.mensagem) {
-                errorMessage = error.response.data.mensagem;
-            } else if (error.message) {
-                errorMessage = error.message;
+            if (isAxiosError(err)) {
+                const axiosError = err;
+                if (axiosError.response?.data && typeof axiosError.response.data === 'object') {
+                    const errorData = axiosError.response.data as ApiErrorResponse;
+                    if (errorData.mensagem) {
+                        errorMessage = errorData.mensagem;
+                    }
+                } else if (axiosError.message) {
+                    errorMessage = axiosError.message;
+                }
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err === 'string') {
+                errorMessage = err;
             }
+
 
             setSubmitError(errorMessage);
         } finally {
@@ -435,7 +456,7 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
                                 accept="image/*"
                                 onChange={handleFileChange}
                                 disabled={isSubmitting}
-                                id="dish-image-input" // Add ID for debugging
+                                id="dish-image-input"
                             />
                             {imagem && (
                                 <div className="text-sm text-gray-600 mt-1 ml-[15px]">
