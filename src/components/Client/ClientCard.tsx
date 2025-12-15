@@ -1,4 +1,4 @@
-// File: src/components/Client/ClientCard.tsx
+// File: `src/components/Client/ClientCard.tsx`
 import React, { useState } from "react";
 import type { SustainabilityReport, IngredientItem, DishItem } from "../../data/clientItems.ts";
 import { fetchSustainabilityReport, fetchTop10Desperdicios, openPdfBlobInNewTab } from "../../api/relatorios_requests";
@@ -140,9 +140,10 @@ export default function ClientCard({ item, compact = false }: Props) {
     const isUnavailable = dish.available === false;
     const unavailableClass = isUnavailable ? "opacity-50 filter grayscale" : "";
 
+    // badge: keep it touching the bottom border (rounded to match card)
     const badgeClasses = compact
-        ? "w-3/4 text-center px-3 py-1 rounded-md text-sm font-semibold"
-        : "w-full text-center px-6 py-3 rounded-none text-2xl font-extrabold";
+        ? "w-3/4 text-center px-3 py-1 rounded-b-lg text-sm font-semibold"
+        : "w-full text-center px-6 py-3 rounded-b-2xl text-2xl font-extrabold";
 
     const dishCardBase = compact ? dishCardBaseCompact : dishCardBaseLarge;
 
@@ -150,13 +151,16 @@ export default function ClientCard({ item, compact = false }: Props) {
     // Keep container full-width on small screens but constrain the *image* max width
     // and use the same card background so no white band shows.
     const thumbContainerClass = compact
-        ? "w-full md:w-44 md:min-w-[112px] flex-shrink-0 flex items-center justify-center bg-[#D9D9D9] overflow-hidden"
-        : "w-full md:w-52 md:min-w-[128px] flex-shrink-0 flex items-center justify-center bg-[#D9D9D9] overflow-hidden";
+        ? "w-full md:w-44 md:min-w-[112px] flex-shrink-0 flex items-center justify-center bg-[#D9D9D9] overflow-hidden rounded-lg"
+        : "w-full md:w-52 md:min-w-[128px] flex-shrink-0 flex items-center justify-center bg-[#D9D9D9] overflow-hidden rounded-xl";
 
-    // Image will not stretch to fill container on small screens — use `w-auto` + `max-w-...`
+
+
+// keep images slightly rounded on every screen size
     const thumbImgClass = compact
-        ? "w-auto max-w-[9rem] md:max-w-[11rem] h-auto max-h-28 md:max-h-40 object-contain transform transition-transform duration-200"
-        : "w-auto max-w-[11rem] md:max-w-[14rem] h-auto max-h-36 md:max-h-52 object-contain transform transition-transform duration-200";
+        ? "w-auto max-w-[12.5rem] md:max-w-[14rem] h-auto max-h-36 md:max-h-44 object-contain rounded-lg"
+        : "w-auto max-w-[14rem] md:max-w-[18rem] h-auto max-h-44 md:max-h-56 object-contain rounded-xl";
+
 
     // Typography hierarchy:
     const dishNameClass = compact
@@ -169,7 +173,8 @@ export default function ClientCard({ item, compact = false }: Props) {
 
     return (
         <div className={`${dishCardBase} ${unavailableClass} relative`}>
-            <div className="w-full flex flex-col md:flex-row items-start md:items-center p-4 h-full">
+            {/* add extra bottom padding on small screens so the badge (absolutely positioned) doesn't cover content */}
+            <div className="w-full flex flex-col md:flex-row items-start md:items-center p-4 pb-12 md:pb-4 h-full">
                 <div className={`${thumbContainerClass}`}>
                     {dish.image ? (
                         <img
@@ -209,7 +214,7 @@ export default function ClientCard({ item, compact = false }: Props) {
             </div>
 
             {isUnavailable && (
-                <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center pb-4 pointer-events-none">
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pointer-events-none">
                     <div className={`bg-[#4C6E43] text-white ${badgeClasses}`}>
                         Indisponível
                     </div>
