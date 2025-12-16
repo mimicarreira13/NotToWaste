@@ -1,5 +1,6 @@
 import Modal from '../components/Modal';
 import React from "react";
+import LoadingSpinner from "../components/LoadingSpinner";
 import {
     getPontuacaoSustentabilidade, type RankingItem, getRankingDesperdicio,
     getNotificacoesIngredientesProximosValidade, type NotificacaoIngrediente
@@ -15,60 +16,69 @@ export default function Dashboard() {
     const [totalKgDesperdicado, setTotalKgDesperdicado] = React.useState<number>(0);
     const [totalCustoDesperdicio, setTotalCustoDesperdicio] = React.useState<number>(0);
     const [percentagemDesperdicio, setPercentagemCustoDesperdicio] = React.useState<number>(0);
+    const [notificacoesIngredientes, setNotificacoesIngredientes] = React.useState<NotificacaoIngrediente[]>([]);
+    const [loading, setLoading] = React.useState<boolean>(true);
+
     const navigate = useNavigate();
-    const [notificacoesIngredientes, setNotificacoesIngredientes] =
-        React.useState<NotificacaoIngrediente[]>([]);
 
     React.useEffect(() => {
-        async function loadPontuacao() {
+        let mounted = true;
+        (async () => {
             try {
-                const objeto = await getPontuacaoSustentabilidade();
-                setPontuacaoSustentabilidade(objeto);
-            } catch (err) {
-                console.error("Erro ao calcular a pontuação de sustentabilidade", err);
-            }
-        }
-        loadPontuacao();
-    }, []);
+                // run all requests in parallel and wait for them to settle
+                const results = await Promise.allSettled([
+                    getPontuacaoSustentabilidade(),
+                    getNotificacoesIngredientesProximosValidade(),
+                    getRankingDesperdicio(),
+                ]);
 
-    React.useEffect(() => {
-        async function loadIngredientesPrazo() {
-            try {
-                const objeto = await getNotificacoesIngredientesProximosValidade();
-                setNotificacoesIngredientes(objeto);
-            } catch (err) {
-                console.error("Erro ao mostrar ingredientes perto de expirar", err);
-            }
-        }
-        loadIngredientesPrazo();
-    }, []);
+                if (!mounted) return;
 
-    React.useEffect(() => {
-        async function loadRanking() {
-            try {
-                const rankingData = await getRankingDesperdicio();
-                console.log("rankingData", rankingData);
-                setRanking(rankingData);
-                const totalKg = rankingData.reduce(
-                    (custoDesperdicio, item) => custoDesperdicio + item.quantidadeDesperdicada,
-                    0
-                );
-                const totalCusto = rankingData.reduce(
-                    (custoEuros, item) => custoEuros + item.custoDesperdicio,
-                    0
-                );
-                const percentagemDesperdicio = rankingData.reduce(
-                    (percentagem, item) => percentagem + item.percentagemDesperdicio,
-                    0
-                );
-                setPercentagemCustoDesperdicio(percentagemDesperdicio);
-                setTotalKgDesperdicado(totalKg);
-                setTotalCustoDesperdicio(totalCusto);
+                const [pontRes, notifRes, rankRes] = results;
+
+                if (pontRes.status === "fulfilled") {
+                    setPontuacaoSustentabilidade(pontRes.value as number);
+                } else {
+                    console.error("Erro ao calcular a pontuação de sustentabilidade", pontRes.reason);
+                }
+
+                if (notifRes.status === "fulfilled") {
+                    setNotificacoesIngredientes(notifRes.value as NotificacaoIngrediente[]);
+                } else {
+                    console.error("Erro ao mostrar ingredientes perto de expirar", notifRes.reason);
+                }
+
+                if (rankRes.status === "fulfilled") {
+                    const rankingData = rankRes.value as RankingItem[];
+                    setRanking(rankingData);
+                    const totalKg = rankingData.reduce(
+                        (acc, item) => acc + item.quantidadeDesperdicada,
+                        0
+                    );
+                    const totalCusto = rankingData.reduce(
+                        (acc, item) => acc + item.custoDesperdicio,
+                        0
+                    );
+                    const percentagem = rankingData.reduce(
+                        (acc, item) => acc + item.percentagemDesperdicio,
+                        0
+                    );
+                    setTotalKgDesperdicado(totalKg);
+                    setTotalCustoDesperdicio(totalCusto);
+                    setPercentagemCustoDesperdicio(percentagem);
+                } else {
+                    console.error("Erro ao carregar ranking de desperdício", rankRes.reason);
+                }
             } catch (err) {
-                console.error("Erro ao carregar ranking de desperdício", err);
+                console.error("Erro ao carregar dados do dashboard", err);
+            } finally {
+                if (mounted) setLoading(false);
             }
-        }
-        loadRanking();
+        })();
+
+        return () => {
+            mounted = false;
+        };
     }, []);
 
     function getClassificacaoSustentabilidade(score: number | null): string {
@@ -77,7 +87,7 @@ export default function Dashboard() {
         if (score <= 50) return "Média";
         if (score <= 75) return "Bom";
         if (score <= 99) return "Muito bom";
-        return "Excelente"; // 100
+        return "Excelente";
     }
 
     const cards = [
@@ -111,32 +121,32 @@ export default function Dashboard() {
             ),
         },
         {
-        id: "card-mes",
-        content: (
-            <>
-                <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-[6px] text-center mt-auto">Ranking Mensal de
-                    Desperdício
-                </div>
-                <div className="bg-[#D9D9D9] text-[#000000] pb-4 p-4 rounded mb-1 text-lg">{percentagemDesperdicio.toFixed(3)}% ({totalCustoDesperdicio.toFixed(2)}€) de compras desperdiçadas
-                </div>
-                <div className="bg-[#D9D9D9] text-[#000000] rounded text-lg">{totalKgDesperdicado}kg</div>
-                <div className="bg-[#BCBCBC] text-[#000000] p-2 text-sm text-left h-[80px] mt-2">
-                    <ul>
-                        {ranking.slice(0, 3).map((item, index) => (
-                            <li key={item.ingredienteId}>
-                                {index + 1}º - {item.nome} ({item.quantidadeDesperdicada}Kg /{" "}
-                                {item.custoDesperdicio}€)
-                            </li>
-                        ))}
-                        {ranking.length < 3 &&
-                            Array.from({length: 3 - ranking.length}).map((_, i) => (
-                                <li key={`empty-${i}`}>{ranking.length + i + 1}º -</li>
+            id: "card-mes",
+            content: (
+                <>
+                    <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-[6px] text-center mt-auto">Ranking Mensal de
+                        Desperdício
+                    </div>
+                    <div className="bg-[#D9D9D9] text-[#000000] pb-4 p-4 rounded mb-1 text-lg">{percentagemDesperdicio.toFixed(3)}% ({totalCustoDesperdicio.toFixed(2)}€) de compras desperdiçadas
+                    </div>
+                    <div className="bg-[#D9D9D9] text-[#000000] rounded text-lg">{totalKgDesperdicado}kg</div>
+                    <div className="bg-[#BCBCBC] text-[#000000] p-2 text-sm text-left h-[80px] mt-2">
+                        <ul>
+                            {ranking.slice(0, 3).map((item, index) => (
+                                <li key={item.ingredienteId}>
+                                    {index + 1}º - {item.nome} ({item.quantidadeDesperdicada}Kg /{" "}
+                                    {item.custoDesperdicio}€)
+                                </li>
                             ))}
-                    </ul>
-                </div>
-            </>
-        )
-    },
+                            {ranking.length < 3 &&
+                                Array.from({length: 3 - ranking.length}).map((_, i) => (
+                                    <li key={`empty-${i}`}>{ranking.length + i + 1}º -</li>
+                                ))}
+                        </ul>
+                    </div>
+                </>
+            )
+        },
         {
             id: "card-pontuacao",
             content: (
@@ -171,15 +181,23 @@ export default function Dashboard() {
             )
         }
     ];
+
     return (
         <div className="flex justify-center p-4">
-            <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-20 mt-12">
-                {cards.map((card,index) => (
-                    <div id={card.id} key={card.id} className={cardBaseClasses + (index === 0 ? " md:col-span-2 md:mt-8" : "")}>
-                        {card.content}
-                    </div>
-                ))}
-            </div>
+            {loading ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent">
+                    <LoadingSpinner message="Carregando Métricas..." size={64} ariaLabel="loading-dashboard" />
+                </div>
+            ) : (
+                <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-20 mt-12">
+                    {cards.map((card,index) => (
+                        <div id={card.id} key={card.id} className={cardBaseClasses + (index === 0 ? " md:col-span-2 md:mt-8" : "")}>
+                            {card.content}
+                        </div>
+                    ))}
+                </div>
+            )}
+
             <Modal
                 open={openSugestoesModal}
                 onClose={() => setOpenSugestoesModal(false)}

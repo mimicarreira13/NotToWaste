@@ -1,9 +1,14 @@
+// TypeScript
 import {FiSearch} from "react-icons/fi";
-import {type JSX, useCallback, useEffect, useState} from "react";
+import React, {type JSX, useCallback, useEffect, useState} from "react";
 import BackButton from "../components/Back.tsx";
 import Info from "../api/PlatesAndIngredients.tsx";
 import {createCards} from "../components/Cards.tsx";
 import {useNavigate} from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
+import ToggleTabs from "../components/ToggleTabs";
+import { GiCarrot } from "react-icons/gi";
+import { FaUtensils } from "react-icons/fa";
 
 type ItemUI = {
     id: string;
@@ -35,8 +40,9 @@ export default function CozinhaBase({
 }) {
     const [, setSearch] = useState("");
     const navigate = useNavigate();
+    const IngredientsIcon = <GiCarrot size={18} aria-hidden />;
+    const DishesIcon = <FaUtensils size={20} aria-hidden />;
     let fColor;
-    let iColor;
 
     const updatePageMode = (value: boolean) => {
         onPageModeChange(value);
@@ -45,16 +51,20 @@ export default function CozinhaBase({
     }
 
     if (pageState) {
-        iColor = "#303030";
         fColor = "#767676";
     } else {
-        iColor = "#767676";
         fColor = "#303030";
     }
 
     const [ingredientCards, setIngredientCards] = useState<CardUI[]>([]);
     const [foodCards, setFoodCards] = useState<CardUI[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // selected tab state synchronized with pageState
+    const [selectedTab, setSelectedTab] = useState(pageState ? "ingredientes" : "pratos");
+    useEffect(() => {
+        setSelectedTab(pageState ? "ingredientes" : "pratos");
+    }, [pageState]);
 
     useEffect(() => {
         console.log("Ingredient cards updated:", ingredientCards.length);
@@ -77,20 +87,35 @@ export default function CozinhaBase({
         setIsLoading(false);
     }, []);
 
+    // when the tab changes, update local state and call updatePageMode
+    const handleTabChange = (id: string) => {
+        setSelectedTab(id);
+        const isIngredient = id === "ingredientes";
+        updatePageMode(isIngredient);
+    };
+
     const topBar = [
         {
-          id:"back",
-          content: (
-              <BackButton />
-          )
+            id:"back",
+            content: (
+                <BackButton />
+            )
         },
         {
             id:"categoria",
             content: (
-                <div className={"flex flex-row text-[20px]"}>
-                    <button className={"border-b-2 pl-[5px] pr-[5px]"} style={{color:fColor, borderColor:fColor}} onClick={() => updatePageMode(false)}>Pratos</button>
-                    <button className={"border-b-2 pl-[5px] pr-[5px]"} style={{color:iColor, borderColor:iColor}} onClick={() => updatePageMode(true)}>Ingredientes</button>
-                </div>
+                <ToggleTabs
+                    options={[
+                        { id: "pratos", label: "Pratos", icon: DishesIcon },
+                        { id: "ingredientes", label: "Ingredientes", icon: IngredientsIcon }
+                    ]}
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    selectedBackgroundColor="#4C6E43"
+                    selectedTextColor="#D9D9D9"
+                    baseTextColor={fColor}
+                    fontSize="20px"
+                />
             )
         },
         {
@@ -102,11 +127,11 @@ export default function CozinhaBase({
     return (
         <div className="p-4 mt-20 w-full h-full flex flex-col justify-start self-start">
             <div className="flex flex-row justify-around w-full">
-            <div className="flex items-center flex-row h-14 w-full mb-3 flex-wrap gap-4 ml-auto mr-auto">
-                {topBar.map(item => (
-                    <div key={item.id}>{item.content}</div>
-                ))}
-            </div>
+                <div className="flex items-center flex-row h-14 w-full mb-3 flex-wrap gap-4 ml-auto mr-auto">
+                    {topBar.map(item => (
+                        <div key={item.id}>{item.content}</div>
+                    ))}
+                </div>
                 <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px] h-14"}>
                     <FiSearch className="text-black" />
                     <input
@@ -118,8 +143,8 @@ export default function CozinhaBase({
                 </div>
             </div>
             {isLoading && (
-                <div className="text-center py-10">
-                    Carregando...
+                <div className="w-full flex items-center justify-center" style={{ minHeight: 'calc(100vh - 25rem)' }}>
+                    <LoadingSpinner message="Carregando cozinha..." size={64} ariaLabel="loading-kitchen" />
                 </div>
             )}
             {pageState ? (
