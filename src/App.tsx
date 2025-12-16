@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {  Routes, Route } from "react-router-dom";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import Navbar from "./components/Navbar";
 import Perfis from "./pages/Perfis";
@@ -17,7 +17,6 @@ import Relatorios from "./pages/Relatorios.tsx";
 function App() {
     return (
         <ProfileProvider>
-            <Router>
                 <div className="min-h-screen bg-[#D9D9D9] flex flex-col w-full font-[Sansita]">
                     <Navbar />
                     <main className="flex-1 flex items-center justify-center">
@@ -29,17 +28,16 @@ function App() {
                             <Route path="/client" element={<Client />} />
                             <Route path={"/definicoes"} element={<Definicoes />} />
                             <Route path="/cozinha/food/:id" element={<Food mode={false} />} />
-                            <Route path="/cozinha/ingredient/:id" element={<Ingredient mode={false} />} />
+                            <Route path="/ingredient/:id" element={<Ingredient mode={false} />} />
                             <Route path="/pratos" element={<Pratos />} />
                             <Route path="/pratos/food/:id" element={<Food mode={true} />} />
-                            <Route path="/pratos/ingredient/:id" element={<Ingredient  mode={true} />} />
+                            <Route path="/ingredient/:id" element={<Ingredient  mode={true} />} />
                             <Route path="/stock" element={<Stock />} />
                             <Route path="/desperdicio" element={<Desperdicio />} />
                             <Route path="/relatorios" element={<Relatorios />} />
                         </Routes>
                     </main>
                 </div>
-            </Router>
         </ProfileProvider>
     );
 }

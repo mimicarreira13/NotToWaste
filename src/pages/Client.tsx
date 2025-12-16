@@ -3,7 +3,8 @@ import { FaUtensils, FaRegFileAlt } from "react-icons/fa";
 import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
-import { dishes } from "../data/clientItems";
+import useDishes from "../hooks/useDishes";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { RelatoriosContent, RelatoriosToggle } from "./Relatorios";
 
 export default function Client() {
@@ -11,6 +12,8 @@ export default function Client() {
     // estado para o segundo toggle (ingredientes / sustentabilidade)
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">("ingredients");
     const bandHeight = 190; // altura da banda fixa no topo
+
+    const { dishes, loading } = useDishes();
 
     const DishesIcon = <FaUtensils size={20} aria-hidden />;
     const ReportsIcon = <FaRegFileAlt size={20} aria-hidden />;
@@ -37,7 +40,9 @@ export default function Client() {
 
                 {/* passa o estado real do segundo toggle para permitir clique */}
                 {selected === "reports" && (
-                    <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} />
+                    <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)}
+                    selectedBackgroundColor={"#772f2f"}
+                    />
                 )}
             </div>
 
@@ -48,13 +53,21 @@ export default function Client() {
                 )}
 
                 {selected === "dishes" && (
-                    <ClientGrid
-                        variant="dishes"
-                        items={dishes}
-                        columns={4}
-                        className="client-dishes-grid"
-                        renderItem={(d) => <ClientCard item={d} />}
-                    />
+                    <>
+                        {loading ? (
+                            <div className="w-full flex items-center justify-center" style={{ minHeight: 280 }}>
+                                <LoadingSpinner />
+                            </div>
+                        ) : (
+                            <ClientGrid
+                                variant="dishes"
+                                items={dishes}
+                                columns={4}
+                                className="client-dishes-grid"
+                                renderItem={(d) => <ClientCard item={d} />}
+                            />
+                        )}
+                    </>
                 )}
             </div>
 

@@ -1,3 +1,4 @@
+// File: `src/components/Client/ClientGrid.tsx`
 import React from "react";
 
 type Variant = "sustainability" | "ingredients" | "dishes";
@@ -18,8 +19,17 @@ export default function ClientGrid<T>({
                                           className = "",
                                           renderItem,
                                       }: ClientGridProps<T>) {
-    const cols = columns ?? (variant === "ingredients" ? 6 : 4);
     const gapCss = typeof gap === "number" ? `${gap}px` : gap;
+
+    const gridTemplateColumns = (() => {
+        // For dishes ensure a minimum width of 24rem (w-96) and allow wrapping
+        if (variant === "dishes") {
+            return `repeat(auto-fit, minmax(22rem, 1fr))`;
+        }
+        // explicit columns prop wins for non-dishes variants
+        const cols = columns ?? (variant === "ingredients" ? 6 : 4);
+        return `repeat(${cols}, minmax(0, 1fr))`;
+    })();
 
     return (
         <div className={className}>
@@ -28,7 +38,7 @@ export default function ClientGrid<T>({
                 className="w-full"
                 style={{
                     display: "grid",
-                    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+                    gridTemplateColumns: gridTemplateColumns,
                     gap: gapCss,
                 }}
             >
