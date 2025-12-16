@@ -103,6 +103,7 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
         onAdded?.(res.objeto);
         setSuccessModal(true);
         setOpenAlteracoesModal(true);
+        window.location.reload();
       } else {
         setErrorModal(res?.mensagem || "Não foi possível guardar o desperdício.");
       }
