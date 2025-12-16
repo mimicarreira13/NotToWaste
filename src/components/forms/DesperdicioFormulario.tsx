@@ -13,11 +13,10 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
   const [openList, setOpenList] = useState(false);
   const [selectKey, setSelectKey] = useState(0);
   const [form, setForm] = useState({
-    id: "",
     ingredienteId: "",
     descricao:"",
     quantidade: 0,
-    unidadeIngrediente: 0,
+    unidadeIngrediente: "",
   });
 
   const motivos = [
@@ -64,8 +63,8 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
       }
 
       
-      if (name === "unidade") {
-        setForm(prev => ({ ...prev, unidade: Number(value) }));
+      if (name === "unidadeIngrediente") {
+        setForm(prev => ({ ...prev, unidadeIngrediente:value }));
         return;
       }
 
@@ -74,7 +73,7 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.descricao || !form.ingredienteId || !form.quantidade || !form.unidadeIngrediente) {
+    if (!form.descricao || !form.ingredienteId || form.quantidade < 1 || !form.unidadeIngrediente) {
       setErrorModal("Por favor, preencha todos os campos.");
       return;
     }
@@ -88,17 +87,25 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
     }
 
     try {
-      const newItem = {
-       
-        id: "",
+      const newItem = { 
         ingredienteId: form.ingredienteId,
         descricao: form.descricao,
         quantidade: Number(form.quantidade),
+        unidadeIngrediente: Number(form.unidadeIngrediente),
+        utilizadorId:"7bafc80f-0c10-457e-a4bd-cc303afa6332", //fincionario de stock id
+        tipoSaida: 2, //desperdicio
       };
-    const saved = await addDesperdicioItem(newItem);
-      onAdded?.(saved);
+      
+      const res = await addDesperdicioItem(newItem);
+      console.log("Resposta da API:", res);
 
-      setSuccessModal(true);
+      if (res?.exito) {
+        onAdded?.(res.objeto);
+        setSuccessModal(true);
+        setOpenAlteracoesModal(true);
+      } else {
+        setErrorModal(res?.mensagem || "Não foi possível guardar o desperdício.");
+      }
 
   } catch {
       setErrorModal("Não foi possível guardar o desperdício.");
@@ -106,103 +113,92 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3">
-     
-      <select
-        key={selectKey}
-        name="ingredienteId"
-        value={form.ingredienteId}
-        onChange={(e) => {
-          handleChange(e);
-          setOpenList(false);
-          }}
-        onFocus={() => setOpenList(true)}
-        onBlur={() => setOpenList(false)}
-        size={openList ? Math.min(ingredientes.length, 8) : 1}
-        className="w-full px-3 py-2 border rounded max-h-60 overflow-y-auto"
-        required
-      >
-        <option value="">Selecione o ingrediente</option>
-        {ingredientes.map(i => (
-          <option key={i.id} value={i.id}>{i.nome}</option>
-        ))}
-      </select>
-      
+    <>
+      <form onSubmit={submit} className="space-y-3">
+        {errorModal && <p className="text-red-500">{errorModal}</p>}
 
-      <select 
-      name="motivo" 
-      value={form.descricao} 
-      onChange={handleChange}
-      className="w-full px-3 py-2 border rounded" 
-      required 
-      >
-        <option value="">Selecione o motivo</option>
-        {motivos.map((m) => (
-          <option key={m} value={m}>{m}</option>
-        ))}
-        
-      </select>
-
-      <div className="relative pt-8">
-        <label className="absolute left-2 -top-3 bg-white px-1 text-sm text-gray-600 pt-5">
-          Quantidade
-        </label>
-        <input 
-          name="quantidade"
-          min={1} 
-          max={99999}
-          type ="number"
-          inputMode="numeric"
-          pattern="[1-9]*"
-          value={form.quantidade} 
-          onChange={handleChange} 
-          placeholder="Quantidade" 
+        <select
+          key={selectKey}
+          name="ingredienteId"
+          value={form.ingredienteId}
+          onChange={handleChange}
+          onFocus={() => setOpenList(true)}
+          onBlur={() => setOpenList(false)}
+          size={openList ? Math.min(ingredientes.length, 8) : 1}
+          className="w-full px-3 py-2 border rounded max-h-60 overflow-y-auto"
           required
-          className="w-full px-3 py-2 border rounded" 
-          
-        />
-      </div>
-      <select
-        name="unidade"
-        value={form.unidadeIngrediente}
-        onChange={handleChange}
-        className="w-full px-3 py-2 border rounded"
-        required
-      >
-        <option value={1}>Unidade</option>
-        <option value={2}>Quilo</option>
-        <option value={3}>Litro</option>
-      
-      </select>
+        >
+          <option value="">Selecione o ingrediente</option>
+          {ingredientes.map(i => (
+            <option key={i.id} value={i.id}>{i.nome}</option>
+          ))}
+        </select>
 
-      <div className="flex justify-center gap-20 mt-6">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded border">Cancelar</button>
-        <button type="submit" className="px-4 py-2 rounded bg-[#4C6E43] text-white" onClick={() => setOpenAlteracoesModal(true)}>Adicionar</button> 
-          <Modal
-                  open={openAlteracoesModal}
-                  onClose={() => {setOpenAlteracoesModal(false); onClose();}}
-                  title={"Alterações"}
-                
-                  message={"Ingrediente(s) adicionado(s) ao Desperdício com sucesso!"}
-                  buttons={[
-                      {
-                          label: "Fechar",
-                          className:
-                              "px-6 py-2 rounded text-sm text-white bg-[#4C6E43] hover:opacity-90",
-                          onClick: () => {setOpenAlteracoesModal(false);  onClose();},
-                      },
-                  ]}
-              >
-            </Modal>
-      </div>
-      
-      <style>{`
-      form > div > button, form > input {
-        margin-top: 2rem; 
-        /* Para ter mais padding entre os botões e os inputs */
-      }
-      `}</style>
+        <select
+          name="descricao"
+          value={form.descricao}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded"
+          required
+        >
+          <option value="">Selecione o motivo</option>
+          {motivos.map(m => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
 
-    </form>
+        <div className="relative pt-8">
+          <label className="absolute left-2 -top-3 bg-white px-1 text-sm text-gray-600 pt-5">
+            Quantidade
+          </label>
+          <input
+            name="quantidade"
+            min={1}
+            max={99999}
+            type="number"
+            inputMode="numeric"
+            pattern="[1-9]*"
+            value={form.quantidade}
+            onChange={handleChange}
+            placeholder="Quantidade"
+            required
+            className="w-full px-3 py-2 border rounded"
+          />
+        </div>
+
+        <select
+          name="unidadeIngrediente"
+          value={form.unidadeIngrediente}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded"
+          required
+        >
+          <option value="">Selecione a unidade</option>
+          <option value="1">Unidade</option>
+          <option value="2">Quilo</option>
+          <option value="3">Litro</option>
+        </select>
+
+        <div className="flex justify-center gap-20 mt-6">
+          <button type="button" onClick={onClose} className="px-4 py-2 rounded border">Cancelar</button>
+          <button type="submit" className="px-4 py-2 rounded bg-[#4C6E43] text-white">Adicionar</button>
+        </div>
+      </form>
+
+      
+      <Modal
+        open={successModal}
+        onClose={() => { setSuccessModal(false); onClose(); }}
+        title={"Alterações"}
+        message={"Ingrediente(s) adicionado(s) ao Desperdício com sucesso!"}
+        buttons={[
+          {
+            label: "Fechar",
+            className: "px-6 py-2 rounded text-sm text-white bg-[#4C6E43] hover:opacity-90",
+            onClick: () => { setSuccessModal(false); onClose(); },
+          },
+        ]}
+      />
+    </>
   );
 }

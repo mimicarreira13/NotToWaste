@@ -1,21 +1,32 @@
 import api from "./api";
+import type { CriarItemDesperdicio } from "../pages/Desperdicio.ts";
 
 export async function getDesperdicio() {
     const response = await api.get("/api/SaidaStock");
-    //console.log("Desperdicio Api , get desperdicio", response.data.objeto);
-    return response.data.objeto;
+    const todos = response.data.objeto;
+    const desperdicio = todos.filter((item: any) => item.tipoSaida === 2);
+    return desperdicio;
 }
 
-export async function addDesperdicioItem(item: {
-    id: string;
-    ingredienteId: string;
-    descricao: string;
-    //motivo: string;
-    quantidade: number; 
-    
-}) {
+/*export async function addDesperdicioItem(item: CriarItemDesperdicio) {
     const response = await api.post("/api/SaidaStock", item);
-    return response.data;
+     if (!response.data?.exito) {
+    throw new Error(response.data?.mensagem ?? "Erro desconhecido");
+    }
+    return response.data.objeto;
+}*/
+export async function addDesperdicioItem(item: any) {
+  const res = await api.post("/api/SaidaStock", item);
+  /*await fetch("/api/SaidaStock", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(item),
+  });*/
+
+  console.log("Resposta raw da API:", res);
+
+  if (!res) throw new Error("Erro ao adicionar");
+    return res.data;
 }
 
 export async function updateDesperdicioItem(id: number, item: {
