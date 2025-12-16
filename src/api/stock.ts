@@ -5,7 +5,7 @@ export async function getStock() {
     console.log("Stock Api , get stock", response.data.objeto);
     return response.data.objeto;
 }
-
+/*
 export async function addStockItem(item: {
     id: string;
     nome: string;
@@ -16,6 +16,19 @@ export async function addStockItem(item: {
 }) {
     const response = await api.post("/api/Ingrediente", item);
     return response.data;
+}*/
+export async function addStockItem(item: any) {
+  const res = await api.post("/api/Ingredientes", item);
+  /*await fetch("/api/SaidaStock", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(item),
+  });*/
+
+  console.log("Resposta raw da API:", res);
+
+  if (!res) throw new Error("Erro ao adicionar");
+    return res.data;
 }
 
 

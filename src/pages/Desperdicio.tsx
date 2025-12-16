@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
-import desperdicioDataJSON from "../tmp/dataDesperdicio.json";
 import { Tabela } from "../components/Tabelas/CriarTabela";
 import type { Column } from "../components/Tabelas/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
-import { getDesperdicio, addDesperdicioItem, updateDesperdicioItem, getIngredientes } from "../api/desperdicio.ts";
+import { getDesperdicio, addDesperdicioItem, getIngredientes } from "../api/desperdicio.ts";
 
 export type ItemDesperdicio = {
-
     id: string;
     ingredienteId: string;
     descricao: string;
@@ -17,6 +15,15 @@ export type ItemDesperdicio = {
     unidadeIngrediente: number;
     dataMovimento?: string;
 }
+
+export type CriarItemDesperdicio = {
+    ingredienteId: string;
+    descricao: string;
+    quantidade: number;
+    unidadeIngrediente: number;
+    utilizadorId: string;
+}
+
 type Ingrediente = {
   id: string;
   nome: string;
@@ -57,8 +64,9 @@ export default function Desperdicio() {
 
     async function handleAdd(item: ItemDesperdicio) 
     {
-        const saved = await addDesperdicioItem(item);
-        setDesperdicioData(prev => [...prev, saved]);
+        if (!item) return; 
+        console.log("Item recebido no handleAdd:", item);
+        setDesperdicioData(prev => [...prev, item]);
     }
 
     async function handleUpdateQuantidade(id: string, quantidade: number) 
