@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import desperdicioDataJSON from "../tmp/dataDesperdicio.json";
 import { Tabela } from "../components/Tabelas/CriarTabela";
 import type { Column } from "../components/Tabelas/CriarTabela";
 import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
-import { getDesperdicio, addDesperdicioItem, updateDesperdicioItem, getIngredientes } from "../api/desperdicio.ts";
+import { getDesperdicio, addDesperdicioItem, getIngredientes } from "../api/desperdicio.ts";
 
 export type ItemDesperdicio = {
 

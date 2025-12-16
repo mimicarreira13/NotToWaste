@@ -54,7 +54,7 @@ export default function ToggleTabs({
                 let iconNode: React.ReactNode = null;
                 if (opt.icon && isValidElement(opt.icon)) {
                     try {
-                        iconNode = cloneElement(opt.icon as React.ReactElement, { size: iconSize });
+                        iconNode = cloneElement(opt.icon as React.ReactElement<{ size?: number }>, { size: iconSize });
                     } catch {
                         iconNode = opt.icon;
                     }

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import   { useEffect, useState } from "react";
 //import stockDataJSON from "../tmp/dataStock.json";
 import { Tabela } from "../components/Tabelas/CriarTabela";
 import type { Column } from "../components/Tabelas/CriarTabela";
