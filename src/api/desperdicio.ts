@@ -1,5 +1,4 @@
 import api from "./api";
-import type { CriarItemDesperdicio } from "../pages/Desperdicio.ts";
 
 export async function getDesperdicio() {
     const response = await api.get("/api/SaidaStock");

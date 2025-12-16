@@ -6,10 +6,10 @@ import { getIngredientes } from "../../api/desperdicio";
 
 export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm) 
 {
-  const [, setSuccessModal] = useState(false);
-  const [, setErrorModal] = useState<string | null>(null);
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState<string | null>(null);
   const [ingredientes, setIngredientes] = useState<{ id: number; nome: string }[]>([]);
-  const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
+  const [, setOpenAlteracoesModal] = useState(false);
   const [openList, setOpenList] = useState(false);
   const [selectKey, setSelectKey] = useState(0);
   const [form, setForm] = useState({

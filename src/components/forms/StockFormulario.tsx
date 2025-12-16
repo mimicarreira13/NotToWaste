@@ -5,9 +5,11 @@ import { addStockItem } from "../../api/stock";
 
 export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
   const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
-  const [errorModal, setErrorModal] = useState<string | null>(null);
-  const [openList, setOpenList] = useState(false);
-  const [selectKey, setSelectKey] = useState(0);
+  const [errorModal,/* setErrorModal*/] = useState<string | null>(null);
+  const [/*openList*/, setOpenList] = useState(false);
+  const [/*selectKey*/, setSelectKey] = useState(0);
+
+
   const [form, setForm] = useState({
     id: "",
     nome: "",
@@ -76,7 +78,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       unidade: Number(form.unidade),
       custo: Number(form.custo),
       dataValidade: form.dataValidade,
-      imagem: (form as any).imagem,
+      imagem: form.imagem,
     };
      try {
       const res = await addStockItem(newItem); // chama API
@@ -181,7 +183,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        (setForm as any)((prev: any) => ({ ...prev, imagem: reader.result as string }));
+          setForm(prev => ({ ...prev, imagem: String(reader.result) }));
         const img = document.getElementById("preview") as HTMLImageElement | null;
         if (img) img.src = reader.result as string;
       };
@@ -201,11 +203,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       type="button"
       className="ml-2 px-3 py-2 rounded border"
       onClick={() => {
-        (setForm as any)((prev: any) => {
-        const copy = { ...prev };
-        delete copy.imagem;
-        return copy;
-        });
+      setForm(prev => ({...prev, imagem: ""}));
         const img = document.getElementById("preview") as HTMLImageElement | null;
         if (img) img.src = "";
         const fileInput = document.getElementById("imageInput") as HTMLInputElement | null;
@@ -216,11 +214,8 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       </button>
 
       <div className="mt-2 justify-center flex">
-      {(form as any).imagem && (
-        <img
-          id="preview"
-          src={(form as any).imagem}
-          className="w-full h-40 object-contain mt-2"
+      {form.imagem && (
+        <img id="preview" src={form.imagem} className="w-full h-40 object-contain mt-2"
         />
       )}
       </div>
