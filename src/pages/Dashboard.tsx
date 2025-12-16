@@ -6,6 +6,8 @@ import {
     getNotificacoesIngredientesProximosValidade, type NotificacaoIngrediente
 } from "../api/dashboard.ts"
 import { useNavigate } from "react-router-dom";
+import sustRelatorios from "./assets/images/icons/sustainability_report.png"
+import ingrRelatorios from "./assets/images/icons/ingredients_report.png"
 
 const cardBaseClasses = "bg-[#D9D9D9] rounded-5 shadow flex flex-col border-2 border-[#CFCFCF] w-full text-center p-0";
 
@@ -164,7 +166,7 @@ export default function Dashboard() {
                 <button onClick={()=>navigate("/relatorios?only=sustainability")}>
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Sustentabilidade</div>
                     <div className="flex flex-center">
-                        <img src="src/assets/images/icons/sustainability_report.png" className="w-1/3 h-15 mx-auto pt-6" alt="Sustentabilidade"/>
+                        <img src={sustRelatorios} className="w-1/3 h-15 mx-auto pt-6" alt="Sustentabilidade"/>
                     </div>
                 </button>
             )
@@ -175,7 +177,7 @@ export default function Dashboard() {
                 <button onClick={()=>navigate("/relatorios?only=ingredients")}>
                     <div className="w-full bg-[#4C6E43] text-[#D9D9D9] py-2 mt-auto">Baixar Relatório de Ingredientes</div>
                     <div className="flex flex-center">
-                        <img src="src/assets/images/icons/ingredients_report.png" className="w-1/3 h-15 mx-auto pt-6" alt="Ingredientes"/>
+                        <img src={ingrRelatorios} className="w-1/3 h-15 mx-auto pt-6" alt="Ingredientes"/>
                     </div>
                 </button>
             )
