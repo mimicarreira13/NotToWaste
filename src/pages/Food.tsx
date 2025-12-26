@@ -8,6 +8,12 @@ import { useNavigate } from "react-router-dom";
 import {useProfile} from "../contexts/ProfileContext.tsx";
 import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
+interface PratoIngrediente {
+    nome: string;
+    quantidade: number;
+    custo: number;
+}
+
 interface ApiIngrediente {
     id: string;
     nome: string;
@@ -16,17 +22,6 @@ interface ApiIngrediente {
     custo: number;
     dataValidade: string | null;
     unidade: number;
-}
-
-interface PratoIngrediente {
-    pratoId: string;
-    prato: null;
-    ingredienteId: string;
-    ingrediente: ApiIngrediente | null;
-    quantidade: number;
-    id: string;
-    dataCriacao: string;
-    deletado: boolean;
 }
 
 interface ApiPrato {
@@ -45,6 +40,12 @@ interface ApiResponse<T> {
     objeto: T;
 }
 
+interface ApiResponseArray<T> {
+    exito: boolean;
+    mensagem: string;
+    objeto: T[];
+}
+
 interface FoodUI {
     id: string;
     title: string;
@@ -53,7 +54,7 @@ interface FoodUI {
     ingredients: string[];
     imageName: string;
     available: boolean;
-    pratoIngredientes: Array<{ingredienteId: string, quantidade: number}>;
+    pratoIngredientes: Array<{ingredienteNome: string, quantidade: number}>;
     apiData?: ApiPrato;
 }
 
@@ -72,15 +73,15 @@ function useLocalStorageState(key: string, defaultValue: boolean) {
 
 function convertApiToUI(apiPrato: ApiPrato): FoodUI {
     const ingredients: string[] = [];
-    const pratoIngredientes: Array<{ingredienteId: string, quantidade: number}> = [];
+    const pratoIngredientes: Array<{ingredienteNome: string, quantidade: number}> = [];
 
     if (apiPrato.pratoIngredientes && Array.isArray(apiPrato.pratoIngredientes)) {
         apiPrato.pratoIngredientes.forEach((pi: PratoIngrediente) => {
-            if (pi.ingrediente?.nome) {
+            if (pi.nome) {
                 const qty = pi.quantidade || 1;
-                ingredients.push(`${pi.ingrediente.nome} (${qty})`);
+                ingredients.push(`${pi.nome} (${qty})`);
                 pratoIngredientes.push({
-                    ingredienteId: pi.ingredienteId,
+                    ingredienteNome: pi.nome,
                     quantidade: qty
                 });
             }
@@ -100,6 +101,30 @@ function convertApiToUI(apiPrato: ApiPrato): FoodUI {
     };
 }
 
+interface itemIDs {
+    id: string;
+    nome: string;
+}
+
+async function getIngredientIdByName(name: string): Promise<string | undefined> {
+    try {
+        const response = await api.get<ApiResponseArray<ApiIngrediente>>("/api/Ingrediente");
+        const ingredients: itemIDs[] = response.data.objeto.map(item => ({
+            id: item.id,
+            nome: item.nome,
+        }));
+        console.log(ingredients);
+        if (response.data.exito && response.data.objeto) {
+            const ingredient = ingredients.find(item => item.nome.includes(name));
+            console.log("This bitch " + name);
+            return ingredient?.id;
+        }
+        return undefined;
+    } catch (error) {
+        console.error("Error fetching ingredients:", error);
+        return undefined;
+    }
+}
 
 export default function Food({ mode }: { mode: boolean }) {
     const [showPopupDelete, setShowPopupDelete] = useLocalStorageState("popupDelete", false);
@@ -223,8 +248,12 @@ export default function Food({ mode }: { mode: boolean }) {
 
         try {
             const promises = food.pratoIngredientes.map(async (ingredient) => {
+                const ingredientId = await getIngredientIdByName(ingredient.ingredienteNome)
+                if (!ingredientId) {
+                    console.error("No ingredient ID found for ", ingredient.ingredienteNome)
+                }
                 const requestBody = {
-                    ingredienteId: ingredient.ingredienteId,
+                    ingredienteId: ingredientId,
                     utilizadorId: userId,
                     quantidade: ingredient.quantidade,
                     descricao: "Cozinhar prato: " + food.title,
