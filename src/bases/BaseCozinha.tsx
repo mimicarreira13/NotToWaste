@@ -132,7 +132,7 @@ export default function CozinhaBase({
                         <div key={item.id}>{item.content}</div>
                     ))}
                 </div>
-                <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px] h-14"}>
+                <div className={"flex flex-row bg-gray-300 shadow items-center p-[5px] rounded-[10px] text-[25px] h-14 xl:mr-2"}>
                     <FiSearch className="text-black" />
                     <input
                         type="text"
@@ -154,15 +154,15 @@ export default function CozinhaBase({
                         type="Ingrediente"
                         onData={handleIngredientData}
                     />
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-[2%] min-h-200"
+                    <div className=" grid xl:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-[2%] min-h-200"
                          style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                         {ingredientCards.length > 0 ? (
                             ingredientCards.map(card => (
                                 <div
                                     key={card.id}
-                                    className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
+                                    className="bg-[#D9D9D9] rounded-5 shadow flex flex-row 2xl:w-[400px] cursor-pointer hover:shadow-lg transition-shadow xl:w-1/2"
                                     onClick={() => navigate(`/ingredient/${card.id}`)}
-                                    style={{height: "345px", borderRadius: "10px", width: "400px"}}
+                                    style={{height: "345px", borderRadius: "10px"}}
                                 >
                                     {card.content}
                                 </div>
@@ -180,15 +180,15 @@ export default function CozinhaBase({
                         type="Prato"
                         onData={handleFoodData}
                     />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2%] min-h-200"
+                    <div className="grid xl:grid-cols-2 gap-[2%] 2xl:grid-cols-3 3xl:grid-cols-4 min-h-200"
                          style={{width: '100%', fontFamily: "Sansita", fontWeight:"400", fontStyle:"normal"}}>
                         {foodCards.length > 0 ? (
                             foodCards.map(card => (
                                 <div
                                     key={card.id}
-                                    className="bg-[#D9D9D9] rounded-5 shadow flex flex-row cursor-pointer hover:shadow-lg transition-shadow"
+                                    className="bg-[#D9D9D9] rounded-5 shadow 3xl:w-[400px] 2xl:w-[500px] flex flex-row cursor-pointer hover:shadow-lg transition-shadow xl:w-[600px]"
                                     onClick={() => navigate(`/${pageType}/food/${card.id}`)}
-                                    style={{height: "345px", borderRadius: "10px", width: "444px"}}
+                                    style={{height: "345px", borderRadius: "10px"}}
                                 >
                                     {card.content}
                                 </div>
