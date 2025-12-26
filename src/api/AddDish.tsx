@@ -312,34 +312,24 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
         setIsSubmitting(true);
 
         try {
-            const formData = new FormData();
-
-            formData.append('Nome', nome.trim());
-            formData.append('Preco', preco.toString());
-            formData.append('Descricao', descricao.trim() || "Sem descrição");
-
-            const pratoIngredientes = selectedIds.map(id => ({
-                ingredienteId: id,
-                quantidade: ingredientQuantities[id] || 1
-            }));
-            formData.append('PratoIngredientes', JSON.stringify(pratoIngredientes));
-
-            if (imagem) {
-                formData.append('imagem', imagem);
-            }
+            // Create JSON payload instead of FormData
+            const dishData = {
+                nome: nome.trim(),
+                preco: preco,
+                descricao: descricao.trim() || "Sem descrição",
+                pratoIngredientes: selectedIds.map(id => ({
+                    ingredienteId: id,
+                    quantidade: ingredientQuantities[id] || 1
+                }))
+            };
 
             console.log("Editing dish with ID:", dishId);
-            console.log("Form data:", {
-                nome: nome.trim(),
-                preco,
-                descricao: descricao.trim() || "Sem descrição",
-                pratoIngredientes,
-                hasImage: !!imagem
-            });
+            console.log("Dish data:", dishData);
 
-            const editResponse = await api.put(`/api/Prato/${dishId}`, formData, {
+            // Send as JSON, not FormData
+            const editResponse = await api.put(`/api/Prato/${dishId}`, dishData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/json'  // Change to JSON
                 },
                 timeout: 30000
             });
@@ -349,6 +339,7 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
             if (!editResponse.data.exito) {
                 throw new Error(editResponse.data.mensagem || "Falha ao editar prato");
             }
+
 
             setSubmitSuccess(true);
 

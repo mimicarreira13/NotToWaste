@@ -233,14 +233,6 @@ function useFunctionFinder(
         formData.append('Descricao', data.descricao);
         formData.append('PratoIngredientes', JSON.stringify(data.pratoIngredientes));
 
-        if (data.imagem && typeof data.imagem !== 'string') {
-            formData.append('imagem', data.imagem);
-        } else if (data.imagem && data.imagem.startsWith('data:')) {
-            const response = await fetch(data.imagem);
-            const blob = await response.blob();
-            formData.append('imagem', blob, 'dish-image.jpg');
-        }
-
         const response = await fetch(`/api/Prato/${data.id}`, {
             method: 'PUT',
             body: formData,
