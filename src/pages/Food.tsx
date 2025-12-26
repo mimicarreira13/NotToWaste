@@ -6,6 +6,7 @@ import type { AxiosError } from "axios";
 import api from "../api/api.ts";
 import { useNavigate } from "react-router-dom";
 import {useProfile} from "../contexts/ProfileContext.tsx";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
 interface ApiIngrediente {
     id: string;
@@ -170,8 +171,8 @@ export default function Food({ mode }: { mode: boolean }) {
 
     if (loading) {
         return (
-            <div className="h-full align-top font-[Sansita] flex items-center justify-center">
-                <div className="text-[32px]">Carregando prato...</div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent">
+                <LoadingSpinner message="Carregando Prato..." size={64} ariaLabel="loading-dish" />
             </div>
         );
     }

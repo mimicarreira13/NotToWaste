@@ -1,5 +1,5 @@
 // File: `src/components/ToggleTabs.tsx`
-import React from "react";
+import React, { isValidElement, cloneElement } from "react";
 
 type Option = { id: string; label: React.ReactNode; icon?: React.ReactNode };
 
@@ -11,6 +11,8 @@ type ToggleTabsProps = {
     selectedBackgroundColor?: string;
     selectedTextColor?: string;
     baseTextColor?: string;
+    fontSize?: string | number; // new: overall label font size
+    iconSize?: number; // new: icon size in px
 };
 
 export default function ToggleTabs({
@@ -21,6 +23,8 @@ export default function ToggleTabs({
                                        selectedBackgroundColor = "#4C6E43",
                                        selectedTextColor = "#FFFFFF",
                                        baseTextColor = "#767676",
+                                       fontSize = "1.1rem",
+                                       iconSize = 22,
                                    }: ToggleTabsProps) {
     return (
         <div
@@ -34,16 +38,30 @@ export default function ToggleTabs({
         >
             {options.map((opt) => {
                 const selected = opt.id === value;
+                const computedFontSize = typeof fontSize === "number" ? `${fontSize}px` : fontSize;
                 const baseButtonStyle: React.CSSProperties = {
                     padding: "0.5rem 1rem",
                     borderRadius: 8,
-                    fontSize: "1rem",
+                    fontSize: computedFontSize,
                     minWidth: 88,
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 8,
                     justifyContent: "center",
                 };
+
+                // if icon is a React element (react-icons), clone it to set size
+                let iconNode: React.ReactNode = null;
+                if (opt.icon && isValidElement(opt.icon)) {
+                    try {
+                        iconNode = cloneElement(opt.icon as React.ReactElement<{ size?: number }>, { size: iconSize });
+                    } catch {
+                        iconNode = opt.icon;
+                    }
+                } else {
+                    iconNode = opt.icon;
+                }
+
                 return (
                     <button
                         key={opt.id}
@@ -69,7 +87,11 @@ export default function ToggleTabs({
                                 }
                         }
                     >
-                        {opt.icon && <span aria-hidden style={{ display: "inline-flex", width: 20, height: 20 }}>{opt.icon}</span>}
+                        {iconNode && (
+                            <span aria-hidden style={{ display: "inline-flex", width: iconSize, height: iconSize, alignItems: "center", justifyContent: "center" }}>
+                                {iconNode}
+                            </span>
+                        )}
                         <span>{opt.label}</span>
                     </button>
                 );

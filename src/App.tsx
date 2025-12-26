@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {  Routes, Route } from "react-router-dom";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import Navbar from "./components/Navbar";
 import Perfis from "./pages/Perfis";
@@ -17,7 +17,6 @@ import Relatorios from "./pages/Relatorios.tsx";
 function App() {
     return (
         <ProfileProvider>
-            <Router>
                 <div className="min-h-screen bg-[#D9D9D9] flex flex-col w-full font-[Sansita]">
                     <Navbar />
                     <main className="flex-1 flex items-center justify-center">
@@ -39,7 +38,6 @@ function App() {
                         </Routes>
                     </main>
                 </div>
-            </Router>
         </ProfileProvider>
     );
 }

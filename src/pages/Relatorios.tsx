@@ -1,3 +1,5 @@
+// typescript
+// File: `src/pages/Relatorios.tsx`
 import { useState } from "react";
 import { GiCarrot } from "react-icons/gi";
 import { MdEco } from "react-icons/md";
@@ -5,17 +7,19 @@ import ToggleTabs from "../components/ToggleTabs.tsx";
 import ClientGrid from "../components/Client/ClientGrid.tsx";
 import ClientCard from "../components/Client/ClientCard.tsx";
 import ClientYearSections from "../components/Client/ClientYearSections";
-import { sustainabilityReports, ingredientItems } from "../data/clientItems";
 import { useLocation } from "react-router-dom";
+import useReports from "../hooks/useReports";
 
 export function RelatoriosToggle({
                                      value,
                                      onChange,
                                      only,
+                                     selectedBackgroundColor,
                                  }: {
     value: "ingredients" | "sustainability";
     onChange: (v: "ingredients" | "sustainability") => void;
     only?: "ingredients" | "sustainability";
+    selectedBackgroundColor?: string;
 }) {
     const IngredientsIcon = <GiCarrot size={18} aria-hidden />;
     const SustainabilityIcon = <MdEco size={18} aria-hidden />;
@@ -32,25 +36,34 @@ export function RelatoriosToggle({
             options={filtered}
             value={value}
             onChange={(id) => onChange(id as "ingredients" | "sustainability")}
+            selectedBackgroundColor={selectedBackgroundColor}
         />
     );
 }
 
 export function RelatoriosContent({ tab }: { tab: "ingredients" | "sustainability" }) {
+    const { sustainabilityItems, ingredientItems, loading } = useReports();
+
     return (
         <div style={{ marginTop: 220 }}>
-            {tab === "sustainability" && (
+            {loading && (
+                <div className="w-full flex items-center justify-center" style={{ minHeight: 120 }}>
+                    <div>Loading report lists…</div>
+                </div>
+            )}
+
+            {!loading && tab === "sustainability" && (
                 <div className="sust_grid">
                     <ClientGrid
                         variant="sustainability"
-                        items={sustainabilityReports}
+                        items={sustainabilityItems}
                         columns={4}
                         renderItem={(r) => <ClientCard item={r} />}
                     />
                 </div>
             )}
 
-            {tab === "ingredients" && (
+            {!loading && tab === "ingredients" && (
                 <div className="first-year-wrap">
                     <ClientYearSections items={ingredientItems} columns={6} compact />
                 </div>
@@ -139,6 +152,7 @@ export default function Relatorios() {
     const [reportTab, setReportTab] = useState<"ingredients" | "sustainability">(only ?? "ingredients");
     const bandHeight = 190;
 
+
     return (
         <div
             className={`w-full relatorios-page ${!only ? "has-second-toggle" : ""}`}
@@ -150,12 +164,7 @@ export default function Relatorios() {
                 aria-hidden="true"
             />
             <div className="fixed-top-toggles fixed top-32 left-48 right-48 flex items-center justify-between z-40">
-                {/* agora o toggle secundário fica no lado esquerdo quando acessada a página Relatórios */}
                 <RelatoriosToggle value={reportTab} onChange={(v) => setReportTab(v)} only={only} />
-
-                <div>
-                    {/* placeholder para o primeiro toggle quando acessada diretamente (lado direito) */}
-                </div>
             </div>
 
             <RelatoriosContent tab={reportTab} />
