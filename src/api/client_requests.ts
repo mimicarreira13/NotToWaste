@@ -1,14 +1,9 @@
 import api from "./api";
 
 export type PratoIngrediente = {
-    pratoId: string;
-    prato?: string | null;
-    ingredienteId: string;
-    ingrediente?: string | null;
+    nome: string;
     quantidade: number;
-    id: string;
-    dataCriacao?: string;
-    deletado?: boolean;
+    custo: number;
 };
 
 export type Prato = {
