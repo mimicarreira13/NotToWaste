@@ -1,14 +1,21 @@
 import {useState, useRef, useEffect} from "react";
 import { Dishes, type DishesHandle } from "../api/AddDish.tsx";
 import {useNavigate} from "react-router-dom";
+import api from "../api/api.ts";
 
 interface DishData {
     id: string;
     nome: string;
     preco: number;
     descricao: string;
-    pratoIngredientes: Array<{ ingredienteId: string; quantidade: number }>;
+    pratoIngredientes: Array<{ ingredienteNome: string; quantidade: number }>;
     imagem?: string;
+}
+
+interface PratoIngrediente {
+    nome: string;
+    quantidade: number;
+    custo: number;
 }
 
 interface ApiPrato {
@@ -18,17 +25,7 @@ interface ApiPrato {
     disponivel: boolean;
     preco: number;
     caminhoImagem: string | null;
-    pratoIngredientes: Array<{
-        pratoId: string;
-        ingredienteId: string;
-        ingrediente: {
-            id: string;
-            nome: string;
-            quantidade: number;
-        } | null;
-        quantidade: number;
-        id: string;
-    }>;
+    pratoIngredientes: PratoIngrediente[];
 }
 
 interface FoodUI {
@@ -39,7 +36,7 @@ interface FoodUI {
     ingredients: string[];
     imageName: string;
     available: boolean;
-    pratoIngredientes: Array<{ingredienteId: string; quantidade: number}>;
+    pratoIngredientes: Array<{ingredienteNome: string; quantidade: number}>;
     apiData?: ApiPrato;
 }
 
@@ -136,6 +133,47 @@ function InfoDelete({ ItemName }: { ItemName?: string }) {
     );
 }
 
+interface ApiIngrediente {
+    id: string;
+    nome: string;
+    quantidade: number;
+    caminhoImagem: string | null;
+    custo: number;
+    dataValidade: string | null;
+    unidade: number;
+}
+
+interface ApiResponseArray<T> {
+    exito: boolean;
+    mensagem: string;
+    objeto: T[];
+}
+
+interface itemIDs {
+    id: string;
+    nome: string;
+}
+
+async function getIngredientIdByName(name: string): Promise<string | undefined> {
+    try {
+        const response = await api.get<ApiResponseArray<ApiIngrediente>>("/api/Ingrediente");
+        const ingredients: itemIDs[] = response.data.objeto.map(item => ({
+            id: item.id,
+            nome: item.nome,
+        }));
+        console.log(ingredients);
+        if (response.data.exito && response.data.objeto) {
+            const ingredient = ingredients.find(item => item.nome.includes(name));
+            console.log("This bitch " + name);
+            return ingredient?.id;
+        }
+        return undefined;
+    } catch (error) {
+        console.error("Error fetching ingredients:", error);
+        return undefined;
+    }
+}
+
 function useFunctionFinder(
     close: () => void,
     onConfirm: (() => void | Promise<void>) | undefined,
@@ -227,13 +265,41 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
 
     useEffect(() => {
         if (type === "edit" && dishData && 'pratoIngredientes' in dishData) {
-            const editData = dishData as DishData;
-            const ingredientIds = editData.pratoIngredientes.map(
-                (ing) => ing.ingredienteId
-            );
-            setSelectedIngredientIds(ingredientIds);
+            const fetchIngredientIds = async () => {
+                const editData = dishData as DishData;
+
+                const nameToIdMap = new Map<string, string>();
+
+                try {
+                    const response = await api.get<ApiResponseArray<ApiIngrediente>>("/api/Ingrediente");
+                    if (response.data.exito && response.data.objeto) {
+                        response.data.objeto.forEach(item => {
+                            nameToIdMap.set(item.nome, item.id);
+                        });
+
+                        const ingredientIds = editData.pratoIngredientes
+                            .map(ing => {
+                                const ingredientName = ing.ingredienteNome;
+                                for (const [storedName, id] of nameToIdMap.entries()) {
+                                    if (storedName.includes(ingredientName) || ingredientName.includes(storedName)) {
+                                        return id;
+                                    }
+                                }
+                                return undefined;
+                            })
+                            .filter((id): id is string => id !== undefined); // Remove undefined
+
+                        setSelectedIngredientIds(ingredientIds);
+                    }
+                } catch (error) {
+                    console.error("Error fetching ingredients:", error);
+                }
+            };
+
+            fetchIngredientIds();
         }
     }, [type, dishData]);
+
 
     const render = () => {
         switch(type) {
@@ -269,8 +335,9 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
                     if ('pratoIngredientes' in dishData && Array.isArray(dishData.pratoIngredientes)) {
                         const apiDish = dishData as ApiPrato;
                         ingredients = apiDish.pratoIngredientes.map((pi) =>
-                            pi.ingrediente ? `${pi.ingrediente.nome} (${pi.quantidade || 1})` : `Ingrediente ID: ${pi.ingredienteId}`
+                            pi.nome ? `${pi.nome} (${pi.quantidade || 1})` : `Ingrediente ID: ${getIngredientIdByName(pi.nome)}`
                         );
+                        console.log("THE ONE AND ONLY: " + ingredients[0]);
                     }
                     else if ('ingredients' in dishData && Array.isArray(dishData.ingredients)) {
                         const foodUI = dishData as FoodUI;
@@ -316,7 +383,7 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
 
     if (type === "cook") {
         widthPop = "50%";
-        heightPop = "55%";
+        heightPop = "";
         divWhite = "85%";
         divGreen = "15%";
     }
@@ -339,7 +406,7 @@ export default function BasePopup({type, greenButton, redFunction, greenFunction
                                 {type === "cook" ? "Não" : "Cancelar"}
                             </button>
                             <button
-                                className={"bg-[#4c6e43] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px] hover:bg-[#3a5a32] transition-colors"}
+                                className={"bg-[#4c6e43] text-white w-[500px] h-[70px] content-center text-[40px] rounded-[10px] hover:bg-[#3a5a32] transition-colors mb-5"}
                                 onClick={async () => {
                                     if (type === "dishes" || type === "edit") {
                                         await handleSubmit();

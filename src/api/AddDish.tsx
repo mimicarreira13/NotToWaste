@@ -28,7 +28,7 @@ interface DishesProps {
         preco?: number;
         descricao?: string;
         pratoIngredientes?: Array<{
-            ingredienteId: string;
+            ingredienteNome: string;
             quantidade: number;
         }>;
         imagem?: string;
@@ -75,12 +75,12 @@ export const Dishes = forwardRef<DishesHandle, DishesProps>(({
             setDescricao(dishData.descricao || "");
 
             if (dishData.pratoIngredientes && dishData.pratoIngredientes.length > 0) {
-                const ingredientIds = dishData.pratoIngredientes.map(ing => ing.ingredienteId);
-                onChange(ingredientIds);
+                const ingredientNames = dishData.pratoIngredientes.map(ing => ing.ingredienteNome);
+                onChange(ingredientNames);
 
                 const quantities: IngredientQuantity = {};
                 dishData.pratoIngredientes.forEach(ing => {
-                    quantities[ing.ingredienteId] = ing.quantidade;
+                    quantities[ing.ingredienteNome] = ing.quantidade;
                 });
                 setIngredientQuantities(quantities);
             }
