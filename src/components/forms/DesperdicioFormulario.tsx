@@ -9,7 +9,6 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
   const [successModal, setSuccessModal] = useState(false);
   const [errorModal, setErrorModal] = useState<string | null>(null);
   const [ingredientes, setIngredientes] = useState<{ id: number; nome: string }[]>([]);
-  const [, setOpenAlteracoesModal] = useState(false);
   const [openList, setOpenList] = useState(false);
   const [selectKey, setSelectKey] = useState(0);
   const [form, setForm] = useState({
@@ -23,7 +22,6 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
     "Fora de validade",
     "Mau estado",
     "Mal confecionado",
-    //"Outro",
   ];
 
    useEffect(() => {
@@ -42,7 +40,6 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
      const { name, value } = e.target;
-
    
       if (name === "quantidade") {
         // permite string vazia (para apagar)
@@ -87,23 +84,22 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
     }
 
     try {
-      const newItem = { 
+      const newDesperdicioItem = { 
         ingredienteId: form.ingredienteId,
         descricao: form.descricao,
         quantidade: Number(form.quantidade),
         unidadeIngrediente: Number(form.unidadeIngrediente),
-        utilizadorId:"7bafc80f-0c10-457e-a4bd-cc303afa6332", //fincionario de stock id
+        utilizadorId:"7bafc80f-0c10-457e-a4bd-cc303afa6332", //funcionário de stock id
         tipoSaida: 2, //desperdicio
       };
       
-      const res = await addDesperdicioItem(newItem);
-      console.log("Resposta da API:", res);
+      const res = await addDesperdicioItem(newDesperdicioItem);
+      console.log("Resposta da API Desperdicio:", res);
 
       if (res?.exito) {
         onAdded?.(res.objeto);
         setSuccessModal(true);
-        setOpenAlteracoesModal(true);
-        window.location.reload();
+        
       } else {
         setErrorModal(res?.mensagem || "Não foi possível guardar o desperdício.");
       }
@@ -191,6 +187,7 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
         open={successModal}
         onClose={() => { setSuccessModal(false); onClose(); }}
         title={"Alterações"}
+        
         message={"Ingrediente(s) adicionado(s) ao Desperdício com sucesso!"}
         buttons={[
           {

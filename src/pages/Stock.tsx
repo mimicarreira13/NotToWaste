@@ -9,19 +9,32 @@ import StockFormulario from "../components/forms/StockFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { getStock, addStockItem, updateStockItem } from "../api/stock.ts";
+import { getStock, updateStockQuantidadeItem } from "../api/stock.ts";
+
 
 export type ItemStock = {
     id: string;
     nome: string;
+    marca: string;
     quantidade: number;
     unidade: number;
     custo: number;
     dataValidade: string;
     //imAGEM
-};
+    
+}
+export type CriarItemStock = {
+    nome: string;
+    marca: string;
+    quantidade: number;
+    unidade: number; 
+    custo: number;
+    dataValidade: string;
+}
 
-export default function StockPage() {
+
+export default function StockPage() 
+{
     const [stockData, setStockData] = useState<ItemStock[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -40,17 +53,28 @@ export default function StockPage() {
         load();
     }, []);
 
-    async function handleUpdateQuantidade(id: string, quantidade: number) {
-        await updateStockItem(id, { quantidade });
-
+    async function handleUpdateQuantidade(id:string, novaQuantidade:number) 
+    {
+        if (novaQuantidade < 0) return;
+        
         setStockData((prev) =>
-            prev.map((item) => (item.id === id ? { ...item, quantidade } : item))
-        );
+            prev.map(item => item.id === id ? { ...item, quantidade : novaQuantidade} : item));
+
+        try{
+             await updateStockQuantidadeItem(id, novaQuantidade);
+        } catch (error) {
+            console.error("Erro ao atualizar quantidade na página stock:", error);
+            const data = await getStock();
+            setStockData(data);
+        }
     }
 
-    async function handleAdd(item: ItemStock) {
-        const saved = await addStockItem(item);
-        setStockData((prev) => [...prev, saved]);
+    async function handleAdd(item: ItemStock) 
+    {
+        if (!item) return; 
+        console.log("Item recebido no handleAdd:", item);
+        setStockData(prev => [...prev, item]);
+
     }
 
     function unidadeToLabel(unidade: number) {

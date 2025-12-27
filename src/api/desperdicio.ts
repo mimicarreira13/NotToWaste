@@ -1,5 +1,9 @@
 import api from "./api";
 
+type atualizarquantidade = {
+  quantidade: number;
+};
+
 export async function getDesperdicio() {
     const response = await api.get("/api/SaidaStock");
     const todos = response.data.objeto;
@@ -7,20 +11,8 @@ export async function getDesperdicio() {
     return desperdicio;
 }
 
-/*export async function addDesperdicioItem(item: CriarItemDesperdicio) {
-    const response = await api.post("/api/SaidaStock", item);
-     if (!response.data?.exito) {
-    throw new Error(response.data?.mensagem ?? "Erro desconhecido");
-    }
-    return response.data.objeto;
-}*/
 export async function addDesperdicioItem(item: any) {
   const res = await api.post("/api/SaidaStock", item);
-  /*await fetch("/api/SaidaStock", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(item),
-  });*/
 
   console.log("Resposta raw da API:", res);
 
@@ -32,10 +24,27 @@ export async function updateDesperdicioItem(id: number, item: {
     quantidade: number;
 }) {
     const response = await api.put(`/api/SaidaStock/${id}`, item);
-    return response.data; //dar o return com o objeto tbm?
+    return response.data; 
 }
 
 export async function getIngredientes() {
   const response = await api.get("/api/Ingrediente");
   return response.data.objeto; 
+}
+
+export async function updateDesperdicioQuantidadeItem(id: string, quantidade: number) 
+{
+    const body: atualizarquantidade = { quantidade };
+    console.log("PUT quantidade →", id, body);
+    const res = await api.put(`/api/SaidaStock/${id}/atualizar-quantidade`,
+        body,
+        {
+        headers: {
+            "Content-Type": "application/json",
+        },
+        }
+    );
+
+    console.log("Resposta backend:", res.data);
+    return res.data;
 }

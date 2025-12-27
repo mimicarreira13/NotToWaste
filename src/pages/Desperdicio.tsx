@@ -6,7 +6,7 @@ import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { getDesperdicio, /*addDesperdicioItem,*/ getIngredientes } from "../api/desperdicio.ts";
+import { getDesperdicio, updateDesperdicioQuantidadeItem, getIngredientes } from "../api/desperdicio.ts";
 
 export type ItemDesperdicio = {
     id: string;
@@ -78,15 +78,20 @@ export default function Desperdicio() {
         setDesperdicioData(prev => [...prev, item]);
     }
 
-    async function handleUpdateQuantidade(id: string, quantidade: number) 
+    async function handleUpdateQuantidade(id:string, novaQuantidade:number) 
     {
-        //await updateDesperdicioItem(id, { quantidade });  // chamada a api falta ter no backend
+        if (novaQuantidade < 0) return;
+        
+        setDesperdicioData((prev) =>
+            prev.map(item => item.id === id ? { ...item, quantidade : novaQuantidade} : item));
 
-        setDesperdicioData(prev =>
-            prev.map(item =>
-                item.id === id ? { ...item, quantidade } : item
-            )
-        );
+        try{
+                await updateDesperdicioQuantidadeItem(id, novaQuantidade);
+        } catch (error) {
+            console.error("Erro ao atualizar quantidade na página desperdício:", error);
+            const data = await getDesperdicio();
+            setDesperdicioData(data);
+        }
     }
 
     function unidadeToLabel(unidade: number) {
@@ -106,15 +111,15 @@ export default function Desperdicio() {
     [
         { key: "ingredienteId", label: "Nome", render: (row) =>
             ingredientesMap[row.ingredienteId] ?? "—" 
-        }, //select endoreço api ingredientes get 
-        { key: "descricao", label: "Motivo" }, //select
+        },  
+        { key: "descricao", label: "Motivo" }, 
         { key: "quantidade", label: "Quantidade",
-            render: (row) => (
+            render: (row: ItemDesperdicio) => (
                 <Contador
-                    value={row.quantidade}
-                    onChange={(int) => handleUpdateQuantidade(row.id, int)}
+                    value={Number(row.quantidade)}
+                    onChange={(int) => handleUpdateQuantidade(row.ingredienteId, int)}
                 />
-            )
+            ),
         },
         { key: "unidadeIngrediente", label: "Unidade",  render: (row) => unidadeToLabel(row.unidadeIngrediente) },
         { key: "dataMovimento", label: "Data de Registo",  render: (row) =>
@@ -148,10 +153,10 @@ export default function Desperdicio() {
                 </h1>
 
                 <BotaoAdicionar 
-                title="Adicionar ingrediente ao Desperdício" 
-                modalComponent={DesperdicioFormulario} 
-                buttonLabel="Adicionar" 
-                onAdded={handleAdd} 
+                    title="Adicionar ingrediente ao Desperdício" 
+                    modalComponent={DesperdicioFormulario} 
+                    buttonLabel="Adicionar" 
+                    onAdded={handleAdd} 
                 />
 
             </div>
