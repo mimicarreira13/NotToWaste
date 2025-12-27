@@ -3,6 +3,7 @@ import type { AdicionarForm } from "../BotaoAdicionar";
 import Modal from "../Modal";
 import { addStockItem } from "../../api/stock";
 
+
 export default function ModalStock({ onClose, onAdded }: AdicionarForm) 
 {
   const [successModal, setSuccessModal] = useState(false);
@@ -77,6 +78,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm)
       setErrorModal("Por favor, preencha todos os campos.");
       return;
     }
+    
     if (!Number.isInteger(quantidadeNum) || quantidadeNum <= 0) {
     setErrorModal("Quantidade inválida.");
     return;
