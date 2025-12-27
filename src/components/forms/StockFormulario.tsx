@@ -3,26 +3,26 @@ import type { AdicionarForm } from "../BotaoAdicionar";
 import Modal from "../Modal";
 import { addStockItem } from "../../api/stock";
 
-export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
+export default function ModalStock({ onClose, onAdded }: AdicionarForm) 
+{
+  const [successModal, setSuccessModal] = useState(false);
   const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
   const [errorModal, setErrorModal] = useState<string | null>(null);
   const [openList, setOpenList] = useState(false);
-  const [selectKey, setSelectKey] = useState(0);
   const [form, setForm] = useState({
-    id: "",
     nome: "",
-    quantidade: 0,
-    unidade: 0,
-    custo: 0,
+    marca: "",
+    quantidade: "",
+    unidade: "",
+    custo: "",
     dataValidade: "",
-    imagem: "",
+    imagem: null as File | null,
+    previewSrc: "",
   });
 
   useEffect(() => {
     async function load() {
       setOpenList(false);
-      setSelectKey(prev => prev + 1);
-      
     }
     load();
   }, []);
@@ -30,63 +30,91 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
        const { name, value } = e.target;
   
-     
         if (name === "quantidade") {
           // permite string vazia (para apagar)
           if (value === "") {
-            setForm(prev => ({ ...prev, quantidade: 0 }));
+            setForm(prev => ({ ...prev, quantidade: "" }));
             return;
           }
-  
-          // só números positivos
-          const num = Number(value);
-  
-         if (!Number.isInteger(num) || num < 1) {
+        
+          if (!/^[1-9][0-9]*$/.test(value)) return;
+
+          setForm(prev => ({ ...prev, quantidade: value }));
           return;
-        }
-  
-          setForm(prev => ({ ...prev, quantidade: num }));
-          return;
+        
         }
   
         if (name === "unidade") {
-          setForm(prev => ({ ...prev, unidade: Number(value) }));
+          setForm(prev => ({ ...prev, unidade: value })); /////----------------------diferença 
           return;
         }
         if (name === "custo") {
-          // permite string vazia (para apagar)
+          
           if (value === "") { 
-            setForm(prev => ({ ...prev, custo: 0 }));
+            setForm(prev => ({ ...prev, custo: "" }));
             return;
           }
+          if (!/^[0-9]+([.,][0-9]{0,2})?$/.test(value)) {
+            return;
         }
+
+        const normalizado = value.replace(",", ".");
   
-      setForm(prev => ({...prev,[name]: value}));
+      setForm(prev => ({
+          ...prev,
+          custo: normalizado,
+        }));
+        return;
+      }
+      setForm(prev => ({ ...prev, [name]: value }));
     }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-     if (!form.nome || form.quantidade < 1 || form.unidade < 1 || form.custo < 1) {
-      alert("Por favor, preencha todos os campos corretamente.");
+    console.log("SUBMIT STOCK TESTE");
+
+    const quantidadeNum = Number(form.quantidade);
+    const unidadeNum = Number(form.unidade);
+    const custoNum =
+    typeof form.custo === "string"
+      ? Number(form.custo.replace(",", "."))
+      : Number(form.custo);
+
+
+    if (!form.nome || !form.marca || quantidadeNum < 1 || unidadeNum < 1 || custoNum <= 0 || !form.dataValidade) {
+      setErrorModal("Por favor, preencha todos os campos.");
       return;
     }
-    const newItem = {
-      nome: form.nome,
-      quantidade: Number(form.quantidade),
-      unidade: Number(form.unidade),
-      custo: Number(form.custo),
-      dataValidade: form.dataValidade,
-      imagem: (form as any).imagem,
-    };
-     try {
-      const res = await addStockItem(newItem); // chama API
+    if (!Number.isInteger(quantidadeNum) || quantidadeNum <= 0) {
+    setErrorModal("Quantidade inválida.");
+    return;
+    }
+
+    try {
+      const newStockItem = {
+        nome: form.nome,
+        marca: form.marca,
+        quantidade: quantidadeNum,
+        unidade: unidadeNum,
+        custo: custoNum,
+        dataValidade: form.dataValidade + "T00:00:00",
+        imagem: form.imagem,
+      };
+     
+      const res = await addStockItem(newStockItem); 
       console.log("Resposta API Stock:", res);
 
-      onAdded?.(res); // envia para o componente pai (StockPage)
-      setOpenAlteracoesModal(true); // abre modal de sucesso
+       if (res?.exito && res?.objeto) {
+      onAdded?.(res.objeto); 
+      setSuccessModal(true);
+      setOpenAlteracoesModal(true); 
+       } else {
+        setErrorModal(res?.mensagem || "Não foi possível guardar o desperdício.");
+       }
+
     } catch (err) {
-      console.error("Erro ao adicionar stock:", err);
-      alert("Não foi possível adicionar o stock.");
+      console.error("Erro no submit página stock:", err);
+      setErrorModal("Não foi possível adicionar o stock. Por favor preencha todos os campos corretamente.");
     }
   }
 
@@ -99,8 +127,18 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
         name="nome" 
         value={form.nome} 
         onChange={handleChange} 
-        placeholder="Nome Marca" 
+        placeholder="Nome" 
         className="w-full px-3 py-2 border rounded" 
+        required
+      />
+
+      <input 
+        name="marca" 
+        value={form.marca} 
+        onChange={handleChange} 
+        placeholder="Marca" 
+        className="w-full px-3 py-2 border rounded" 
+        required
       />
 
       <div className="flex gap-2">
@@ -118,23 +156,25 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
               value={form.quantidade}
               onChange={handleChange}
               placeholder="Quantidade"
+              required
               className="flex-1 px-3 py-2 border rounded"
             />
           </div>
-        <div className="relative pt-8 flex-1">
-          <select
-            name="unidade"
-            value={form.unidade}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded"
-            required
-          >
+
+          <div className="relative pt-8 flex-1">
+            <select
+              name="unidade"
+              value={form.unidade}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded"
+              required
+            >
+              <option value="">Selecione a unidade</option>
+              <option value="1">Unidade</option>
+              <option value="2">Quilo</option>
+              <option value="3">Litro</option>
             
-            <option value={1}>Unidade</option>
-            <option value={2}>Quilo</option>
-            <option value={3}>Litro</option>
-          
-          </select>
+            </select>
         </div>
 
       </div>
@@ -144,17 +184,13 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
       </label>
       <input
         name="custo"
-        min={1} 
-        max={99999}
-        type ="number"
-        inputMode="numeric"
-        pattern="[1-9]*"
+        type ="text"
+        inputMode="decimal"
         value={form.custo}
         onChange={handleChange}
-        placeholder="Custo"
         className="w-full px-3 py-2 border rounded"
-        />
-
+        required
+        />  
     </div>
 
     <div className="relative pt-8">
@@ -167,73 +203,45 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
         value={form.dataValidade}
         onChange={handleChange}
         className="w-full px-3 py-2 border rounded"
+        required
       />
     </div>
 
-    {/*Para selecionar uma imagem, fazer preview e armazenar dataURL em form.imagem */}
-    <input
-      id="imageInput"
-      type="file"
-      accept="image/*"
-      className="hidden"
-      onChange={(e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        (setForm as any)((prev: any) => ({ ...prev, imagem: reader.result as string }));
-        const img = document.getElementById("preview") as HTMLImageElement | null;
-        if (img) img.src = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-      }}
-    />
+    <div className="flex justify-center gap-20 mt-6 pt-6">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0] ?? null;
 
-    <div className="mt-2  text-center ">
-      <label
-      htmlFor="imageInput"
-      className="inline-block px-4 py-2 rounded bg-[#4C6E43] text-white"
-      >
-      Selecionar imagem
-      </label>
+          setForm(prev => ({
+            ...prev,
+            imagem: file,
+            previewSrc: file ? URL.createObjectURL(file) : "",
+          }));
+        }}
+        className="w-full"
+      />
 
-      <button
-      type="button"
-      className="ml-2 px-3 py-2 rounded border"
-      onClick={() => {
-        (setForm as any)((prev: any) => {
-        const copy = { ...prev };
-        delete copy.imagem;
-        return copy;
-        });
-        const img = document.getElementById("preview") as HTMLImageElement | null;
-        if (img) img.src = "";
-        const fileInput = document.getElementById("imageInput") as HTMLInputElement | null;
-        if (fileInput) fileInput.value = "";
-      }}
-      >
-      Remover
-      </button>
-
-      <div className="mt-2 justify-center flex">
-      {(form as any).imagem && (
+      {form.previewSrc && (
         <img
-          id="preview"
-          src={(form as any).imagem}
-          className="w-full h-40 object-contain mt-2"
+          src={form.previewSrc}
+          alt="Preview"
+          className="mt-2 h-32 object-contain rounded border"
         />
       )}
-      </div>
     </div>
     
-      <div className="flex justify-center gap-20 mt-6">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded border">Cancelar</button>
-        <button type="submit" className="px-4 py-2 rounded bg-[#4C6E43] text-white">Adicionar</button> 
-      </div>
+    
+    <div className="flex justify-center gap-20 mt-6 pt-8">
+      <button type="button" onClick={onClose} className="px-4 py-2 rounded border">Cancelar</button>
+      <button type="submit" className="px-4 py-2 rounded bg-[#4C6E43] text-white">Adicionar</button> 
+    </div>
   </form>
+
          <Modal
-                open={openAlteracoesModal}
-                onClose={() => {setOpenAlteracoesModal(false); onClose();}}
+                open={successModal}
+                onClose={() => {setSuccessModal(false); onClose();}}
                 title={"Alterações"}
                
                 message={"Ingrediente(s) adicionado(s) ao Stock com sucesso!"}
@@ -242,7 +250,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm) {
                         label: "Fechar",
                         className:
                             "px-6 py-2 rounded text-sm text-white bg-[#4C6E43] hover:opacity-90",
-                        onClick: () => {setOpenAlteracoesModal(false);  onClose();},
+                        onClick: () => {setSuccessModal(false);  onClose();},
                     },
                 ]}
             />

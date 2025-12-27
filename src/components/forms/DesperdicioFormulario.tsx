@@ -23,7 +23,6 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
     "Fora de validade",
     "Mau estado",
     "Mal confecionado",
-    //"Outro",
   ];
 
    useEffect(() => {
@@ -42,7 +41,6 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
      const { name, value } = e.target;
-
    
       if (name === "quantidade") {
         // permite string vazia (para apagar)
@@ -87,17 +85,17 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
     }
 
     try {
-      const newItem = { 
+      const newDesperdicioItem = { 
         ingredienteId: form.ingredienteId,
         descricao: form.descricao,
         quantidade: Number(form.quantidade),
         unidadeIngrediente: Number(form.unidadeIngrediente),
-        utilizadorId:"7bafc80f-0c10-457e-a4bd-cc303afa6332", //fincionario de stock id
+        utilizadorId:"7bafc80f-0c10-457e-a4bd-cc303afa6332", //funcionário de stock id
         tipoSaida: 2, //desperdicio
       };
       
-      const res = await addDesperdicioItem(newItem);
-      console.log("Resposta da API:", res);
+      const res = await addDesperdicioItem(newDesperdicioItem);
+      console.log("Resposta da API Desperdicio:", res);
 
       if (res?.exito) {
         onAdded?.(res.objeto);
@@ -108,7 +106,7 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
       }
 
   } catch (err) {
-      console.error("Erro no submit:", err);
+      console.error("Erro no submit página desperdicio:", err);
       setErrorModal("Não foi possível guardar o desperdício.");
     }
   }
@@ -191,6 +189,7 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
         open={successModal}
         onClose={() => { setSuccessModal(false); onClose(); }}
         title={"Alterações"}
+        
         message={"Ingrediente(s) adicionado(s) ao Desperdício com sucesso!"}
         buttons={[
           {

@@ -5,7 +5,7 @@ import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
-import { getDesperdicio, addDesperdicioItem, getIngredientes } from "../api/desperdicio.ts";
+import { getDesperdicio, /*addDesperdicioItem,*/ getIngredientes } from "../api/desperdicio.ts";
 
 export type ItemDesperdicio = {
     id: string;
@@ -131,10 +131,10 @@ export default function Desperdicio() {
                 </h1>
 
                 <BotaoAdicionar 
-                title="Adicionar ingrediente ao Desperdício" 
-                modalComponent={DesperdicioFormulario} 
-                buttonLabel="Adicionar" 
-                onAdded={handleAdd} 
+                    title="Adicionar ingrediente ao Desperdício" 
+                    modalComponent={DesperdicioFormulario} 
+                    buttonLabel="Adicionar" 
+                    onAdded={handleAdd} 
                 />
 
             </div>

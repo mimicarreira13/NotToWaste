@@ -10,11 +10,15 @@ import Contador from "../components/Contador.tsx";
 import { getStock, addStockItem, updateStockItem } from "../api/stock.ts";
 
 
+export type UpdateQuantidadeRequest = {
+  quantidade: number;
+};
 
 export type ItemStock = {
 
     id: string;
     nome: string;
+    marca: string;
     quantidade: number;
     unidade: number; 
     custo: number;
@@ -23,11 +27,20 @@ export type ItemStock = {
     //imAGEM
     
 }
+export type CriarItemStock = {
+    nome: string;
+    marca: string;
+    quantidade: number;
+    unidade: number; 
+    custo: number;
+    dataValidade: string;
+}
+
 
 export default function StockPage() 
 {
 
-
+    
     const [stockData, setStockData] = useState<ItemStock[]>([]);
 
     useEffect(() => 
@@ -42,19 +55,31 @@ export default function StockPage()
 
     async function handleUpdateQuantidade(id:string, quantidade:number) 
     {
-        await updateStockItem(id, { quantidade });
-
+        if (quantidade < 1) return;
+        
         setStockData((prev) =>
             prev.map((item) => 
             item.id === id ? { ...item, quantidade} : item
             )
         );
+
+        try{
+             await updateStockItem(id, { quantidade });
+        } catch (error) {
+            console.error("Erro ao atualizar quantidade na página stock:", error);
+             setStockData(prev =>
+                prev.map(item =>
+                    item.id === id ? { ...item, quantidade: item.quantidade } : item
+                )
+            );
+        }
     }
 
     async function handleAdd(item: ItemStock) 
     {
-        const saved = await addStockItem(item);
-        setStockData(prev => [...prev, saved]);
+        if (!item) return; 
+        console.log("Item recebido no handleAdd:", item);
+        setStockData(prev => [...prev, item]);
 
     }
 
@@ -106,10 +131,10 @@ export default function StockPage()
                 </h1>
 
                 <BotaoAdicionar 
-                        title="Adicionar ingrediente ao Stock" 
-                        modalComponent={StockFormulario} 
-                        buttonLabel="Adicionar" 
-                        onAdded={handleAdd}      
+                    title="Adicionar ingrediente ao Stock" 
+                    modalComponent={StockFormulario} 
+                    buttonLabel="Adicionar" 
+                    onAdded={handleAdd}      
                 />
 
             </div>
