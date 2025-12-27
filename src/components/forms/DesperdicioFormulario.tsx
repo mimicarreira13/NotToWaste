@@ -6,8 +6,8 @@ import { getIngredientes } from "../../api/desperdicio";
 
 export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm) 
 {
-  const [successModal, setSuccessModal] = useState(false);
-  const [errorModal, setErrorModal] = useState<string | null>(null);
+  const [, setSuccessModal] = useState(false);
+  const [, setErrorModal] = useState<string | null>(null);
   const [ingredientes, setIngredientes] = useState<{ id: number; nome: string }[]>([]);
   const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
   const [openList, setOpenList] = useState(false);
@@ -105,8 +105,12 @@ export default function ModalDesperdicio({ onClose, onAdded }: AdicionarForm)
         setErrorModal(res?.mensagem || "Não foi possível guardar o desperdício.");
       }
 
+<<<<<<< HEAD
   } catch (err) {
       console.error("Erro no submit página desperdicio:", err);
+=======
+  } catch {
+>>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
       setErrorModal("Não foi possível guardar o desperdício.");
     }
   }

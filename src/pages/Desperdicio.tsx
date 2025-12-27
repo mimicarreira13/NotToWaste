@@ -5,6 +5,10 @@ import BotaoAdicionar from "../components/BotaoAdicionar";
 import DesperdicioFormulario from "../components/forms/DesperdicioFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
+<<<<<<< HEAD
+=======
+import LoadingSpinner from "../components/LoadingSpinner";
+>>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
 import { getDesperdicio, /*addDesperdicioItem,*/ getIngredientes } from "../api/desperdicio.ts";
 
 export type ItemDesperdicio = {
@@ -36,18 +40,26 @@ export default function Desperdicio() {
 
     const [desperdicioData, setDesperdicioData] = useState<ItemDesperdicio[]>([]);
     const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         async function load() {
-            const [desperdicio, ingredientesResp] = await Promise.all([
-                getDesperdicio(),
-                getIngredientes(),
-            ]);
+            try {
+                const [desperdicio, ingredientesResp] = await Promise.all([
+                    getDesperdicio(),
+                    getIngredientes(),
+                ]);
 
-            console.log( "Página desperdicio - desperdicio: " , desperdicio);
-            console.log( "Página desperdicio - ingredientes: " , ingredientesResp);
+                console.log("Página desperdicio - desperdicio: ", desperdicio);
+                console.log("Página desperdicio - ingredientes: ", ingredientesResp);
 
-            setDesperdicioData(desperdicio);
-            setIngredientes(ingredientesResp);
+                setDesperdicioData(desperdicio);
+                setIngredientes(ingredientesResp);
+            } catch (err){
+                console.error("Erro ao carregar desperdício:", err);
+            } finally {
+                setLoading(false);
+            }
             
             
         }
@@ -115,6 +127,14 @@ export default function Desperdicio() {
         },
 
     ];
+
+    if (loading) {
+        return (
+            <div className="w-full min-h-screen flex items-center justify-center">
+                <LoadingSpinner message="Carregando Desperdicio..." size={72} ariaLabel="loading-waste" />
+            </div>
+        );
+    }
 
     return (
 
