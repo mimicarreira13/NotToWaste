@@ -1,15 +1,8 @@
 import api from "./api";
-import { AxiosError } from "axios";
 
-interface AddStockItemRequest {
-    Nome: string;
-    Marca: string;
-    Quantidade: number;
-    Custo: number;
-    Unidade: number;
-    DataValidade: string;
-    //imagem?: string;
-}
+type atualizarquantidade = {
+  quantidade: number;
+};
 
 export async function getStock() {
     const response = await api.get("/api/Ingrediente");
@@ -50,12 +43,19 @@ export async function addStockItem(item: {
 }
 
 
-export async function updateStockItem(id: string, item: {
-    quantidade: number
-}) {
-    const res = await api.put(`/api/EntradaStock/${id}`, item,{ 
+export async function updateStockQuantidadeItem(id: string, quantidade: number) 
+{
+    const body: atualizarquantidade = { quantidade };
+    console.log("PUT quantidade →", id, body);
+    const res = await api.put(`/api/Ingrediente/${id}/atualizar-quantidade`,
+        body,
+        {
         headers: {
             "Content-Type": "application/json",
-    },});
+        },
+        }
+    );
+
+    console.log("Resposta backend:", res.data);
     return res.data;
 }

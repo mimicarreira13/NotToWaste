@@ -9,16 +9,9 @@ import StockFormulario from "../components/forms/StockFormulario";
 import BackButton from "../components/Back.tsx";
 import Contador from "../components/Contador.tsx";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { getStock, addStockItem, updateStockItem } from "../api/stock.ts";
+import { getStock, updateStockQuantidadeItem } from "../api/stock.ts";
 
-<<<<<<< HEAD
 
-export type UpdateQuantidadeRequest = {
-  quantidade: number;
-};
-
-=======
->>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
 export type ItemStock = {
     id: string;
     nome: string;
@@ -28,7 +21,6 @@ export type ItemStock = {
     custo: number;
     dataValidade: string;
     //imAGEM
-<<<<<<< HEAD
     
 }
 export type CriarItemStock = {
@@ -43,13 +35,6 @@ export type CriarItemStock = {
 
 export default function StockPage() 
 {
-
-    
-=======
-};
-
-export default function StockPage() {
->>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
     const [stockData, setStockData] = useState<ItemStock[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -68,44 +53,28 @@ export default function StockPage() {
         load();
     }, []);
 
-<<<<<<< HEAD
-    async function handleUpdateQuantidade(id:string, quantidade:number) 
+    async function handleUpdateQuantidade(id:string, novaQuantidade:number) 
     {
-        if (quantidade < 1) return;
+        if (novaQuantidade < 0) return;
         
-=======
-    async function handleUpdateQuantidade(id: string, quantidade: number) {
-        await updateStockItem(id, { quantidade });
-
->>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
         setStockData((prev) =>
-            prev.map((item) => (item.id === id ? { ...item, quantidade } : item))
-        );
+            prev.map(item => item.id === id ? { ...item, quantidade : novaQuantidade} : item));
 
         try{
-             await updateStockItem(id, { quantidade });
+             await updateStockQuantidadeItem(id, novaQuantidade);
         } catch (error) {
             console.error("Erro ao atualizar quantidade na página stock:", error);
-             setStockData(prev =>
-                prev.map(item =>
-                    item.id === id ? { ...item, quantidade: item.quantidade } : item
-                )
-            );
+            const data = await getStock();
+            setStockData(data);
         }
     }
 
-<<<<<<< HEAD
     async function handleAdd(item: ItemStock) 
     {
         if (!item) return; 
         console.log("Item recebido no handleAdd:", item);
         setStockData(prev => [...prev, item]);
 
-=======
-    async function handleAdd(item: ItemStock) {
-        const saved = await addStockItem(item);
-        setStockData((prev) => [...prev, saved]);
->>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
     }
 
     function unidadeToLabel(unidade: number) {
@@ -151,25 +120,12 @@ export default function StockPage() {
         <div className="w-full min-h-full flex flex-col p-3 sm:p-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 pt-16">
                 <BackButton />
-<<<<<<< HEAD
-
-                <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">
-                    Stock   
-                </h1>
-
-                <BotaoAdicionar 
-                    title="Adicionar ingrediente ao Stock" 
-                    modalComponent={StockFormulario} 
-                    buttonLabel="Adicionar" 
-                    onAdded={handleAdd}      
-=======
                 <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-6">Stock</h1>
                 <BotaoAdicionar
                     title="Adicionar ingrediente ao Stock"
                     modalComponent={StockFormulario}
                     buttonLabel="Adicionar"
                     onAdded={handleAdd}
->>>>>>> 554d4014892a89b8b9fc0cbef47173b2a64e1098
                 />
             </div>
 

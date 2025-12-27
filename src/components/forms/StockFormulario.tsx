@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useState } from "react";
 import type { AdicionarForm } from "../BotaoAdicionar";
 import Modal from "../Modal";
 import { addStockItem } from "../../api/stock";
@@ -6,9 +6,7 @@ import { addStockItem } from "../../api/stock";
 export default function ModalStock({ onClose, onAdded }: AdicionarForm) 
 {
   const [successModal, setSuccessModal] = useState(false);
-  const [openAlteracoesModal, setOpenAlteracoesModal] = useState(false);
   const [errorModal, setErrorModal] = useState<string | null>(null);
-  const [openList, setOpenList] = useState(false);
   const [form, setForm] = useState({
     nome: "",
     marca: "",
@@ -20,12 +18,6 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm)
     previewSrc: "",
   });
 
-  useEffect(() => {
-    async function load() {
-      setOpenList(false);
-    }
-    load();
-  }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
        const { name, value } = e.target;
@@ -107,7 +99,7 @@ export default function ModalStock({ onClose, onAdded }: AdicionarForm)
        if (res?.exito && res?.objeto) {
       onAdded?.(res.objeto); 
       setSuccessModal(true);
-      setOpenAlteracoesModal(true); 
+    
        } else {
         setErrorModal(res?.mensagem || "Não foi possível guardar o desperdício.");
        }
