@@ -102,7 +102,7 @@ export default function Dashboard() {
                     </div>
                     {notificacoesIngredientes.slice(0, 3).map((n, index) => {
                         const bg = index % 2 === 0 ? "bg-[#cfcfcf]" : "bg-[#bcbcbc]";
-                        const pratoSugestao = n.pratosRelacionados[0] ?? "";
+                        const pratoSugestao = n.pratosRelacionados?.[0] ?? "";
                         return (
                             <div key={n.stockId} className={`${bg} text-left h-auto`}>
                                 <ul>
@@ -221,7 +221,11 @@ export default function Dashboard() {
                                     {n.nomeIngrediente}
                                 </td>
                                 <td className="px-3 py-2 border border-[#949494]">
-                                    Pratos recomendados: {n.pratosRelacionados.join(", ")}
+                                    Pratos recomendados: {
+                                        Array.isArray(n.pratosRelacionados) && n.pratosRelacionados.length > 0
+                                        ? n.pratosRelacionados.join(", ")
+                                        : "-"
+                                    }
                                 </td>
                                 <td className="px-3 py-2 border border-[#949494]">
                                     Tempo restante: {n.diasParaExpirar}{" "}
