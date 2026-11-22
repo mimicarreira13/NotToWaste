@@ -1,8 +1,86 @@
-# **Projeto NotToWaste - Front-End**
+# NotToWaste 🍽️
 
-## Estrutura do Projeto
+A prototype platform for managing stock and reducing food waste in restaurants. It tracks ingredients, registers waste, warns about products close to expiry, and generates sustainability reports for managers and customers.
 
-Aqui está uma visão geral da estrutura do projeto, destacando as partes mais importantes para entender o funcionamento:
+**Live demo (frontend only):** https://nottowaste-2.onrender.com
+> Note: the homepage and profile selection page are available in the live demo. The backend depended on an external service that is no longer active, so the full functionality is not available there.
+
+---
+
+## 🎯 About
+
+Restaurants often lose food because stock is not monitored closely: portions are too large, products are forgotten or pass their expiry date, and meals are poorly planned. NotToWaste brings stock, waste and sustainability data into one place, so the team can see where food is lost and act on it.
+
+## ✨ Features
+
+- **Stock management:** record ingredient entries and exits, and keep the stock updated
+- **Waste tracking:** record wasted ingredients with quantity, cost and reason (expired, badly prepared, returned by a customer, or partly eaten)
+- **Expiry alerts:** notifications when a product is 7 days from its expiry date
+- **Smart menus:** suggestions for dishes that use ingredients close to expiry
+- **Dish availability:** dishes with missing ingredients are blocked, and the client sees only available dishes
+- **Sustainability reports:** monthly waste indicators, a ranking of the most wasted ingredients, and PDF exports
+- **Sustainability score:** calculated from ingredient consumption and waste
+- **Role-based access:** each user type sees only the pages they are allowed to use
+
+## 👥 User Roles
+
+| Role | Access |
+|------|--------|
+| Stock employee | Stock, Waste |
+| Manager | All pages |
+| Cook | Kitchen, Waste |
+| Head chef | Dashboard, Kitchen, Manage Dishes, Waste |
+
+Selecting a role on the profiles page simulates a login and stores the selected profile in global state (context).
+
+## 🖥️ Pages
+
+1. **Home:** navbar with the logo, application name, search and user icon. The menu shows only the options the user can access. Clicking a locked option shows a "Service unavailable / No permission" popup.
+2. **Profiles:** grid of profiles (Manager, Stock Employee, Head Chef, Cook) that simulates login.
+3. **Client:** grid of available dishes (image, name, optional ingredients), locked unavailable dishes, and buttons to download sustainability and most-wasted-ingredient reports.
+4. **Stock:** table of ingredients (name, quantity, expiry date, opening date) with + / - buttons, add popup and confirmation.
+5. **Waste:** table of wasted ingredients (name, quantity, reason, date) with + / - buttons, add popup and confirmation.
+6. **Kitchen:** dish and ingredient grid with search, switching between dishes and ingredients, and automatic stock deduction when a dish is selected.
+7. **Manage Dishes:** add, view, edit and delete dishes and ingredients, with search and filters. Editing ingredients is limited to the head chef.
+8. **Dashboard:** notifications for ingredients expiring within 7 days, sustainability score, waste percentage, monetary value of waste, and report downloads.
+   Sustainability score: `100 - (monetary waste / total spent on purchases) * 100`
+9. **Settings:** alert configuration: suggestions for dishes with expiring ingredients, and 7-day expiry alerts. The number of days is adjusted with + / -.
+
+## 🛠️ Tech Stack
+
+**Front-end**
+- React and TypeScript
+- Vite
+- HTML, CSS and Bootstrap
+
+**Back-end**
+- C# REST API
+- Microsoft SQL Server
+- xUnit and Coverlet for unit tests
+
+**Tools**
+- Visual Studio, SSMS, VS Code
+- GitHub Projects for sprints and task tracking
+
+## 🚀 Getting Started (Front-end)
+
+1. **Clone the repository:**
+   ```bash
+   git clone git@github.com:mimicarreira13/NotToWaste.git
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the application:**
+   ```bash
+   npm run dev
+   ```
+   The front-end should open at `http://localhost:5173/` (or the port set in the configuration).
+
+## 📁 Project Structure
 
 ```
 NotToWaste/
@@ -12,152 +90,47 @@ NotToWaste/
 ├── package.json
 ├── vite.config.js
 ├── src/
-│   ├── assets/          # Imagens, ícones e outros arquivos estáticos
+│   ├── assets/          # Images, icons and other static files
 │   │   └── images/
-│   ├── components/      # Componentes reutilizáveis (Navbar, Botões, Cards, etc.)
+│   ├── components/      # Reusable components (Navbar, buttons, cards, etc.)
 │   │   └── Navbar.tsx
-│   ├── pages/           # Páginas individuais do projeto
+│   ├── pages/           # Individual pages
 │   │   ├── Home.tsx
-│   │   ├── OutraPagina.tsx
-│   ├── App.tsx          # Componente principal, onde as rotas são definidas
-│   └── main.tsx         # Ponto de entrada do React
-└── node_modules/        # Dependências do projeto
+│   │   └── ...
+│   ├── App.tsx          # Main component, where routes are defined
+│   └── main.tsx         # React entry point
+└── node_modules/        # Dependencies
 ```
 
-### Descrição das Pastas Principais
+- **assets/:** images, icons and other static files
+- **components/:** reusable components such as the navbar, buttons and cards
+- **pages/:** individual pages of the application
+- **App.tsx:** main component that defines the routes
+- **main.tsx:** React entry point, where the app is mounted
 
-* **assets/**: Contém imagens, ícones e outros arquivos estáticos usados no projeto.
-* **components/**: Componentes reutilizáveis como Navbar, botões, cards, etc.
-* **pages/**: Páginas individuais do site (Home, About, Contact, etc.).
-* **App.jsx**: Componente principal que define as rotas do projeto.
-* **main.jsx**: Ponto de entrada do React, onde o App é montado.
+## 🧪 Testing and Validation
 
-# Instruções de Inicialização
+- **Back-end unit tests:** written with xUnit, covering the business layer. Coverlet reported about 88% line coverage and 65% branch coverage.
+- **User tests:** each team member ran 1 to 3 participant sessions. Participants completed a set of tasks and a SUS questionnaire, and the system scored **86.35/100**, which the team interpreted as excellent usability. This was a small study, so treat the result as an early indication.
+- **Interviews:** validation interviews covered both the management and the customer perspective. All participants understood the main goal of the system.
 
-1. Clonar o repositório:
+**Next steps identified by the team:** improve the display of stock and waste, improve responsiveness so visual elements do not overlap, and enrich the information shown to the customer.
 
-   ```bash
-   git clone git@github.com:mimicarreira13/NotToWaste.git
-   ```
-2. Instalar dependências:
+## 👩‍💻 Team
 
-   ```bash
-   npm install
-   ```
-3. Iniciar a aplicação:
+Developed as a group project for *Processos e Métricas de Software*, Universidade da Madeira (2025/2026).
 
-   ```bash
-   npm run dev
-   ```
-
-   O frontend deve abrir em `http://localhost:5173/` (ou porta configurada).
-
-
----
-
-## **Distribuição de Tarefas**
-
-| Grupo | Membro Responsável | Páginas | Observações |
-|-------|-----------------|---------|-------------|
-| 1 | Milena    | Página Inicial (navbar -> para todas as páginas), Página de Perfis, Página do Cliente | Menu dinâmico, grid de perfis, lógica de login simulada, grid de pratos do cliente, download de relatórios, popups de permissão e feedback. |
-| 2 | Alexandra | Página de Stock, Página de Desperdício | Tabelas de ingredientes, popups de adicionar/editar, manipulação de stock/desperdício, botões de incremento/decremento, feedback visual. |
-| 3 | Leandro   | Página de Cozinha, Página de Gerir Pratos | Grid de pratos e ingredientes, visualização detalhada, filtros e pesquisa, popups de adicionar/editar/excluir pratos e ingredientes (somente chefe de cozinha), alternar entre grid de pratos e ingredientes. |
-| 4 | Catarina  | Dashboard, Definições | Métricas de sustentabilidade, notificações de ingredientes próximos da validade, download de relatórios, configuração de alertas (tipo e número de dias), popups de confirmação e feedback. |
+| Member | Role |
+|--------|------|
+| Alexandra Barbeito | Researcher, Designer, Front-end |
+| Angel David Abreu Parra | Back-end, Tester |
+| Josefa Monteiro | Back-end Leader, Tester |
+| Leandro Hontman | Designer, Front-end, Tester |
+| Leonardo Henriques | Researcher, Back-end |
+| Leonardo Sousa | Researcher, Back-end |
+| Maria Catarina Freitas | Project Manager, Front-end |
+| Milena Carreira | Front-end Leader, Tester |
 
 ---
 
-## **Descrição Detalhada de Cada Página**
-
-### **1️⃣ Página Inicial**
-- Navbar: logo (esquerda), nome da aplicação (centro), pesquisa + ícone do utilizador (direita)
-- Menu de opções: Dashboard, Cozinha, Definições, Gerir Pratos, Stock, Desperdício
-- Funcionalidades:
-  - Mostrar apenas opções desbloqueadas de acordo com o tipo de utilizador
-  - Clique em opção bloqueada → popup: “Serviço indisponível / Sem permissão”
-  - Navegação para páginas correspondentes
-- Tipos de utilizador e permissões:
-  - Funcionário de stock: Stock, Desperdício
-  - Gerente: Todas
-  - Cozinheiro: Cozinha, Desperdício
-  - Chefe de cozinha: Dashboard, Cozinha, Gerir Pratos, Desperdício
-
-### **2️⃣ Página de Perfis**
-- Grid de perfis: Gerente, Funcionário de Stock, Chefe de Cozinha, Cozinheiro
-- Funcionalidades:
-  - Seleção de perfil → simula login
-  - Guardar perfil selecionado em state global/context
-
-### **3️⃣ Página do Cliente**
-- Grid de pratos disponíveis: imagem, nome, ingredientes (opcional)
-- Pratos indisponíveis: bloqueados, texto “Não disponível”
-- Botões de download de relatórios: sustentabilidade e ingredientes mais desperdiçados
-- Funcionalidades:
-  - Visualizar apenas pratos disponíveis
-  - Download de relatórios
-  - Feedback visual em interações (hover, clique)
-
-### **4️⃣ Página de Stock**
-- Tabela de ingredientes: nome, quantidade, data de validade, data de abertura, ícones + / -
-- Botões: Adicionar, Voltar
-- Funcionalidades:
-  - Adicionar ingrediente → popup com campos, Cancelar / Adicionar
-  - Incrementar quantidade (+)
-  - Popup de confirmação após adição
-  - Backend decrementa stock automaticamente quando aplicável
-
-### **5️⃣ Página de Desperdício**
-- Tabela de desperdício: nome do ingrediente, quantidade, motivo, data, botões + / -
-- Botões: Adicionar, Voltar
-- Funcionalidades:
-  - Adicionar desperdício → popup com campos, Cancelar / Adicionar
-  - Popup de confirmação após adição
-  - Backend decrementa stock automaticamente
-
-### **6️⃣ Página de Cozinha**
-- Barra superior: Voltar, seleção Pratos / Ingredientes, pesquisa
-- Grid de pratos: imagem, nome, lista de ingredientes
-- Funcionalidades:
-  - Alternar visualização entre pratos e ingredientes
-  - Pesquisa de pratos/ingredientes
-  - Seleção de prato → ingredientes retirados do stock automaticamente (backend)
-  - Botão Voltar → página anterior
-
-### **7️⃣ Página de Gerir Pratos**
-- Grid de pratos e ingredientes:
-  - Pratos: imagem, nome, lista de ingredientes, ícone apagar
-  - Ingredientes: nome, custo, peso, validade, ícone editar (somente Chefe de Cozinha)
-- Funcionalidades:
-  - Adicionar prato → popup: nome, ingredientes, custo, imagem, Cancelar / Adicionar
-  - Visualização detalhada do prato: ingredientes, custo, imagem, botões Editar / Eliminar
-  - Editar prato / ingrediente → popup com feedback
-  - Eliminar prato → popup de confirmação + popup de sucesso/erro
-  - Pesquisa e filtro
-  - Alternar entre grid de pratos e ingredientes
-
-### **8️⃣ Dashboard**
-- Notificações de ingredientes a expirar ≤7 dias (topo da página)
-- Métricas: pontuação de sustentabilidade, % de desperdício, valor monetário do desperdício, outras métricas
-- Botões de download: relatórios de sustentabilidade, ingredientes mais desperdiçados
-- Funcionalidades:
-  - Visualização contínua de notificações
-  - Download de relatórios
-  - Possível cálculo de sustentabilidade: `100 - (Desperdício monetário / Total gasto em compras) * 100`
-
-### **9️⃣ Definições**
-- Botão Voltar
-- Funcionalidades:
-  - Editar alertas:
-    - Tipo 1: sugestões de pratos com ingredientes a expirar
-    - Tipo 2: alertas de 7 dias para ingredientes próximos da validade
-  - Ajuste do número de dias via + / -
-  - Cancelar / Guardar alterações
-
----
-
-## **Observações Gerais**
-- Navbar incluída na Página Inicial, visível em todas as páginas
-- Popups de feedback para ações críticas (adicionar, editar, eliminar, guardar alterações)
-- Popups de confirmação para exclusão de pratos
-- Layout consistente: grid, barra superior, botões
-- Backend gere decremento de stock, disponibilidade de pratos e cálculo de métricas
-
+> _"Every ingredient counts."_ 🌱
